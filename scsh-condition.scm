@@ -5,24 +5,26 @@
 
 ;;; A syscall-error condition-type:
 
-(define-condition-type 'syscall-error '(error))
+;;(define-condition-type 'syscall-error '(error))
 
-(define syscall-error? (condition-predicate 'syscall-error))
+;;(define syscall-error? (condition-predicate 'syscall-error))
 
-;; the remainder of this file doesn't work yet in Guile.
 (define (errno-error errno syscall . stuff)
   (let ((msg (errno-msg errno)))
-    (apply signal 'syscall-error errno msg syscall stuff)))
+    (scm-error 'system-error syscall "%s" msg (list errno))))
 
 (define (with-errno-handler* handler thunk)
-  (with-handler
-    (lambda (condition more)
-      (if (syscall-error? condition)
-	  (let ((stuff (condition-stuff condition)))
-	    (handler (car stuff)	; errno
-		     (cdr stuff))))	; (msg syscall . packet)
-      (more))
-    thunk))
+  (catch 'system-error
+	 thunk
+	 (lambda args
+	   (let ((errno (car (list-ref args 4)))
+		 (message (car (list-ref args 3)))
+		 (subr (list-ref args 1)))
+	   (handler errno (list message
+				subr
+				'()))	; data
+	   (throw 'system-error subr "%s" (list-ref args 3) #f)))))
+		      
 
 ;;; (with-errno-handler
 ;;;   ((errno data) ; These are vars bound in this scope.

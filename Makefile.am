@@ -3,7 +3,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 scshdir = $(datadir)/guile/scsh
-scsh_DATA = char-set.scm condition.scm \
+scsh_DATA = bitwise.scm char-set.scm condition.scm \
 	defrec.scm errno.scm fileinfo.scm fname.scm fr.scm \
 	init.scm let-opt.scm netconst.scm \
 	network.scm newports.scm population.scm procobj.scm \

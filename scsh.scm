@@ -17,6 +17,102 @@
   (thunk)
   (exit 0))
 
+;;; Like FORK, but the parent and child communicate via a pipe connecting
+;;; the parent's stdin to the child's stdout. This function side-effects
+;;; the parent by changing his stdin.
+
+(define (fork/pipe . maybe-thunk)
+  (really-fork/pipe fork maybe-thunk))
+
+(define (%fork/pipe . maybe-thunk)
+  (really-fork/pipe %fork maybe-thunk))
+  
+;;; Common code for FORK/PIPE and %FORK/PIPE.
+(define (really-fork/pipe forker maybe-thunk)
+  (receive (r w) (pipe)
+    (let ((proc (forker)))
+      (cond (proc		; Parent
+	     (close w)
+	     (move->fdes r 0))
+	    (else		; Child
+	     (close r)
+	     (move->fdes w 1)
+	     (if (pair? maybe-thunk)
+		 (call-terminally (car maybe-thunk)))))
+      proc)))
+
+
+;;; FORK/PIPE with a connection list.
+;;; (FORK/PIPE . m-t) = (apply fork/pipe+ '((1 0)) m-t)
+
+(define (%fork/pipe+ conns . maybe-thunk)
+  (really-fork/pipe+ %fork conns maybe-thunk))
+
+(define (fork/pipe+ conns . maybe-thunk)
+  (really-fork/pipe+ fork conns maybe-thunk))
+
+;;; Common code.
+(define (really-fork/pipe+ forker conns maybe-thunk)
+  (let* ((pipes (map (lambda (conn) (call-with-values pipe cons))
+		     conns))
+	 (rev-conns (map reverse conns))
+	 (froms (map (lambda (conn) (reverse (cdr conn)))
+		     rev-conns))
+	 (tos (map car rev-conns)))
+
+    (let ((proc (forker)))
+      (cond (proc			; Parent
+	     (for-each (lambda (to r/w)
+			 (let ((w (cdr r/w))
+			       (r (car r/w)))
+			   (close w)
+			   (move->fdes r to)))
+		       tos pipes))
+
+	    (else		; Child
+	     (for-each (lambda (from r/w)
+			 (let ((r (car r/w))
+			       (w (cdr r/w)))
+			   (close r)
+			   (for-each (lambda (fd) (dup w fd)) from)
+			   (close w))) ; Unrevealed ports win.
+		       froms pipes)
+	     (if (pair? maybe-thunk)
+		 (call-terminally (car maybe-thunk)))))
+      proc)))
+
+(define (tail-pipe a b)
+  (fork/pipe a)
+  (call-terminally b))
+
+(define (tail-pipe+ conns a b)
+  (fork/pipe+ conns a)
+  (call-terminally b))
+
+;;; Lay a pipeline, one process for each thunk. Last thunk is called
+;;; in this process. PIPE* never returns.
+
+(define (pipe* . thunks)
+  (letrec ((lay-pipe (lambda (thunks)
+		       (let ((thunk (car thunks))
+			     (thunks (cdr thunks)))
+			 (if (pair? thunks)
+			     (begin (fork/pipe thunk)
+				    (lay-pipe thunks))
+			     (call-terminally thunk)))))) ; Last one.
+    (if (pair? thunks)
+	(lay-pipe thunks)
+	(error "No thunks passed to PIPE*"))))
+
+;;; Splice the processes into the i/o flow upstream from us.
+;;; First thunk's process reads from our stdin; last thunk's process'
+;;; output becomes our new stdin. Essentially, n-ary fork/pipe.
+;;;
+;;; This procedure is so trivial it isn't included.
+;;; (define (pipe-splice . thunks) (for-each fork/pipe thunks))
+
+
+
 ;;; Environment stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -253,6 +349,78 @@
 	(else (error "Can only stringify strings, symbols, and integers."
 		     thing))))
 
+(define (exec-path-search prog path-list)
+  (if (file-name-absolute? prog)
+      (and (file-executable? prog) prog)
+      (first? (lambda (dir)
+		(let ((fname (string-append dir "/" prog)))
+		  (and (file-executable? fname) fname)))
+	     path-list)))
+		    
+(define (exec/env prog env . arglist)
+  (flush-all-ports)
+  (%exec prog (cons prog arglist) env))
+
+;(define (exec-path/env prog env . arglist)
+;  (cond ((exec-path-search (stringify prog) exec-path-list) =>
+;	 (lambda (binary)
+;	   (apply exec/env binary env arglist)))
+;	(else (error "No executable found." prog arglist))))
+
+;;; This procedure is bummed by tying in directly to %%exec/errno
+;;; and pulling some of %exec's code out of the inner loop so that
+;;; the inner loop will be fast. Folks don't like waiting...
+
+(define (exec-path/env prog env . arglist)
+  (flush-all-ports)
+  (let ((prog (stringify prog)))
+    (if (index prog #\/)
+
+	;; Contains a slash -- no path search.
+	(%exec prog (cons prog (map stringify arglist)) env)
+
+	;; Try each directory in PATH-LIST.
+	(let ((arglist (cons prog (map stringify arglist))))
+	  (for-each (lambda (dir)
+		      (let ((binary (string-append dir "/" prog)))
+			(false-if-exception (%exec binary arglist env))))
+		    exec-path-list))))
+
+    (error "No executable found." prog arglist))
+	 
+(define (exec-path prog . arglist)
+  (apply exec-path/env prog #t arglist))
+
+(define (exec prog . arglist)
+  (apply exec/env prog #t arglist))
+
+
+;;; Assumes niladic primitive %%FORK.
+
+(define (fork . maybe-thunk)
+  (flush-all-ports)
+  (really-fork #t maybe-thunk))
+
+(define (%fork . maybe-thunk)
+  (really-fork #f maybe-thunk))
+
+(define (really-fork clear-interactive? maybe-thunk)
+  ((with-enabled-interrupts 0
+     (let ((pid (%%fork)))
+       (if (zero? pid)				
+
+	   ;; Child
+	   (lambda ()	; Do all this outside the WITH-INTERRUPTS.
+	     (set! reaped-procs '())
+	     (if clear-interactive?
+		 (set-batch-mode?! #t))	; Children are non-interactive.
+	     (and (pair? maybe-thunk)
+		  (call-terminally (car maybe-thunk))))
+
+	   ;; Parent
+	   (let ((proc (new-child-proc pid)))
+	     (lambda () proc)))))))
+
 
 (define (exit . maybe-status)
   (flush-all-ports)
@@ -275,8 +443,10 @@
 
 
 ;;; Some globals:
-(define home-directory "")
-(define exec-path-list '())
+(if (not (defined? 'home-directory))
+    (define home-directory ""))
+(if (not (defined? 'exec-path-list))
+    (define exec-path-list '()))
 
 (define (init-scsh-vars quietly?)
   (set! home-directory

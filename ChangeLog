@@ -1,3 +1,21 @@
+Sat Aug 23 19:17:19 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* scsh.scm (exec-path-search, exec/env, exec-path/env, exec-path, 
+	exec, fork, %fork, really-fork): defined.
+	(fork/pipe, %fork/pipe, really-fork/pipe, %fork/pipe+, fork/pipe+,
+	really-fork/pipe+, tail-pipe, tail-pipe+, pipe*): defined.
+	* init.scm (set-batch-mode?!, batch-mode?): dummy definitions.
+	* Makefile.am, init.scm: add bitwise.scm.
+	* bitwise.scm: new file from scsh-0.5.1/alt/.
+	(biwise-not, bitwise-and, bitwise-or, bitwise-ior, bitwise-xor):
+	moved from init.scm.
+	(count-bits): shift -1, not 1.  Commented out, seems unused.
+	* scsh-condition.scm (errno-error, with-errno-handler): modified
+	to use Guile primitives.
+	Don't define syscall-error condition type.
+	* syscalls.scm (errno-msg): defined.
+	* errno.scm: include all errnos from cpp_err_symbols.in (libguile).
+
 Sat Aug 16 08:10:24 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm: load fileinfo.scm, condition.scm, scsh-condition.scm.

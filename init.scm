@@ -1,8 +1,3 @@
-(define (bitwise-not a) (lognot a))
-(define (bitwise-and a b) (logand a b))
-(define (bitwise-ior a b) (logior a b))
-(define (bitwise-xor a b) (logxor a b))
-
 (define (foreign-source . args) #f)
 (defmacro define-foreign args #f)
 (defmacro define-record-discloser args #f)
@@ -19,6 +14,9 @@
 	      (if (eq? (caar rest) 'begin)
 		  (cons (car rest) result)
 		  result)))))
+
+(define (batch-mode?) #t)
+(define (set-batch-mode?! arg) #t)
 
 (use-modules (ice-9 slib))
 (require 'values)
@@ -41,6 +39,7 @@
 (load-from-path "scsh/defrec.scm")
 (load-from-path "scsh/weak.scm")
 (load-from-path "scsh/population.scm")
+(load-from-path "scsh/bitwise.scm")
 (load-from-path "scsh/condition.scm")
 (load-from-path "scsh/scsh-condition.scm")
 (load-from-path "scsh/re.scm")

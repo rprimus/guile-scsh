@@ -1088,3 +1088,4 @@
 
 (define-foreign errno-msg (errno_msg (integer i))
   static-string)
+(define errno-msg strerror)

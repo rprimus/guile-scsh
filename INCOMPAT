@@ -9,6 +9,7 @@ scsh features not implemented
 =============================
 
 The ODBC interface.
+The char->char partial maps library (CCP).
 
 enabled-interrupts, interrupt-set, itimer, %set-unix-signal-handler,
 set-enabled-interrupts, %unix-signal-handler,

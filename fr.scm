@@ -11,10 +11,6 @@
   :use-module (ice-9 receive)
   :use-module (scsh let-opt)
   :use-module (srfi srfi-14)
-
-  ;; can be removed when rx upgraded to 0.5.3
-  :use-module (scsh cset-obsolete)
-
   :use-module (scsh rdelim)
   :use-module (scsh rx re)
   :use-module (scsh rx re-low)

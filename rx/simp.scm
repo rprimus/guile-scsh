@@ -36,7 +36,6 @@
   :use-module (scsh rx re)
   :use-module (scsh rx cond-package)
   :use-module (srfi srfi-14)
-  :use-module (scsh cset-obsolete)
 )
 (export simplify-regexp)
 
@@ -56,7 +55,7 @@
       (values (let ((cs (re-char-set:cset re)))
 		(if (and (char-set? cs)
 			 (= 1 (char-set-size cs)))
-		    (make-re-string (string (car (char-set-members cs))))
+		    (make-re-string (string (car (char-set->list cs))))
 		    re))
 	      0))
 
@@ -252,7 +251,7 @@
 	 (tail (if (and bos? (not prev-bos?)) (cons re-bos tail) tail))
 	 (tail (? ((zero? numchars) tail)	; Drop empty char set.
 		  ((= 1 numchars)		; {c} => "c"
-		   (cons (make-re-string (string (car (char-set-members cset))))
+		   (cons (make-re-string (string (car (char-set->list cset))))
 			 tail))
 		  (else (cons (make-re-char-set cset) tail)))))
     tail))

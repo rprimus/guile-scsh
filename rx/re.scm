@@ -18,7 +18,6 @@
   :use-module (ice-9 receive)
   :use-module (srfi srfi-13)
   :use-module (srfi srfi-14)
-  :use-module (scsh cset-obsolete)
   :use-module (scsh defrec)
   :use-module (scsh jar-defrecord)
   :use-module (scsh rx re-low)
@@ -86,7 +85,7 @@
 	(re-tsm (re-dsm:body re)))))	;   minus body's submatches.
 
 ;;; Slightly smart DSM constructor:
-;;; - Absorb this DSM into an inner dsm, or submatch.
+;;; - Absorb this DSM into an inner dsm.
 ;;; - Punt unnecessary DSM's.
 
 (define (re-dsm body pre-dsm post-dsm)
@@ -94,14 +93,8 @@
     (receive (body1 pre-dsm1) (open-dsm body)
       (let ((pre-dsm (+ pre-dsm pre-dsm1)))
 
-	(? ((= tsm (re-tsm body1)) body1)		; Trivial DSM
-
-	   ((re-submatch? body1)			; Absorb into submatch.
-	    (%make-re-submatch (re-submatch:body body1)
-			       (+ pre-dsm (re-submatch:pre-dsm body1))
-			       tsm))
-
-	   (else (%make-re-dsm body1 pre-dsm tsm)))))))	; Non-trivial DSM
+	(if (= tsm (re-tsm body1)) body1		; Trivial DSM
+	    (%make-re-dsm body1 pre-dsm tsm))))))	; Non-trivial DSM
 
 ;;; Take a regexp RE and return an equivalent (re', pre-dsm) pair of values.
 ;;; Recurses into DSM records. It is the case that 
@@ -213,7 +206,7 @@
 				      (string->char-set (re-string:chars elt))))
 				res))))
 	  (if (= 1 (char-set-size cset))
-	      (make-re-string (apply string (char-set-members cset)))
+	      (make-re-string (apply string (char-set->list cset)))
 	      (make-re-char-set cset)))
 
 	(if (pair? res)
@@ -438,7 +431,7 @@
 	      (char-set-full? cs)))))
 
 (define re-nonl
-  (make-re-char-set/posix (char-set-invert (char-set #\newline))
+  (make-re-char-set/posix (char-set-complement (char-set #\newline))
 			  "[^\n]"
 			  '#()))
 
@@ -465,7 +458,7 @@
 
 
 (define re-word
-  (let ((wcs (char-set-union char-set:alphanumeric	; Word chars
+  (let ((wcs (char-set-union char-set:letter+digit	; Word chars
 			     (char-set #\_))))
     (make-re-seq (list re-bow
 		       (make-re-repeat 1 #f (make-re-char-set wcs))

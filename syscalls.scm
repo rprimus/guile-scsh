@@ -634,8 +634,9 @@
 (define-errno-syscall (pipe-fdes) pipe-fdes/errno
   r w)
 
-(if (not (defined? 'guile-pipe))
-    (define guile-pipe pipe))
+(define guile-pipe
+  (module-ref (resolve-module '(guile)) 'pipe))
+
 (define pipe (lambda ()
 	       (let ((rv (guile-pipe)))
 		 (values (car rv) (cdr rv)))))
@@ -889,6 +890,8 @@
 			   cons))
        env-list))
 
+;; guile version uses lists instead of vectors.
+; (define (alist->env-vec alist)
 (define (alist->env-list alist)
   (map (lambda (var.val)
 	 (string-append (car var.val) "=" (cdr var.val)))
@@ -1128,11 +1131,11 @@
 ; De-released -- not POSIX and not on SGI systems.
 ; (define-foreign usleep (usleep (integer usecs)) integer)
 
-;; Guile's sleep can be interrupted.
-(if (not (defined? 'guile-sleep))
-    (define guile-sleep sleep))
+;; Guile's sleep can be interrupted so define using sleep-until.
+(define (sleep secs) (sleep-until (+ secs (current-time))))
 
-(define (sleep secs) (sleep-until (+ secs (time))))
+(define guile-sleep
+  (module-ref (resolve-module '(guile)) 'sleep))
 
 (define (sleep-until when)
   (let ((now (current-time))

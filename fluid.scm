@@ -2,9 +2,6 @@
 
 (define-module (scsh fluid))
 
-(if (not (defined? 'guile-make-fluid))
-    (define guile-make-fluid make-fluid))
-
 (begin-deprecated
  ;; Prevent `export' from re-exporting core bindings.  This behaviour
  ;; of `export' is deprecated and will disappear in one of the next
@@ -12,6 +9,9 @@
  (define make-fluid #f))
 
 (export make-fluid set-fluid! fluid let-fluid)
+
+(define guile-make-fluid
+  (module-ref (resolve-module '(guile)) 'make-fluid))
 
 (define (make-fluid value)
   (let ((result (guile-make-fluid)))

@@ -5,6 +5,7 @@
 
 (define-module (scsh scsh)
   :use-module (ice-9 receive)
+  :use-module (ice-9 format)
   :use-module (scsh utilities)
   :use-module (scsh syscalls)
   :use-module (scsh syntax)
@@ -336,7 +337,9 @@
 	     (close-fdes (open-fdes fname oflags #o600))
 	     fname)
 	   (if (null? maybe-prefix) '()
-	       (list (string-append (car maybe-prefix) ".~a"))))))
+	       (list (string-append (constant-format-string (car maybe-prefix))
+				    ".~a"))))))
+
 
 (define *temp-file-template*
   (make-fluid (string-append "/usr/tmp/" (number->string (pid)) ".~a")))
@@ -354,6 +357,23 @@
 	      (if (car retvals) (apply values retvals)
 		  (loop (+ i 1)))))))))
 
+
+;; Double tildes in S. 
+;; Using the return value as a format string will output exactly S.
+(define (constant-format-string s)	; Ugly code. Would be much clearer
+  (let* ((len (string-length s))	; if written with string SRFI.
+	 (tilde? (lambda (s i) (char=? #\~ (string-ref s i))))
+	 (newlen (do ((i (- len 1) (- i 1))
+		      (ans 0 (+ ans (if (tilde? s i) 2 1))))
+		     ((< i 0) ans)))
+	 (fs (make-string newlen)))
+    (let lp ((i 0) (j 0))
+      (cond ((< i len)
+	     (let ((j (cond ((tilde? s i) (string-set! fs j #\~) (+ j 1))
+			    (else j))))
+	       (string-set! fs j (string-ref s i))
+	       (lp (+ i 1) (+ j 1))))))
+    fs))
 
 
 ;;; Roughly equivalent to (pipe).
@@ -706,7 +726,7 @@
   (%exec prog (cons prog arglist) env))
 
 ;(define (exec-path/env prog env . arglist)
-;  (cond ((exec-path-search (stringify prog) exec-path-list) =>
+;  (cond ((exec-path-search (stringify prog) (fluid exec-path-list)) =>
 ;	 (lambda (binary)
 ;	   (apply exec/env binary env arglist)))
 ;	(else (error "No executable found." prog arglist))))
@@ -728,7 +748,7 @@
 	  (for-each (lambda (dir)
 		      (let ((binary (string-append dir "/" prog)))
 			(false-if-exception (%exec binary arglist env))))
-		    exec-path-list))))
+		    (fluid exec-path-list)))))
 
     (error "No executable found." prog arglist))
 	 
@@ -787,10 +807,8 @@
 
 
 ;;; Some globals:
-(if (not (defined? 'home-directory))
-    (define home-directory ""))
-(if (not (defined? 'exec-path-list))
-    (define exec-path-list '()))
+(define home-directory "")
+(define exec-path-list (make-fluid '()))
 
 (define (init-scsh-vars quietly?)
   (set! home-directory
@@ -798,11 +816,11 @@
 	      (else (if (not quietly?)
 			(warn "Starting up with no home directory ($HOME)."))
 		    "/")))
-  (set! exec-path-list
-	(cond ((getenv "PATH") => split-colon-list)
-	      (else (if (not quietly?)
-			(warn "Starting up with no path ($PATH)."))
-		    '()))))
+  (set-fluid! exec-path-list
+	      (cond ((getenv "PATH") => split-colon-list)
+		    (else (if (not quietly?)
+			      (warn "Starting up with no path ($PATH)."))
+			  '()))))
 
 (init-scsh-vars #f)
 

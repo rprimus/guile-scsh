@@ -1,21 +1,10 @@
 ;;; These are some macros to support using regexp matching.
 
+;; this file has been renamed to re-match-syntax.scm in scsh.
 (define-module (scsh rx let-match)
   :use-module (scsh module-system)
   :use-module (scsh alt-syntax))
 (export-syntax let-match if-match match-cond)
-
-(define-structure let-match-package
-  (export (let-match  :syntax)
-	  (if-match   :syntax)
-	  (match-cond :syntax))
-  (for-syntax (open scheme
-		    signals))	; For ERROR
-
-  (open scsh scheme)
-  (access signals) ; for ERROR
-
-  (begin
 
 ;;; (let-match m mvars body ...)
 ;;; Bind the vars in MVARS to the match & submatch strings of match data M,
@@ -123,4 +112,3 @@
 						     (let-match m mvars
 						       body ...))))
 		    clause2 ...))))
-))

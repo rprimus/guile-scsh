@@ -96,31 +96,26 @@
           #f))))
 
 (define (bind-listen-accept-loop protocol-family proc arg)
-  (let* ((sock (create-socket protocol-family socket-type/stream))
-	 (addr (cond ((= protocol-family
-			 protocol-family/internet)
-		      (let ((port (cond ((integer? arg) arg)
-					((string? arg)
-					 (service-info:port 
-					  (service-info arg "tcp")))
-					(else
-					 (error "socket-connect: bad arg ~s"
-						arg)))))
-			(internet-address->socket-address internet-address/any
-							  arg)))
-		     ((= protocol-family
-			 protocol-family/unix)
-		      (unix-address->socket-address arg))
-		     (else 
-      (error "bind-listen-accept-loop: unsupported protocol-family ~s"
-	     protocol-family)))))
+  (let ((sock (create-socket protocol-family socket-type/stream))
+	(addr (cond ((= protocol-family protocol-family/internet)
+		     (internet-address->socket-address internet-address/any
+		       (cond ((integer? arg) arg)
+			     ((string? arg)
+			      (service-info:port (service-info arg "tcp")))
+			     (else (error "socket-connect: bad arg ~s" arg)))))
+
+		    ((= protocol-family protocol-family/unix)
+		     (unix-address->socket-address arg))
+
+		    (else
+		     (error "bind-listen-accept-loop: unsupported protocol-family ~s"
+			    protocol-family)))))
+
     (set-socket-option sock level/socket socket/reuse-address #t)
     (bind-socket sock addr)
     (listen-socket sock 5)
     (let loop ()
-      (call-with-values 
-       (lambda () (accept-connection sock))
-       proc)
+      (call-with-values (lambda () (accept-connection sock)) proc)
       (loop))))
 
 ;;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

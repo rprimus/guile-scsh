@@ -7,16 +7,12 @@
 (define-module (scsh rdelim)
   :use-module (ice-9 rdelim)
   :use-module (srfi srfi-14)
-  :use-module (scsh cset-obsolete)
   :use-module (scsh rx re-high)
   :use-module (scsh rx re)
   :use-module (scsh rx re-syntax)
   :use-module (scsh errno)
   :use-module (scsh let-opt)
 )
-
-(if (not (defined? 'guile-read-delimited))
-    (define guile-read-delimited read-delimited))
 
 (begin-deprecated
  ;; Prevent `export' from re-exporting (ice-9 rdelim) bindings.  This behaviour
@@ -31,21 +27,21 @@
 ;; unchanged from (ice-9 rdelim)
 (re-export %read-delimited!)
 
+(define guile-read-delimited
+  (module-ref (resolve-module '(ice-9 rdelim)) 'read-delimited))
+(define guile-read-delimited!
+  (module-ref (resolve-module '(ice-9 rdelim)) 'read-delimited!))
+
 (define (read-delimited delims . args)
   (let ((rv
-	 (apply guile-read-delimited (list->string
-				      (char-set-members delims)) args)))
+	 (apply guile-read-delimited (char-set->string delims) args)))
     (if (pair? rv)
 	(values (car rv) (cdr rv))
 	rv)))
 
-(if (not (defined? 'guile-read-delimited!))
-    (define guile-read-delimited! read-delimited!))
-
 (define (read-delimited! delims . args)
   (let ((rv
-	 (apply guile-read-delimited! (list->string
-				       (char-set-members delims)) args)))
+	 (apply guile-read-delimited! (char-set->string delims) args)))
     (if (pair? rv)
 	(values (car rv) (cdr rv))
 	rv)))
@@ -244,7 +240,6 @@
 ;		     (values c (- i start)))
 
 ;		    ((>= i end)			; Filled the buffer.
-;		     (if gobble? (read-char port))
 ;		     (values #f (- i start)))
 			
 ;		    (else (string-set! buf i (read-char port))

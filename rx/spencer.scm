@@ -8,7 +8,6 @@
 (define-module (scsh rx spencer)
   :use-module (ice-9 receive)
   :use-module (srfi srfi-14)
-  :use-module (scsh cset-obsolete)
   :use-module (scsh ascii)
   :use-module (scsh rx re))
 (export posix-string->regexp)
@@ -136,7 +135,7 @@
 		    ((#\]) (if (= i i0)
 			       (lp i1 (char-set-adjoin! cset #\]))
 			       (let ((cset (if negate?
-					       (char-set-invert! cset)
+					       (char-set-complement! cset)
 					       cset)))
 				 (values (make-re-char-set cset) i1))))
 

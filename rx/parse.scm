@@ -47,7 +47,6 @@
 (define-module (scsh rx parse)
   :use-module (scsh utilities)
   :use-module (srfi srfi-14)
-  :use-module (scsh cset-obsolete)
   :use-module (ice-9 receive)
   :use-module (scsh ascii)
   :use-module (scsh rx re-low)
@@ -87,8 +86,8 @@
                
 
 ;;; Two useful standard char sets
-(define nonl-chars (char-set-invert (char-set #\newline)))
-(define word-chars (char-set-union (char-set #\_) char-set:alphanumeric))
+(define nonl-chars (char-set-complement (char-set #\newline)))
+(define word-chars (char-set-union (char-set #\_) char-set:letter+digit))
 
 ;;; Little utility that should be moved to scsh's utilities.scm
 (define (partition pred lis)
@@ -245,8 +244,8 @@
 					   (map parse-char-class (cdr sre))
 					   r))
 			(cs (if (char-set? cs)
-				(char-set-invert cs)
-				`(,(r 'char-set-invert) ,cs))))
+				(char-set-complement cs)
+				`(,(r 'char-set-complement) ,cs))))
 		   (if cset? cs (make-re-char-set cs))))
 
 	    ((&) (let ((cs (assoc-cset-op char-set-intersection 'char-set-intersection
@@ -294,15 +293,15 @@
 			   ((nonl)			nonl-chars)
 			   ((lower-case lower)		char-set:lower-case)
 			   ((upper-case upper)		char-set:upper-case)
-			   ((alphabetic alpha)		char-set:alphabetic)
-			   ((numeric digit num)	char-set:numeric)
-			   ((alphanumeric alnum alphanum) char-set:alphanumeric)
+			   ((alphabetic alpha)		char-set:letter)
+			   ((numeric digit num)	char-set:digit)
+			   ((alphanumeric alnum alphanum) char-set:letter+digit)
 			   ((punctuation punct)	char-set:punctuation)
 			   ((graphic graph)		char-set:graphic)
 			   ((blank)			char-set:blank)
 			   ((whitespace space white)	char-set:whitespace)
 			   ((printing print)		char-set:printing)
-			   ((control cntrl)		char-set:control)
+			   ((control cntrl)		char-set:iso-control)
 			   ((hex-digit xdigit hex)	char-set:hex-digit)
 			   ((ascii)			char-set:ascii)
 			   (else (error "Illegal regular expression" sre)))))
@@ -359,10 +358,9 @@
 	  (if (< i 0)
 	      (if cs? cset (uncase-char-set cset)) ; Case fold if necessary.
 	      (lp (- i 2)
-		  (char-set-union!
-		      cset
-		      (ascii-range->char-set (char->ascii (string-ref specs (- i 1)))
-					     (+ 1 (char->ascii (string-ref specs i)))))))))))
+		  (ucs-range->char-set! (char->ascii (string-ref specs (- i 1)))
+					(+ 1 (char->ascii (string-ref specs i)))
+					#f cset)))))))
 
 ;;; (regexp->scheme re r)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -464,17 +462,17 @@
 			   (else #f)))
 		(if one
 		    (switch char-set= cs
-		      ((char-set:alphanumeric)	alphanum)
+		      ((char-set:letter+digit)	alphanum)
 		      ((char-set:graphic)	graph)
 		      ((char-set:hex-digit)	hex)
 		      (else #f))
-		    (and (char-set= cs char-set:alphabetic) alpha)))
+		    (and (char-set= cs char-set:letter) alpha)))
 	    (and (char-set= cs char-set:lower-case) lower)) ; a, not A
 
 	(if biga
 	    (and (not space) (char-set= cs char-set:upper-case) upper)
 	    (if one
-		(and (not space) (char-set= cs char-set:numeric) num)
+		(and (not space) (char-set= cs char-set:digit) num)
 		(if space
 		    (switch char-set= cs
 		      ((char-set:whitespace) white)
@@ -482,7 +480,7 @@
 		      (else #f))
 		    (switch char-set= cs
 		      ((char-set:punctuation)	punct)
-		      ((char-set:control)	ctl)
+		      ((char-set:iso-control)	ctl)
 		      (else #f))))))))
 		
 
@@ -491,21 +489,21 @@
 	       (try-classify-char-set cs
 				      'char-set:full         'nonl-chars
 				      'char-set:lower-case   'char-set:upper-case
-				      'char-set:alphabetic   'char-set:numeric
-				      'char-set:alphanumeric 'char-set:punctuation
+				      'char-set:letter       'char-set:digit
+				      'char-set:letter+digit 'char-set:punctuation
 				      'char-set:graphic      'char-set:whitespace
-				      'char-set:printing     'char-set:control
+				      'char-set:printing     'char-set:iso-control
 				      'char-set:hex-digit    'char-set:blank
 				      'char-set:ascii))))
     (? ((not (char-set? cs)) cs) ; Dynamic -- *already* Scheme code.
        ((char-set-empty? cs) (r 'char-set:empty))
        ((try cs) => r)
-       ((try (char-set-invert cs)) =>
-	(lambda (name) `(,(r 'char-set-invert) ,name)))
+       ((try (char-set-complement cs)) =>
+	(lambda (name) `(,(r 'char-set-complement) ,name)))
 
        (else
 	(receive (loose+ ranges+) (char-set->in-pair cs)
-	  (receive (loose- ranges-) (char-set->in-pair (char-set-invert cs))
+	  (receive (loose- ranges-) (char-set->in-pair (char-set-complement cs))
 	    (let ((makeit (r 'spec->char-set)))
 	      (if (< (+ (length loose-) (* 12 (length ranges-)))
 		     (+ (length loose+) (* 12 (length ranges+))))
@@ -530,9 +528,9 @@
 					  'ascii)))
 	    (nchars (char-set-size cs)))
 	(? ((zero? nchars) `(,(r '|)))
-	   ((= 1 nchars) (apply string (char-set-members cs)))
+	   ((= 1 nchars) (apply string (char-set->list cs)))
 	   ((try cs) => r)
-	   ((try (char-set-invert cs)) =>
+	   ((try (char-set-complement cs)) =>
 	    (lambda (name) `(,(r '~) ,name)))
 	   (else (receive (cs rp comp?) (char-set->in-sexp-spec cs)
 		   (let ((args (append (? ((string=? cs "") '())
@@ -632,7 +630,7 @@
 						      `(,(car r) ,(cdr r) . ,lis))
 						    '() ranges)))))))
     (receive (cs+ rp+) (->sexp-pair cset)
-      (receive (cs- rp-) (->sexp-pair (char-set-invert cset))
+      (receive (cs- rp-) (->sexp-pair (char-set-complement cset))
 	(if (< (+ (string-length cs-) (string-length rp-))
 	       (+ (string-length cs+) (string-length rp+)))
 	    (values cs- rp- #t)

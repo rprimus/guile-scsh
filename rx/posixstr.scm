@@ -57,7 +57,6 @@
   :use-module (ice-9 receive)
   :use-module (srfi srfi-13)
   :use-module (srfi srfi-14)
-  :use-module (scsh cset-obsolete)
   :use-module (scsh utilities)
   :use-module (scsh ascii)
   :use-module (scsh rx re)
@@ -388,11 +387,11 @@
 	(? ((= 0 nchars) (values "[^\000-\177]" 1 0 '#()))	; Empty set
 	     
 	   ((= 1 nchars)					; Singleton set
-	    (translate-string (string (car (char-set-members cset)))))
+	    (translate-string (string (car (char-set->list cset)))))
 
 	   ;; General case. Try both [...] and [^...].
 	   (else (let ((s- (->bracket-string cset #t))
-		       (s+ (->bracket-string (char-set-invert cset) #f)))
+		       (s+ (->bracket-string (char-set-complement cset) #f)))
 		   (values (if (< (string-length s-) (string-length s+))
 			       s- s+)
 			   1 0 '#())))))))

@@ -121,8 +121,8 @@
 ;;; do the rename, we could end up overriding it, when the user asked
 ;;; us not to. That's life in the food chain.
 
-(if (not (defined? 'guile-rename-file))
-    (define guile-rename-file rename-file))
+(define guile-rename-file
+  (module-ref (resolve-module '(guile)) 'rename-file))
 
 (define (rename-file old-fname new-fname . maybe-override?)
   (let ((override? (:optional maybe-override? #f)))

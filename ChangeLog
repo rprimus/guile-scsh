@@ -1,3 +1,27 @@
+2001-08-04  Gary Houston  <ghouston@arglist.com>
+
+	* rx/spencer.scm, rx/simp.scm, rx/rx-lib.scm, rx/re.scm,
+	rx/posixstr.scm, rx/parse.scm, rx/let-match.scm, rdelim.scm,
+	network.scm: upgraded with scsh 0.5.2 -> 0.5.3 changes.
+
+	* rdelim.scm (read-delimited): don't use obsolete char-set-members.
+	don't use module (scsh cset-obsolete).  define guile-read-delimted!
+	before read-delimited! is redefined by export.
+
+	* rx/spencer.scm, rx/simp.scm, rx/rx-lib.scm, rx/re.scm, rx/parse.scm,
+	posixstr.scm, fr.scm: don't use module (scsh cset-obsolete).
+
+	* scsh.scm: use module (ice-9 format).  adjust home-directory and
+	exec-path-list.
+
+	* filesys.scm (rename-file), fluid.scm (make-fluid),
+	rdelim.scm (read-delimited, read-delimited!),
+	syscalls.scm (pipe, sleep): use module-ref to get bindings from
+	guile-core.
+
+	* README, USAGE, INCOMPAT: updated: now guile-scsh is based on
+	scsh 0.5.3.
+
 2001-08-03  Gary Houston  <ghouston@arglist.com>
 
 	* glob.scm, fr.scm, fileinfo.scm, let-opt.scm:

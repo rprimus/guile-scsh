@@ -1,10 +1,11 @@
-This is an incomplete port of the Scheme Shell, scsh 0.5.2, to Guile.
+This is an incomplete port of the Scheme Shell, scsh 0.5.3, to Guile.
 This is not a release of guile-scsh, but was presumably obtained at
 some random time from the CVS archive.
 
 For the original scsh package and documentation, see:
 
 http://www.swiss.ai.mit.edu/ftpdir/scsh/
+http://sourceforge.net/projects/scsh/
 
 This version of guile-scsh requires:
 

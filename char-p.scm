@@ -30,12 +30,13 @@
 (define (char-ascii?        c) (char-set-contains? char-set:ascii        c))
 
 ;; Obsolete scsh.
-(define (char-alphanumeric? c)
-  (issue-deprecation-warning
-   "char-alphanumeric? is deprecated.  Use char-letter+digit? instead")
-  (char-letter+digit? c))
+(begin-deprecated
+ (define (char-alphanumeric? c)
+   (issue-deprecation-warning
+    "char-alphanumeric? is deprecated.  Use char-letter+digit? instead")
+   (char-letter+digit? c))
 
-(define (char-control? c)
-  (issue-deprecation-warning
-   "char-control? is deprecated.  Use char-iso-control? instead")
-  (char-iso-control? c))
+ (define (char-control? c)
+   (issue-deprecation-warning
+    "char-control? is deprecated.  Use char-iso-control? instead")
+   (char-iso-control? c)))

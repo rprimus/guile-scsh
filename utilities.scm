@@ -197,14 +197,15 @@
 
 
 (define (deprecated-proc proc name . maybe-preferred-msg)
-  (let ((warned? #f))
+  (begin-deprecated
     (lambda args
-      (cond ((not warned?)
-	     (set! warned? #t)
-	     (apply warn
-		    "Deprecated procedure (may not be supported in a future release)"
-		    name
-		    maybe-preferred-msg)))
+      (issue-deprecation-warning
+       (string-append
+	(symbol->string name)
+	" is deprecated. "
+	(if (pair? maybe-preferred-msg)
+	    (car maybe-preferred-msg)
+	    "")))
       (apply proc args))))
 
 

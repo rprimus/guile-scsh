@@ -45,7 +45,6 @@
   :use-module (scsh jar-defrecord))
 
 (export char:newline char:tab char:page char:return char:space char:vtab
-	char-ascii?
 
 	char-set?
 	char-set-copy
@@ -116,10 +115,6 @@
   (do ((index lower (+ index 1)))
     ((>= index upper) str)
     (string-set! str index ch)))
-
-(define (char-ascii? char)
-  (let ((maybe-ascii (char->ascii char)))
-    (and (<= 0 maybe-ascii 127) maybe-ascii)))
 
 ;;;; Character Sets
 

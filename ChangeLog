@@ -8,6 +8,9 @@
 	char-symbol?): new from scsh-0.5.3.
 	* init.scm, USAGE, Makefile.am, make-module-list: updated.
 
+	* utilities.scm (deprecated-proc): redefined using Guile's deprecation
+	mechanism.
+
 2001-07-30  Gary Houston  <ghouston@arglist.com>
 
 	* char-set.scm (char:newline, char:tab, char:page, char:return,

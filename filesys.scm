@@ -2,6 +2,17 @@
 ;;; create-{directory,fifo,hard-link,symlink}
 ;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
+(define-module (scsh filesys)
+  :use-module (scsh scsh-condition)
+  :use-module (scsh syscalls)
+  :use-module (scsh let-opt)
+  :use-module (scsh fileinfo)
+  :use-module (scsh errno)
+  :use-module (scsh scsh)
+)
+(export delete-filesys-object create-directory create-fifo create-hard-link
+	create-symlink rename-file)
+
 ;;; This procedure nukes FNAME, whatever it may be: directory, file, fifo,
 ;;; symlink.
 ;;;
@@ -102,6 +113,9 @@
 ;;; do the rename, we could end up overriding it, when the user asked
 ;;; us not to. That's life in the food chain.
 
+(if (not (defined? 'guile-rename-file))
+    (define guile-rename-file rename-file))
+
 (define (rename-file old-fname new-fname . maybe-override?)
   (let ((override? (:optional maybe-override? #f)))
     (if (or (and override? (not (eq? override? 'query)))
@@ -109,4 +123,4 @@
 	    (and override?
 		 (y-or-n? (string-append "rename-file:" new-fname
 					 " already exists. Delete"))))
-	(%rename-file old-fname new-fname))))
+	(guile-rename-file old-fname new-fname))))

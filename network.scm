@@ -3,6 +3,40 @@
 ;;; Copyright (c) 1994 by Olin Shivers.
 ;;; See file COPYING.
 
+(define-module (scsh network)
+  :use-module (ice-9 receive)
+  :use-module (scsh define-foreign-syntax)
+  :use-module (scsh netconst)
+  :use-module (scsh let-opt)
+  :use-module (scsh errno)
+  :use-module (scsh rw)
+  :use-module (scsh defrec)
+)
+(export bind-listen-accept-loop
+	socket? socket:family socket:inport socket:outport
+	socket-address? socket-address:address socket-address:family
+	internet-address->socket-address socket-address->internet-address
+	create-socket close-socket bind-socket connect-socket
+	listen-socket accept-connection socket-remote-address
+	socket-local-address shutdown-socket create-socket-pair
+	receive-message receive-message!
+	receive-message/partial receive-message!/partial
+	send-message send-message/partial
+	socket-option set-socket-option
+	host-info host-info?
+	host-info:name host-info:aliases host-info:addresses
+	network-info network-info?
+	network-info:name network-info:aliases network-info:net
+	service-info service-info?
+	service-info:name service-info:aliases service-info:port
+	service-info:protocol
+	protocol-info protocol-info?
+	protocol-info:name protocol-info:aliases protocol-info:number
+)
+
+;; noop for Guile.
+(defmacro define-errno-syscall args #f)
+
 ;;; Scheme48 implementation.
 
 (foreign-source

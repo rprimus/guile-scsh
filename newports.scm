@@ -5,6 +5,20 @@
 ;;; Guile version omits the Unix file port system and has other
 ;;; modifications.
 
+(define-module (scsh newports)
+  :use-module (ice-9 receive)
+  :use-module (scsh syntax)
+  :use-module (scsh alt-syntax)
+)
+(export fdport? set-port-buffering 
+	bufpol/block bufpol/line bufpol/none
+	call/fdes close-after
+	with-current-input-port* with-current-output-port*
+	with-current-error-port*
+	with-current-input-port with-current-output-port
+	with-current-error-port
+	set-current-input-port! set-current-output-port!
+	set-current-error-port!)
 
 (define (fdport? x)
   (and (or (input-port? x)

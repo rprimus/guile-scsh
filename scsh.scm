@@ -3,6 +3,45 @@
 ;;; Copyright (c) 1994 by Brian D. Carlstrom.
 ;;; See file COPYING.
 
+(define-module (scsh scsh)
+  :use-module (ice-9 receive)
+  :use-module (scsh utilities)
+  :use-module (scsh syscalls)
+  :use-module (scsh syntax)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh bitwise)
+  :use-module (scsh fluid)
+  :use-module (scsh let-opt)
+  :use-module (scsh newports)
+  :use-module (scsh scsh-condition)
+  :use-module (scsh stringcoll)
+  :use-module (scsh fileinfo)
+  :use-module (scsh fname)
+  :use-module (scsh rw)
+  :use-module (scsh sighandlers)
+  :use-module (scsh procobj)
+)
+(export call-terminally fork/pipe %fork/pipe tail-pipe tail-pipe+
+	alist-update alist-compress add-before add-after
+	with-env* with-total-env* with-cwd* with-umask*
+	create-temp-file temp-file-channel
+	run/collecting* run/port+proc*
+	run/port* run/file* run/string* run/strings* run/sexp*
+	run/sexps*
+	port->string port->string-list port->sexp-list
+	port->list port-fold
+	char-filter string-filter y-or-n?
+	stdio->stdports with-stdio-ports* stdports->stdio
+	command-line-arguments arg* arg argv
+	home-directory exec-path-list suspend
+	exec/env exec-path/env exec-path exec
+	fork %fork
+)
+(export-syntax with-cwd with-umask with-env with-total-env
+	       run/port run/file run/string run/strings run/sexp run/sexps
+	       with-stdio-ports
+)
+
 ;;; Call THUNK, then die.
 ;;; A clever definition in a clever implementation allows the caller's stack
 ;;; and dynamic env to be gc'd away, since this procedure never returns.
@@ -604,7 +643,8 @@
 
 ;;; Some globals.
 ;;(define %command-line '())		; Includes program.
-(define command-line-arguments #f)	; Doesn't include program.
+(define command-line-arguments 	; Doesn't include program.
+  (cdr (command-line)))
 
 ;; not implemented in Guile.
 ;;(define (set-command-line-args! args)
@@ -726,11 +766,11 @@
 	     (lambda () proc)))))))
 
 
-(define (exit . maybe-status)
-  (flush-all-ports)
-  (primitive-exit (:optional  maybe-status 0))
-  (display "The evil undead walk the earth." 2)
-  (error "(exit) returned."))
+;(define (exit . maybe-status)
+;  (flush-all-ports)
+;  (primitive-exit (:optional  maybe-status 0))
+;  (display "The evil undead walk the earth." 2)
+;  (error "(exit) returned."))
 
 
 ;;; The classic T 2.0 primitive.
@@ -763,6 +803,8 @@
 	      (else (if (not quietly?)
 			(warn "Starting up with no path ($PATH)."))
 		    '()))))
+
+(init-scsh-vars #f)
 
 ; SIGTSTP blows s48 away. ???
 (define (suspend) (signal-process 0 signal/stop))

@@ -1,3 +1,29 @@
+2000-12-04  Gary Houston  <ghouston@arglist.com>
+
+	* scsh.scm: define module (scsh scsh).
+	(command-line-arguments): define directly here instead of in init.scm.
+	(init-scsh-vars): call here instead of in init.scm.
+	(exit): removed, use Guile definition.
+
+	* syscalls.scm (define-errno-syscall): don't export
+	* network.scm: define module (scsh network).
+	(define-errno-syscall): copied from syscalls.scm.
+	* netconst.scm: define module (scsh netconst).
+	(maybe-define, maybe-define-so): export the generated definitions.
+	* fr.scm: define module (scsh fr).
+	* awk.scm: define module (scsh awk).
+	* newports.scm: define module (scsh newports).
+	* time.scm: define module (scsh time).
+	* filesys.scm: define module (scsh filesys).
+	rename-file: use guile primitive rename-file instead of
+	%rename-file.
+	* filemtch.scm: file removed.  it's deprecated/obsolete/broken.
+	* glob.scm: define module (scsh glob).
+	* fileinfo.scm: define module (scsh fileinfo).
+	* syntax.scm: define module (scsh syntax).
+	* init.scm: load new modules.
+	* Makefile.am (pkgdata_DATA): filemtch.scm removed.
+
 2000-12-02  Gary Houston  <ghouston@arglist.com>
 
 	* receive.scm: removed.

@@ -2,6 +2,16 @@
 ;;; Translating process forms into Scheme code.
 ;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
+(define-module (scsh syntax)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh syntax-helpers)
+  :use-module (scsh procobj)
+  :use-module (scsh scsh)
+)
+(export-syntax define-simple-syntax exec-epf & run || && run-collecting
+	       run/port+proc run/port run/strings run/file run/string
+	       run/sexp run/sexps)
+
 (define-syntax define-simple-syntax
   (syntax-rules ()
     ((define-simple-syntax (name . pattern) result)
@@ -60,8 +70,8 @@
 (define-simple-syntax (run/sexps . epf)
   (run/sexps* (lambda () (exec-epf . epf))))
 
-(define-simple-syntax (run/pty . epf)
-  (run/pty* (lambda () (exec-epf . epf))))
+;(define-simple-syntax (run/pty . epf)
+;  (run/pty* (lambda () (exec-epf . epf))))
 
 ;(define (expand-mac transformer form)
 ;  (transformer form (lambda (x) x) eq?))

@@ -119,6 +119,8 @@ This list was generated with help from the make-module-list script.
 (regexp-fold regexp-fold-right regexp-for-each)
 
 (scsh rx re-syntax)
+;; rx macro generates code that requires
+;; (scsh rx re)
 (sre-form? expand-rx if-sre-form rx)
 
 (scsh rx parse)

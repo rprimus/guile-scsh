@@ -37,7 +37,11 @@
 	     (scsh rx oldfuns)
 	     (scsh rx re-subst)
 	     (scsh rx re-fold)
+
+	     ;; rx macro generates code that requires
+	     ;; (scsh rx re)
 	     (scsh rx re-syntax)
+
 	     (scsh rx parse)
 	     (scsh rx rx-lib)
 
@@ -64,20 +68,31 @@
 	     ;; map map-in-order for-each member assoc iota list-index
 	     ;; delete delete!
 	     (scsh lib list-lib)
+
+	     ;; define-simple-syntax generates code that requires
+	     ;; (scsh alt-syntax).
+	     (scsh syntax)
+
+	     (scsh fileinfo)
+	     (scsh glob)
+
+	     ;; replaces rename-file.
+	     (scsh filesys)
+	     
+	     (scsh time)
+	     (scsh newports)
+
+	     (scsh fr)
+
+	     ;; the awk macro generates code that reqiures:
+	     ;; (scsh rx re-syntax)
+	     ;; (scsh rx re)
+	     ;; (scsh rx re-high)
+	     (scsh awk)
+
+	     ;; also exports symbols such as address-family/unspecified.
+	     (scsh netconst)
+
+	     (scsh network)
+	     (scsh scsh)
 )
-
-(load-from-path "scsh/syntax.scm")
-(load-from-path "scsh/fileinfo.scm")
-(load-from-path "scsh/glob.scm")
-(load-from-path "scsh/filemtch.scm")
-(load-from-path "scsh/filesys.scm")
-(load-from-path "scsh/time.scm")
-(load-from-path "scsh/newports.scm")
-(load-from-path "scsh/awk.scm")
-(load-from-path "scsh/fr.scm")
-(load-from-path "scsh/netconst.scm")
-(load-from-path "scsh/network.scm")
-(load-from-path "scsh/scsh.scm")
-
-(init-scsh-vars #f)
-(set! command-line-arguments (cdr (command-line)))

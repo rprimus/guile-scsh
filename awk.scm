@@ -1,6 +1,17 @@
 ;;; An awk loop, after the design of David Albertz and Olin Shivers.
 ;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 
+(define-module (scsh awk)
+  :use-module (ice-9 receive)
+  :use-module (scsh utilities)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh rx parse)
+  :use-module (scsh rx re-low)
+  :use-module (scsh rx re-high)
+  :use-module (scsh rx re-syntax)
+)
+(export-syntax awk)
+
 ;;; This uses the new RX SRE syntax. Defines a Clinger-Rees expander for
 ;;; the old, pre-SRE syntax AWK, and one for the new SRE-syntax AWK.
 

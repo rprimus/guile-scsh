@@ -1,6 +1,59 @@
 ;;; Time interface for scsh.
 ;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 
+(define-module (scsh time)
+  :use-module (scsh define-foreign-syntax)
+  :use-module (scsh defrec)
+  :use-module (scsh let-opt)
+  :use-module (scsh utilities)
+  :use-module (ice-9 receive)
+)
+(export make-date
+	date?
+
+	date:seconds
+	date:minute	
+	date:hour   	
+	date:month-day	
+	date:month   	
+	date:year    	
+	date:tz-name	
+	date:tz-secs	
+	date:summer?	
+	date:week-day	
+	date:year-day
+
+	set-date:seconds
+	set-date:minute	
+	set-date:hour   	
+	set-date:month-day	
+	set-date:month   	
+	set-date:year    	
+	set-date:tz-name	
+	set-date:tz-secs	
+	set-date:summer?	
+	set-date:week-day	
+	set-date:year-day
+
+	modify-date:seconds
+	modify-date:minute	
+	modify-date:hour   	
+	modify-date:month-day	
+	modify-date:month   	
+	modify-date:year    	
+	modify-date:tz-name	
+	modify-date:tz-secs	
+	modify-date:summer?	
+	modify-date:week-day	
+	modify-date:year-day
+
+	time+ticks
+	ticks/sec
+	time
+	date
+	date->string
+	format-date)
+
 ;;; Should I have a (FILL-IN-DATE! date) procedure that fills in
 ;;; the redundant info in a date record?
 ;;; - month-day & month defined -> week-day & year-day filled in.

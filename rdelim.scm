@@ -9,6 +9,7 @@
   :use-module (scsh rx re-high)
   :use-module (scsh rx re)
   :use-module (scsh rx re-syntax)
+  :use-module (scsh errno)
 )
 
 (export read-line read-paragraph read-delimited read-delimited! skip-char-set)

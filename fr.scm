@@ -7,6 +7,19 @@
 ;;; - Should I change the field-splitters to return lists? It's the
 ;;;   right thing, and costs nothing in terms of efficiency.
 
+(define-module (scsh fr)
+  :use-module (ice-9 receive)
+  :use-module (scsh let-opt)
+  :use-module (scsh char-set)
+  :use-module (scsh rdelim)
+  :use-module (scsh rx re)
+  :use-module (scsh rx re-low)
+  :use-module (scsh rx re-high)
+  :use-module (scsh rx re-syntax)
+)
+(export field-splitter infix-splitter suffix-splitter sloppy-suffix-splitter
+	record-reader field-reader)
+
 ;;; Looping primitives:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; It is nicer for loops that loop over a bunch of different things

@@ -7,7 +7,7 @@ pkgdatadir = @GUILE_SCSH_DIR@
 pkgdata_DATA = alt-syntax.scm ascii.scm awk.scm bitwise.scm \
 	char-set.scm define-foreign-syntax.scm \
 	defrec.scm ekko.scm errno.scm features.scm \
-	fileinfo.scm filemtch.scm filesys.scm \
+	fileinfo.scm filesys.scm \
 	fluid.scm fname.scm fr.scm glob.scm here.scm \
 	init.scm jar-defrecord.scm let-opt.scm \
 	lib/list-lib.scm lib/string-lib.scm \

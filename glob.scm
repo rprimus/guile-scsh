@@ -8,6 +8,19 @@
 ;;; so long as you don't charge money for it, remove this notice, or
 ;;; hold us liable for any results of its use.  --enjoy.
 
+(define-module (scsh glob)
+  :use-module (ice-9 receive)
+  :use-module (scsh fname)
+  :use-module (scsh fileinfo)
+  :use-module (scsh rx re-high)
+  :use-module (scsh rx re)
+  :use-module (scsh utilities)
+  :use-module (scsh char-set)
+  :use-module (scsh scsh-condition)
+  :use-module (scsh syscalls)
+)
+(export glob glob-quote maybe-directory-files)
+
 ;;; Usage:	(glob pattern-list)
 ;;;                 pattern-list := a list of glob-pattern strings
 

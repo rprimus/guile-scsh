@@ -1,14 +1,20 @@
+(define-module (scsh netconst))
+(export options/boolean options/value options/linger
+	shutdown/receives shutdown/sends shutdown/sends+receives)
+;; more generated exports below.
+
 (defmacro maybe-define (name value)
-  `(if (defined? ',value)
-       (define ,name ,value)))
+  `(cond ((defined? ',value)
+	  (define ,name ,value)
+	  (export ,name))))
 
 (defmacro maybe-define-so (name value type)
   (let ((type-var (string->symbol (string-append "options/"
 						 (symbol->string type)))))
-    `(if (defined? ',value)
-	 (begin
-	   (define ,name ,value)
-	   (set! ,type-var (cons ,value ,type-var))))))
+    `(cond ((defined? ',value)
+	    (define ,name ,value)
+	    (export ,name)
+	    (set! ,type-var (cons ,value ,type-var))))))
 
 (maybe-define address-family/unspecified	AF_UNSPEC)
 (maybe-define address-family/unix 		AF_UNIX)
@@ -50,6 +56,3 @@
 (define shutdown/receives	0)
 (define shutdown/sends		1)
 (define shutdown/sends+receives	2)
-
-(undefine maybe-define)
-(undefine maybe-define-so)

@@ -17,10 +17,11 @@
   :use-module (scsh let-opt)
   :use-module (scsh sighandlers)
   :use-module (scsh weak)
+  :use-module (scsh errno)
 )
 (export proc:pid proc? pid->proc autoreap-policy reap-zombies
 	new-child-proc wait/poll wait/stopped-children wait wait-any
-	wait-process-group)
+	wait-process-group reaped-procs)
 
 ;;; Process objects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -4,6 +4,26 @@
 ;;; and report on the file it references. chase? = #f means check the actual
 ;;; file itself, even if it's a symlink.
 
+(define-module (scsh fileinfo)
+  :use-module (scsh syscalls)
+  :use-module (scsh scsh-condition)
+  :use-module (scsh bitwise)
+  :use-module (scsh fname)
+  :use-module (scsh let-opt)
+  :use-module (scsh syntax)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh utilities)
+  :use-module (scsh errno)
+)
+(export file-not-readable? file-not-writable? file-not-executable?
+	file-readable? file-writable? file-executable?
+	file-not-exists? file-exists?
+	file-type file-group file-inode file-last-access file-last-mod
+	file-last-status-change file-mode file-nlinks file-owner
+	file-size
+	file-directory? file-fifo? file-regular? file-socket? file-special?
+	file-symlink?)
+
 ;;; (file-not-accessible? perms fd/port/fname)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PERMS is 3 bits, not 9.

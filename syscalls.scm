@@ -13,6 +13,7 @@
   :use-module (scsh fname)
   :use-module (scsh defrec)
   :use-module (scsh procobj)
+  :use-module (scsh errno)
 )
 (export %exec %%fork cwd user-gid user-effective-gid set-gid
 	user-supplementary-gids user-uid user-effective-uid set-uid
@@ -39,8 +40,6 @@
 	open/no-control-tty fdflags/close-on-exec
 	sleep sleep-until
 	system-name)
-
-(export-syntax define-errno-syscall)
 
 (foreign-source
   "#include <sys/signal.h>"

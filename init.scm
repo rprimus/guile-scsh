@@ -7,6 +7,8 @@
 (defmacro define-foreign args #f)
 (defmacro define-errno-syscall args #f)
 (defmacro define-record-discloser args #f)
+(define ascii->char integer->char)
+(define char->ascii char->integer)
 
 ;; just pick out the begin forms.
 (defmacro define-structure (name interface . body)

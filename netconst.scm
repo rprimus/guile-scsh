@@ -2,6 +2,14 @@
   `(if (defined? ',value)
        (define ,name ,value)))
 
+(defmacro maybe-define-so (name value type)
+  (let ((type-var (string->symbol (string-append "options/"
+						 (symbol->string type)))))
+    `(if (defined? ',value)
+	 (begin
+	   (define ,name ,value)
+	   (set! ,type-var (cons ,value ,type-var))))))
+
 (maybe-define address-family/unspecified	AF_UNSPEC)
 (maybe-define address-family/unix 		AF_UNIX)
 (maybe-define address-family/internet		AF_INET)
@@ -20,19 +28,20 @@
 
 (maybe-define level/socket	SOL_SOCKET)
 
-(maybe-define socket/debug		SO_DEBUG)
-(maybe-define socket/reuse-address	SO_REUSEADDR)
-(maybe-define socket/style		SO_STYLE)
-(maybe-define socket/type		SO_TYPE)
-(maybe-define socket/error		SO_ERROR)
-(maybe-define socket/dont-route		SO_DONTROUTE)
-(maybe-define socket/broadcast		SO_BROADCAST)
-(maybe-define socket/send-buffer	SO_SNDBUF)
-(maybe-define socket/receive-buffer	SO_RCVBUF)
-(maybe-define socket/keep-alive		SO_KEEPALIVE)
-(maybe-define socket/no-check		SO_NO_CHECK)
-(maybe-define socket/priority		SO_PRIORITY)
-(maybe-define socket/linger		SO_LINGER)
+(define options/boolean ())
+(define options/value ())
+(define options/linger ())
+
+(maybe-define-so socket/debug		SO_DEBUG	boolean)
+(maybe-define-so socket/reuse-address	SO_REUSEADDR	boolean)
+(maybe-define-so socket/type		SO_TYPE		value)
+(maybe-define-so socket/error		SO_ERROR	value)
+(maybe-define-so socket/dont-route	SO_DONTROUTE	boolean)
+(maybe-define-so socket/broadcast	SO_BROADCAST	boolean)
+(maybe-define-so socket/send-buffer	SO_SNDBUF	value)
+(maybe-define-so socket/receive-buffer	SO_RCVBUF	value)
+(maybe-define-so socket/keep-alive	SO_KEEPALIVE	boolean)
+(maybe-define-so socket/linger		SO_LINGER	linger)
 
 (maybe-define message/out-of-band	MSG_OOB)
 (maybe-define message/peek		MSG_PEEK)

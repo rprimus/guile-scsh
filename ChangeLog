@@ -1,3 +1,21 @@
+Wed Jan  8 02:32:56 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm (ascii->char, char->ascii) defined.
+
+	* netconst.scm (maybe-define-so): new macro.  use it to define
+	socket option constants.
+	remove a few SO_ types which don't appear in SCSH's netconst.scm.
+	define variables options/boolean etc.
+
+	* network.scm: socket-address->list: new procedure.
+	(generic-send-message, generic-send-message/partial, socket-option,
+	set-socket-option, address->host-info, name->host-info,
+	address->network-info, name->network-info, port->service-info,
+	name->service-info, number->protocol-info, name->protocol-info):
+	use guile primitives.
+	(send-message, send-message/partial): minor modifications.
+	comment out C-long-vec->Scheme, integer->string, string->integer.
+
 Mon Jan  6 05:00:19 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* network.scm (generic-receive-message!): use guile primitives.

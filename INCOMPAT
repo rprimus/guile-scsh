@@ -9,3 +9,5 @@ everything is defined at the top level, no modules.
 generic-receive-message! always returns 2 values: the number of
 bytes read and the address received from.  Likewise for receive-message!
 and receive-message (bug in SCSH?)
+
+network-info works when its argument is a socket address (bug in SCSH?)

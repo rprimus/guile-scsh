@@ -1,5 +1,11 @@
 (use-modules (ice-9 format)
 	     (ice-9 receive)
+
+	     ;; replaces:
+	     ;; map map-in-order for-each member assoc iota list-index
+	     ;; delete delete!
+	     (srfi srfi-1)
+
 	     (scsh alt-syntax)
 	     (scsh module-system)
 	     (scsh let-opt)
@@ -65,11 +71,6 @@
 	     (scsh stringcoll)
 	     (scsh scsh-condition)
 	     
-	     ;; replaces:
-	     ;; map map-in-order for-each member assoc iota list-index
-	     ;; delete delete!
-	     (scsh lib list-lib)
-
 	     ;; define-simple-syntax generates code that requires
 	     ;; (scsh alt-syntax).
 	     ;; other macros generate code that requires

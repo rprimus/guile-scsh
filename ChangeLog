@@ -1,3 +1,10 @@
+2001-07-03  Gary Houston  <ghouston@arglist.com>
+
+	* lib/list-lib.scm: removed.
+	* Makefile.am (pkgdata_DATA): lib/list-lib.scm removed.
+	* init.scm: load (srfi srfi-1) instead of (scsh lib list-lib).
+	* USAGE: updated for module changes.
+
 2001-06-27  Gary Houston  <ghouston@arglist.com>
 
 	* configure.in: converted for autoconf 2.50: remove AC_INIT arg,

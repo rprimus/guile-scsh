@@ -8,7 +8,7 @@ pkgdata_DATA = alt-syntax.scm ascii.scm awk.scm bitwise.scm \
 	fileinfo.scm filesys.scm \
 	fluid.scm fname.scm fr.scm glob.scm here.scm \
 	init.scm jar-defrecord.scm let-opt.scm \
-	lib/list-lib.scm lib/string-lib.scm \
+	lib/string-lib.scm \
 	loophole.scm module-system.scm \
 	netconst.scm network.scm newports.scm population.scm \
 	primitives.scm procobj.scm \

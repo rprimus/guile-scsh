@@ -34,10 +34,30 @@ between module names and files.  It was considered desirable to leave
 the scsh file layouts relatively intact, to simplify ungrading to
 newer versions of scsh.
 
-FIXME: some facilities from scsh are available directly in guile-core.
-They should probably be listed here.
-
 This list was generated with help from the make-module-list script.
+
+modules from guile-core
+=======================
+
+FIXME: various scsh facilities are available by default in guile-core and
+should be list here.
+
+(ice-9 format)
+(format)
+
+(ice-9 receive)
+(receive)
+
+(srfi srfi-1)
+;; replaces:
+;; map map-in-order for-each member assoc iota list-index
+;; delete delete!
+;; following are defined in (scsh utilities) too, possibly incompatibly:
+;; delete filter first fold fold-right any every
+(xcons list-tabulate circular-list proper-list? circular-list? dotted-list? null-list? not-pair? list= first second third fourth fifth sixth seventh eighth ninth tenth car+cdr take drop take-right drop-right take! drop-right! split-at split-at! last length+ concatenate concatenate! append-reverse append-reverse! zip unzip1 unzip2 unzip3 unzip4 unzip5 count fold fold-right pair-fold pair-fold-right reduce reduce-right unfold unfold-right append-map append-map! map! pair-for-each filter-map filter partition remove filter! partition! remove! find find-tail take-while take-while! drop-while span span! break break! any every delete-duplicates delete-duplicates! alist-cons alist-copy alist-delete alist-delete! lset<= lset= lset-adjoin lset-union lset-intersection lset-difference lset-xor lset-diff+intersection lset-union! lset-intersection! lset-difference! lset-xor! lset-diff+intersection! iota map map-in-order for-each list-index member delete delete! assoc)
+
+modules from guile-scsh
+=======================
 
 (scsh alt-syntax)
 ;; not compatible with (ice-9 syncase)
@@ -69,7 +89,7 @@ This list was generated with help from the make-module-list script.
 
 (scsh utilities)
 ;; "delete" is incompatile with guile primitive.
-;; following are defined in (scsh lib list-lib) too, possibly incompatibly:
+;; following are defined in (srfi srfi-1) too, possibly incompatibly:
 ;; delete filter first fold fold-right any every
 (del delete filter first first? nth fold fold-right any every mapv mapv! vector-every? copy-vector initialize-vector vector-append vfold vfold-right check-arg conjoin disjoin negate compose call/cc deprecated-proc deposit-bit-field real->exact-integer)
 
@@ -201,14 +221,6 @@ This list was generated with help from the make-module-list script.
 
 (scsh scsh-condition)
 (errno-error with-errno-handler* with-errno-handler)
-
-(scsh lib list-lib)
-;; replaces:
-;; map map-in-order for-each member assoc iota list-index
-;; delete delete!
-;; following are defined in (scsh utilities) too, possibly incompatibly:
-;; delete filter first fold fold-right any every
-(xcons list-tabulate list-copy circular-list iota proper-list? circular-list? dotted-list? not-pair? null-list? list= first second third fourth fifth sixth seventh eighth ninth tenth car+cdr take drop take-right drop-right take! drop-right! take-while drop-while take-while! split-at split-at! span break span! break! last length+ append-reverse append-reverse! concatenate concatenate! zip unzip1 unzip2 unzip3 unzip4 unzip5 count unfold unfold-right fold unfold pair-fold reduce fold-right unfold-right pair-fold-right reduce-right append-map append-map! map! pair-for-each filter-map map-in-order filter partition remove filter! partition! remove! find find-tail any every list-index delete delete! delete-duplicates delete-duplicates! alist-cons alist-copy alist-delete alist-delete! lset<= lset= lset-adjoin lset-union lset-union! lset-intersection lset-intersection! lset-difference lset-difference! lset-xor lset-xor! lset-diff+intersection lset-diff+intersection! map for-each member assoc)
 
 (scsh syntax)
 ;; define-simple-syntax generates code that requires

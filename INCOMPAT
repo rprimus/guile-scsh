@@ -4,7 +4,9 @@ extended process forms don't work:
 
 (run (echo hello) (> out.log)))
 
-problem with compiling regular expressions:
+there's a problem with compiling regular expressions: the POSIX regex
+library doesn't support imbedded NUL characters.  this probably causes
+numerous problems, e.g.,:
 
 compare the posix string in the result of (rx (- alpha ("ae")))
 with the one in (rx (- alpha ("aei"))): the latter contains garbage
@@ -18,7 +20,7 @@ loading guile-scsh may redefine Guile builtins.  e.g., map is
 redefined by list-lib.scm.  This isn't very good.  Maybe use of the
 module system will make this more manageable in future.  Other
 affected procedures are: read-delimited read-delimited! pipe sleep
-exit make-fluid and probably open-file.
+exit make-fluid string->list and probably open-file.
 
 the interfaces to the I/O system may be incompatible.
 

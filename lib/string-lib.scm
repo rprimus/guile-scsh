@@ -1139,9 +1139,7 @@
 ;	((< i start) ans))))
 
 (define (string->list s . maybe-start+end)
-  (apply string-fold-right s cons '() maybe-start+end))
-
-
+  (apply string-fold-right cons '() s maybe-start+end))
 
 ;;; string-concat        string-list -> string
 ;;; string-concat/shared string-list -> string

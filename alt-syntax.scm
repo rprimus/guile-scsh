@@ -17,7 +17,7 @@
 ; This is the version for Guile.
 (defmacro define-syntax (name expander)
   `(define ,name (defmacro:transformer (lambda form
-					 (,expander (cons ,name
+					 (,expander (cons ',name
 							  form)
 						    (lambda (x) x)
 						    eq?)))))

@@ -1,3 +1,7 @@
+2001-06-12  Gary Houston  <ghouston@arglist.com>
+
+	* network.scm (socket-connect): export socket-connect.
+
 2001-06-06  Gary Houston  <ghouston@arglist.com>
 
 	* scsh-condition.scm (with-errno-handler*): bug fix, errors were

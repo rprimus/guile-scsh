@@ -12,7 +12,7 @@
   :use-module (scsh rw)
   :use-module (scsh defrec)
 )
-(export bind-listen-accept-loop
+(export socket-connect bind-listen-accept-loop
 	socket? socket:family socket:inport socket:outport
 	socket-address? socket-address:address socket-address:family
 	internet-address->socket-address socket-address->internet-address

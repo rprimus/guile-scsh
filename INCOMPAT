@@ -1,23 +1,46 @@
-Bugs:
+Bugs
 ====
 
-Incompatibilities with the original scsh:
-========================================
+The use of Guile modules for individual components of scsh can cause
+problems with macros that refer to unexported or imported bindings.
+e.g., see the "run" comment in the USAGE file.
 
-the Guile module system is not compatible with the one in Scheme48.
+scsh features not implemented
+=============================
 
-interrupt-set, set-enabled-interrupts, with-interrupts,
-with-enabled-interrupts*, %set-unix-signal-handler and
-%unix-signal-handler have not been implemented.  Within a
-with-enabled-interrupts form, all interrupts are disabled.
+enabled-interrupts, interrupt-set, itimer, %set-unix-signal-handler,
+set-enabled-interrupts, %unix-signal-handler,
+with-enabled-interrupts*.
+
+Bugs in scsh fixed in guile-scsh
+================================
+
+delete-filesys-object can't delete directories in linux 2.4.
+
+receive-message! usually returns only the number of bytes instead of
+the two values documented in the scsh-manual: the number of bytes and
+the remote address.  It does return the two values when EOF is seen.
+
+receive-message usually fails since it tries to receive multiple
+values from "receive-message!"  See above.
+
+filter-weak-ptr-list in procobj.scm seems to have a typo in its last
+line: list instead of lis.  This was causing problems for guile-scsh but
+doesn't seem to matter in scsh.  Hmm.
+
+Other Incompatibilities with scsh
+=================================
+
+The Guile module system is not compatible with the one in scsh (from
+Scheme48).
+
+Sockets are created unbuffered in Guile, but buffered in scsh.
+
+with-enabled-interrupts disables all interrupts.
 
 [check that the following are still true in 0.5.2]
 
 the interfaces to the I/O system may be incompatible.
-
-generic-receive-message! always returns 2 values: the number of
-bytes read and the address received from.  Likewise for receive-message!
-and receive-message (bug in scsh?)
 
 network-info works when its argument is a socket address (bug in scsh?)
 
@@ -29,8 +52,6 @@ c) doesn't gain much anyway.
 
 set-command-line-args! is not implemented.
 command-line returns the same list every time, not a copy.
-
-itimer is not implemented.
 
 The close-on-exec flag is not currently set on unrevealed ports.
 

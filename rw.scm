@@ -80,7 +80,7 @@
     (if (< i end)
 	(catch 'system-error
 	       (lambda ()
-		 (let ((nwritten (writer s target i end i)))
+		 (let ((nwritten (writer s target i end)))
 		   (loop (+ i nwritten))))
 	       (lambda args
 		 (apply scm-error args))))))

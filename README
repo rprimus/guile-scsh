@@ -1,4 +1,4 @@
-This is an incomplete port of the scheme shell, scsh 0.5.2, to Guile.
+This is an incomplete port of the Scheme Shell, scsh 0.5.2, to Guile.
 This is not a release of guile-scsh, but was presumably obtained at
 some random time from the CVS archive.
 
@@ -12,7 +12,8 @@ This version of guile-scsh requires:
 as guile-scsh.  Version 1.4 is too old.
 
 2) The guilerxspencer module, available from http://arglist.com/guile/
-(although some scsh modules can still be used if it's not installed.)
+A few guile-scsh modules can still be used if it's not installed.
+It's possible to install guile-scsh first and guilerxspencer later.
 
 Please send bug reports to:
 
@@ -20,16 +21,20 @@ bug-guile@gnu.org
 
 To install the package, use something like:
 
-./configure
+./configure --prefix=<see below>
 make install
 
-The configure script will attempt to locate the Guile site directory,
-as reported by guile-config in the current PATH.  Supplying a prefix
-argument to configure doesn't have any effect.
+The prefix given to configure should probably match the prefix where
+Guile's site directory can be found.  Otherwise Guile won't find the
+module without further configuration.  E.g.,
+
+--prefix=/usr --> /usr/share/guile/site
+--prefix=/usr/local --> /usr/local/share/guile/site
 
 Alternatively it's sufficient to rename (or link) the main guile-scsh
 directory to "scsh" and place it somewhere in the Guile load path (type
 %load-path in an interactive Guile session to see the current
 setting).
 
-See the USAGE file for notes on using the library.
+See the USAGE file for notes on using the library and INSTALL for 
+generic configure documentation.

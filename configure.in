@@ -1,12 +1,6 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(scsh.scm)
+AC_INIT
+AC_CONFIG_SRCDIR(scsh.scm)
+AC_CONFIG_FILES(rx/Makefile)
 AM_INIT_AUTOMAKE(guile-scsh, 0.0, no-define)
-
-AC_CHECK_PROG(have_guile, guile-config, yes, no)
-if test $have_guile = no; then
-   AC_MSG_ERROR([guile-config not found])
-fi
-GUILE_SCSH_DIR=`guile-config info pkgdatadir`/site/scsh
-AC_MSG_RESULT(* directory for make install is $GUILE_SCSH_DIR)
-AC_SUBST(GUILE_SCSH_DIR)
 AC_OUTPUT(Makefile)

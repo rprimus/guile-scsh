@@ -1,3 +1,20 @@
+2001-06-27  Gary Houston  <ghouston@arglist.com>
+
+	* configure.in: converted for autoconf 2.50: remove AC_INIT arg,
+	add AC_CONFIG_SRCDIR.
+	(GUILE_SCSH_DIR): removed.  don't install to directory
+	reported by guile-config, but use the datadir which is
+	derived from prefix by default.
+	don't test for guile-config.
+	add rx/Makefile.
+	* Makefile.am (pkgdatadir): derive it from datadir.
+	add rx to SUBDIRS.  remove mkinstalldirs rx hack from
+	install-exec-local.
+	(EXTRA_DIST): fix the RHS.
+	(pkgdata_DATA): remove rx subdir files.
+	* rx/Makefile.am: new file.
+	* README: updated.
+
 2001-06-12  Gary Houston  <ghouston@arglist.com>
 
 	* network.scm (socket-connect): export socket-connect.

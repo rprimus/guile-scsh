@@ -34,7 +34,7 @@
 	file-info:nlinks file-info:uid file-info:size
 	sync-file sync-file-system
 	seek/set seek/delta seek/end tell pipe
-	signal-process signal-process-group pause-until-interrupt
+	signal-process signal-process-group pause-until-interrupt itimer
 	user-info user-info:name user-info:uid user-info:gid
 	user-info:home-dir user-info:shell
 	name->user-info uid->user-info ->uid ->username %homedir
@@ -45,7 +45,8 @@
 	fdes-flags set-fdes-flags fdes-status set-fdes-status
 	open/read open/write open/read+write open/non-blocking
 	open/append open/exclusive open/create open/truncate
-	open/no-control-tty fdflags/close-on-exec
+	open/no-control-tty open/access-mask
+	fdflags/close-on-exec
 	sleep sleep-until
 	system-name)
 
@@ -711,6 +712,7 @@
 (define pause-until-interrupt pause)
 
 (define-foreign itimer (alarm (uint_t secs)) uint_t)
+(define itimer alarm)
 
 ;;; User info
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1119,6 +1121,8 @@
 (define open/create O_CREAT)
 (define open/truncate O_TRUNC)
 (define open/no-control-tty O_NOCTTY)
+
+(define open/access-mask (logior open/read open/write open/read+write))
 
 (define fdflags/close-on-exec FD_CLOEXEC)
 

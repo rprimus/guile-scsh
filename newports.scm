@@ -9,9 +9,23 @@
   :use-module (ice-9 receive)
   :use-module (scsh syntax)
   :use-module (scsh alt-syntax)
+  :use-module (scsh let-opt)
+  :use-module (scsh utilities)
+  :use-module (scsh bitwise)
+  :use-module (scsh syscalls)
 )
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting core bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define open-file #f)
+ (define open-input-file #f)
+ (define open-output-file #f))
+
 (export fdport? set-port-buffering 
 	bufpol/block bufpol/line bufpol/none
+	open-file open-input-file open-output-file
 	call/fdes close-after
 	with-current-input-port* with-current-output-port*
 	with-current-error-port*
@@ -46,7 +60,6 @@
 ;;	 (err (%fdport-set-buffering/errno port policy size)))
 ;;    (if err (errno-error err set-port-buffering port policy size))))
 
-;; the Guile versions of these don't take compatible arguments.
 ;(define (open-file fname flags . maybe-mode)
 ;  (let ((fd (apply open-fdes fname flags maybe-mode))
 ;	(access (bitwise-and flags open/access-mask)))
@@ -55,16 +68,18 @@
 ;	 make-output-fdport)
 ;     fd 0)))
 
-;(define (open-input-file fname . maybe-flags)
-;  (let ((flags (:optional maybe-flags 0)))
-;    (open-file fname (deposit-bit-field flags open/access-mask open/read))))
+(define open-file open)
 
-;(define (open-output-file fname . rest)
-;  (let* ((flags (if (pair? rest) (car rest)
-;		    (bitwise-ior open/create open/truncate))) ; default
-;	 (maybe-mode (if (null? rest) '() (cdr rest)))
-;	 (flags (deposit-bit-field flags open/access-mask open/write)))
-;    (apply open-file fname flags maybe-mode)))
+(define (open-input-file fname . maybe-flags)
+  (let ((flags (:optional maybe-flags 0)))
+    (open-file fname (deposit-bit-field flags open/access-mask open/read))))
+
+(define (open-output-file fname . rest)
+  (let* ((flags (if (pair? rest) (car rest)
+		    (bitwise-ior open/create open/truncate))) ; default
+	 (maybe-mode (if (null? rest) '() (cdr rest)))
+	 (flags (deposit-bit-field flags open/access-mask open/write)))
+    (apply open-file fname flags maybe-mode)))
 
 
 (define (call/fdes fd/port proc)

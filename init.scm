@@ -1,17 +1,8 @@
 (use-modules (ice-9 format)
 	     (ice-9 receive)
 
-	     ;; replaces:
-	     ;; map map-in-order for-each member assoc iota list-index
-	     ;; delete delete!
 	     (srfi srfi-1)
-
-	     ;; replaces:
-	     ;; string-downcase string-downcase!
-	     ;; string-upcase string-upcase! string-index
-	     ;; string-fill! string-copy string->list
 	     (srfi srfi-13)
-
 	     (srfi srfi-14)
 
 	     (scsh alt-syntax)
@@ -22,7 +13,7 @@
 	     (scsh fdports)
 	     (scsh syntax-helpers)
 	     (scsh bitwise)
-	     (scsh utilities)		; replaces primitive delete.
+	     (scsh utilities)
 	     (scsh define-foreign-syntax)
 	     (scsh ascii)
 	     (scsh features)
@@ -38,7 +29,7 @@
 	     (scsh rx re-low)
 	     (scsh rx cond-package)
 	     (scsh rx let-match)
-	     (scsh rx re)		; replaces regexp?
+	     (scsh rx re)
 	     (scsh rx spencer)
 	     (scsh rx simp)
 	     (scsh rx posixstr)
@@ -65,7 +56,6 @@
 
 	     (scsh procobj)
 
-	     ;; replaces pipe, sleep
 	     (scsh syscalls)
 
 	     (scsh fname)

@@ -1,3 +1,15 @@
+2001-08-06  Gary Houston  <ghouston@arglist.com>
+
+	* syscalls.scm (itimer): define and export.  it's an interface
+	to "alarm", not "setitimer".  weird.
+	(open/access-mask, define and export (from scsh fdflags.scm).
+	* newports.scm (open-file, open-input-file, open-output-file):
+	define and export.  clobbers Guile primitives.
+	use modules (scsh syscalls), (scsh let-opt), (scsh utilities),
+	(scsh bitwise).
+	* init.scm: don't duplicate comments already in USAGE.
+	* USAGE, INCOMPAT: updated.
+
 2001-08-04  Gary Houston  <ghouston@arglist.com>
 
 	* rx/spencer.scm, rx/simp.scm, rx/rx-lib.scm, rx/re.scm,

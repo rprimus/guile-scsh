@@ -11,7 +11,7 @@ scsh features not implemented
 The ODBC interface.
 The char->char partial maps library (CCP).
 
-enabled-interrupts, interrupt-set, itimer, %set-unix-signal-handler,
+enabled-interrupts, interrupt-set, %set-unix-signal-handler,
 set-enabled-interrupts, %unix-signal-handler,
 with-enabled-interrupts*.
 
@@ -43,9 +43,10 @@ Sockets are created unbuffered in Guile, but buffered in scsh.
 
 with-enabled-interrupts disables all interrupts.
 
-[check that the following are still true in 0.5.2]
+open/async, open/fsync, open/shared-lock, open/exclusive-lock are
+not defined.
 
-the interfaces to the I/O system may be incompatible.
+[FIXME: check that the following are still true]
 
 network-info works when its argument is a socket address (bug in scsh?)
 

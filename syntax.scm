@@ -7,7 +7,7 @@
   :use-module (scsh syntax-helpers)
   :use-module (scsh procobj)
 )
-(export-syntax define-simple-syntax exec-epf & run || && run-collecting
+(export-syntax define-simple-syntax exec-epf & run || && run/collecting
 	       run/port+proc run/port run/strings run/file run/string
 	       run/sexp run/sexps)
 

@@ -32,7 +32,8 @@
 	with-current-input-port with-current-output-port
 	with-current-error-port
 	set-current-input-port! set-current-output-port!
-	set-current-error-port!)
+	set-current-error-port!
+	with-error-output-port* with-error-output-port)
 
 (define (fdport? x)
   (and (or (input-port? x)

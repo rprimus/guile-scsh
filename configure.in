@@ -2,5 +2,5 @@
 AC_INIT
 AC_CONFIG_SRCDIR(scsh.scm)
 AC_CONFIG_FILES(Makefile rx/Makefile)
-AM_INIT_AUTOMAKE(guile-scsh, 0.0, no-define)
+AM_INIT_AUTOMAKE(guile-scsh, 2.0.0, no-define)
 AC_OUTPUT

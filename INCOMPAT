@@ -15,6 +15,7 @@ NDBM interface (ndbm*)
 ODBC interface (odbc/*)
 pty interface (pty.scm)
 tty interface (tty*)
+Scheme 48 string ports.
 
 set-command-line-args!
 select!

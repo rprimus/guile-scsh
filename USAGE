@@ -234,7 +234,7 @@ modules from guile-scsh
 ;; (scsh alt-syntax).
 ;; other macros generate code that requires
 ;; (scsh scsh), (scsh procobj), (scsh syntax-helpers).
-(define-simple-syntax exec-epf & run || && run-collecting run/port+proc run/port run/strings run/file run/string run/sexp run/sexps)
+(define-simple-syntax exec-epf & run || && run/collecting run/port+proc run/port run/strings run/file run/string run/sexp run/sexps)
 
 (scsh glob)
 (glob glob-quote maybe-directory-files)

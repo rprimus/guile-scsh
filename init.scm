@@ -49,6 +49,7 @@
 (load-from-path "scsh/rw.scm")
 (load-from-path "scsh/char-set.scm")
 (load-from-path "scsh/rdelim.scm")
+(load-from-path "scsh/fr.scm")
 (load-from-path "scsh/netconst.scm")
 (load-from-path "scsh/network.scm")
 (load-from-path "scsh/scsh.scm")

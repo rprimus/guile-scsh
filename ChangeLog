@@ -1,3 +1,15 @@
+Fri Apr 11 08:15:40 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* rdelim.scm: uncomment skip-char-set.
+
+	* Makefile.am (subpkgdata_DATA): add fr.scm.
+	* init.scm: load fr.scm.
+	* fr.scm: copied from scsh.
+
+Mon Apr  7 08:23:03 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* time.scm (date, time): fixed and uncommented.
+
 Sat Apr  5 06:44:32 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* time.scm (ticks/sec): define, always 1000000.

@@ -2,7 +2,7 @@
 ;;; for guile: read-delimited and read-delimited! are implemented in guile and 
 ;;; modified below to use scsh char-sets and multiple values.
 ;;; read-line is redefined below.
-;;; skip-char-set isn't mentioned in the scsh manual.
+;;; skip-char-set isn't mentioned in the scsh manual, but is used in fr.scm.
 
 (if (not (defined? 'guile-read-delimited))
     (define guile-read-delimited read-delimited))
@@ -248,13 +248,13 @@
 ;  fixnum)	; number of chars skipped.
 
 
-;(define (skip-char-set skip-chars . maybe-port)
-;  (let ((port (:optional maybe-port (current-input-port)))
-;	(cset (->char-set skip-chars)))
+(define (skip-char-set skip-chars . maybe-port)
+  (let ((port (:optional maybe-port (current-input-port)))
+	(cset (->char-set skip-chars)))
 
-;      (cond ((not (input-port? port))
-;	     (error "Illegal value -- not an input port." port))
-
+      (cond ((not (input-port? port))
+	     (error "Illegal value -- not an input port." port))
+	  
 ;	     ;; Direct C support for Unix file ports -- zippy quick.
 ;	     ((fdport? port)
 ;	      (let lp ((total 0))
@@ -264,14 +264,14 @@
 ;			  ((= errno/intr err) (lp total))
 ;			  (errno-error err skip-char-set cset port total))))))
 
-;	     ;; This is the code for other kinds of ports.
-;	     ;; Mighty slow -- we read each char twice (peek first, then read).
-;	     (else (let lp ((i 0))
-;		     (let ((c (peek-char port)))
-;		       (cond ((and (char? c) (char-set-contains? cset c))
-;			      (read-char port)
-;			      (lp (+ i 1)))
-;			     (else i))))))))
+	     ;; This is the code for other kinds of ports.
+	     ;; Mighty slow -- we read each char twice (peek first, then read).
+	     (else (let lp ((i 0))
+		     (let ((c (peek-char port)))
+		       (cond ((and (char? c) (char-set-contains? cset c))
+			      (read-char port)
+			      (lp (+ i 1)))
+			     (else i))))))))
 
 
 

@@ -117,26 +117,19 @@
   fixnum  ; hi secs
   fixnum) ; lo secs
 
-;(define (time . args) ; optional arg [date]
-;  (let lp ()
-;    (receive (err hi-secs lo-secs)
-;	(if (null? args)
-;	    (%time/errno)		; Fast path for (time).
-;	    (let ((date (check-arg date? (car args) time)))
-;	      (%date->time/errno (date:seconds   date)
-;				 (date:minute    date)
-;				 (date:hour      date)
-;				 (date:month-day date)
-;				 (date:month     date)
-;				 (date:year      date)
-;				 (date:tz-name   date) ; #f or string
-;				 (date:tz-secs   date) ; #f or int
-;				 (date:summer?   date))))
-
-;      (cond ((not err) (compose-8/24 hi-secs lo-secs))	; Win.
-;	    ((= errno/intr err) (lp))			; Retry.
-;	    (else (apply errno-error err time args)))))); Lose.
-
+(define (time . args) ; optional arg [date]
+  (if (null? args)
+      (current-time)		; Fast path for (time).
+      (let* ((date (check-arg date? (car args) time))
+	     (tm (gmtime 0)))
+	(set-tm:sec tm (date:seconds date))
+	(set-tm:min tm (date:minute date))
+	(set-tm:hour tm (date:hour date))
+	(set-tm:mday tm (date:month-day date))
+	(set-tm:mon tm (date:month date))
+	(set-tm:year tm (date:year date))
+	(set-tm:isdst tm (if (date:summer? date) 1 0))
+	(car (mktime tm)))))
 
 ;;; Date
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -157,21 +150,25 @@
   fixnum)	; year-day
 
 
-;(define (date . args)	; Optional args [time zone]
-;  (let* ((time (if (pair? args)
-;		   (car args)
-;		   (time)))
-;	 (zone (check-arg time-zone?
-;			  (and (pair? args) (:optional (cdr args) #f))
-;			  date))
-;	 (bt (if zone
-;		 (localtime time zone)
-;		 (localtime time))))
-;    (make-%date (tm:sec bt) (tm:min bt) (tm:hour bt) (tm:mday bt)
-;		(tm:mon bt) (tm:year bt)
-;		(format-time-zone (tm:zone bt) (tm:gmtoff bt))
-;		(tm:gmtoff bt) (= (tm:isdst bt) 1) (tm:wday bt) 
-;		(tm:yday bt))))
+(define (date . args)	; Optional args [time zone]
+  (let* ((time (if (pair? args)
+		   (car args)
+		   (time)))
+	 (zone (check-arg time-zone?
+			  (and (pair? args) (:optional (cdr args) #f))
+			  date))
+	 (bt (if (integer? zone)
+		 (let ((bt (gmtime (+ time zone))))
+		   (set-tm:gmtoff bt zone)
+		   bt)
+		 (if zone
+		     (localtime time zone)
+		     (localtime time)))))
+    (make-%date (tm:sec bt) (tm:min bt) (tm:hour bt) (tm:mday bt)
+		(tm:mon bt) (tm:year bt)
+		(format-time-zone (tm:zone bt) (- (tm:gmtoff bt)))
+		(tm:gmtoff bt) (> (tm:isdst bt) 0) (tm:wday bt) 
+		(tm:yday bt))))
 
 ;;; Formatting date strings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -286,8 +283,8 @@
   (if (zero? offset) name
       (receive (sign offset)
 	       (if (< offset 0)
-		   (values #\+ (- offset))	    ; Notice the flipped sign
-		   (values #\- offset))		    ; of SIGN.
+		   (values #\+ (- offset)) ; Notice the flipped sign
+		   (values #\- offset))	   ; of SIGN.
         (let* ((offset (modulo offset 86400))
 	       (h (quotient offset 3600))
 	       (m (quotient (modulo offset 3600) 60))

@@ -271,6 +271,307 @@
   (with-total-env* `env (lambda () . body)))
 
 
+(define (call/temp-file writer user)
+  (let ((fname #f))
+    (dynamic-wind
+      (lambda () (if fname (error "Can't wind back into a CALL/TEMP-FILE")
+		     (set! fname (create-temp-file))))
+      (lambda ()
+	(with-output-to-file fname writer)
+	(user fname))
+      (lambda () (if fname (delete-file fname))))))
+
+;;; Create a new temporary file and return its name.
+;;; The optional argument specifies the filename prefix to use, and defaults
+;;; to "/usr/tmp/<pid>.", where <pid> is the current process' id. The procedure
+;;; scans through the files named <prefix>0, <prefix>1, ... until it finds a
+;;; filename that doesn't exist in the filesystem. It creates the file with 
+;;; permission #o600, and returns the filename.
+;;; 
+
+(define (create-temp-file . maybe-prefix)
+  (let ((oflags (bitwise-ior open/write
+			     (bitwise-ior open/create open/exclusive))))
+    (apply temp-file-iterate
+	   (lambda (fname)
+	     (close-fdes (open-fdes fname oflags #o600))
+	     fname)
+	   (if (null? maybe-prefix) '()
+	       (list (string-append (car maybe-prefix) ".~a"))))))
+
+(define *temp-file-template*
+  (make-fluid (string-append "/usr/tmp/" (number->string (pid)) ".~a")))
+
+
+(define (temp-file-iterate maker . maybe-template)
+  (let ((template (:optional maybe-template (fluid *temp-file-template*))))
+    (let loop ((i 0))
+      (if (> i 1000) (error "Can't create temp-file")
+	  (let ((fname (format #f template (number->string i))))
+	    (receive retvals (with-errno-handler
+			       ((errno data)
+				((errno/exist) #f))
+			       (maker fname))
+	      (if (car retvals) (apply values retvals)
+		  (loop (+ i 1)))))))))
+
+
+
+;;; Roughly equivalent to (pipe).
+;;; Returns two file ports [iport oport] open on a temp file.
+;;; Use this when you may have to buffer large quantities between
+;;; writing and reading. Note that if the consumer gets ahead of the
+;;; producer, it won't hang waiting for input, it will just return
+;;; EOF. To play it safe, make sure that the producer runs to completion
+;;; before starting the consumer.
+;;;
+;;; The temp file is deleted before TEMP-FILE-CHANNEL returns, so as soon
+;;; as the ports are closed, the file's disk storage is reclaimed.
+
+(define (temp-file-channel)
+  (let* ((fname (create-temp-file))
+	 (iport (open-input-file fname))
+	 (oport (open-output-file fname)))
+    (delete-file fname)
+    (values iport oport)))
+    
+
+;; Return a Unix port such that reads on it get the chars produced by
+;; DISPLAYing OBJ. For example, if OBJ is a string, then reading from
+;; the port produces the characters of OBJ.
+;; 
+;; This implementation works by writing the string out to a temp file,
+;; but that isn't necessary. It could work, for example, by forking off a 
+;; writer process that outputs to a pipe, i.e.,
+;;     (run/port (begin (display obj (fdes->outport 1))))
+
+(define (open-string-source obj)
+  (receive (inp outp) (temp-file-channel)
+    (display obj outp)
+    (close-output-port outp)
+    inp))
+
+
+;;;; Process->Scheme interface forms: run/collecting, run/port, run/string, ...
+
+;;; (run/collecting FDS . EPF)
+;;; --------------------------
+;;; RUN/COLLECTING and RUN/COLLECTING* run processes that produce multiple
+;;; output streams and return ports open on these streams.
+;;;
+;;; To avoid issues of deadlock, RUN/COLLECTING first runs the process
+;;; with output to temp files, then returns the ports open on the temp files.
+;;;
+;;; (run/collecting (1 2) (ls))
+;;; runs ls with stdout (fd 1) and stderr (fd 2) redirected to temporary files.
+;;; When ls is done, RUN/COLLECTING returns two ports open on the temporary
+;;; files. The files are deleted before RUN/COLLECTING returns, so when
+;;; the ports are closed, they vanish.
+;;;
+;;; The FDS list of file descriptors is implicitly backquoted.
+;;;
+;;; RUN/COLLECTING* is the procedural abstraction of RUN/COLLECTING.
+
+(define (run/collecting* fds thunk)
+  ;; First, generate a pair of ports for each communications channel.
+  ;; Each channel buffers through a temp file.
+  (let* ((channels (map (lambda (ignore)
+			  (call-with-values temp-file-channel cons))
+		       fds))
+	 (read-ports (map car channels))
+	 (write-ports (map cdr channels))
+
+	 ;; In a subprocess, close the read ports, redirect input from
+	 ;; the write ports, and run THUNK.
+	 (status (run (begin (for-each close-input-port read-ports)
+			     (for-each move->fdes write-ports fds)
+			     (thunk)))))
+
+    ;; In this process, close the write ports and return the exit status
+    ;; and all the the read ports.
+    (for-each close-output-port write-ports)
+    (apply values status read-ports)))
+
+
+;;; Single-stream collectors:
+;;; Syntax: run/port, run/file, run/string, run/strings, run/sexp, run/sexps
+;;; Procedures: run/port*, run/file*, run/string*, run/strings*, run/sexp*,
+;;;             run/sexps*
+;;;             port->string, port->string-list, port->sexp-list, 
+;;;             port->list
+;;; 
+;;; Syntax:
+;;; (run/port . epf)
+;;; 	Fork off the process EPF and return a port on its stdout.
+;;; (run/file . epf)
+;;; 	Run process EPF with stdout redirected into a temp file.
+;;;     When the process exits, return the name of the file.
+;;; (run/string . epf)
+;;;     Read the process' stdout into a string and return it.
+;;; (run/strings . epf)
+;;; 	Run process EPF, reading newline-terminated strings from its stdout
+;;;     until EOF. After process exits, return list of strings read. Delimiting
+;;;	newlines are trimmed from the strings.
+;;; (run/sexp . epf)
+;;;     Run process EPF, read and return one sexp from its stdout with READ.
+;;; (run/sexps . epf)
+;;;     Run process EPF, read sexps from its stdout with READ until EOF.
+;;;	After process exits, return list of items read.
+;;;
+;;; Procedural abstractions:
+;;; run/port*, run/file*, run/string*, run/strings*, run/sexp*, run/sexps*
+;;;
+;;; These are all procedural equivalents for the macros. They all take
+;;; one argument: the process to be executed passed as a thunk. For example,
+;;; (RUN/PORT . epf) expands into (RUN/PORT* (LAMBDA () (EXEC-EPF . epf)))
+;;;
+;;; Other useful procedures:
+;;; 
+;;; (port->string port) 
+;;; 	Read characters from port until EOF; return string collected.
+;;; (port->string-list port)
+;;;     Read newline-terminated strings from port until EOF. Return
+;;;     the list of strings collected.
+;;; (port->sexp-list port)
+;;;     Read sexps from port with READ until EOF. Return list of items read.
+;;; (port->list reader port)
+;;;     Repeatedly applies READER to PORT, accumulating results into a list.
+;;;     On EOF, returns the list of items thus collected.
+;;; (reduce-port port reader op . seeds)
+;;;     Repeatedly read things from PORT with READER. Each time you read
+;;;     some value V, compute a new set of seeds with (apply OP V SEEDS).
+;;;     (More than 1 seed means OP must return multiple values).
+;;;     On eof, return the seeds.
+;;;     PORT->LIST is just (REDUCE-PORT PORT READ CONS '())
+
+(define (run/port+proc* thunk)
+  (receive (r w) (pipe)
+    (let ((proc (fork (lambda ()
+			(close r)
+			(move->fdes w 1)
+			(with-current-output-port* w thunk)))))
+      (close w)
+      (values r proc))))
+
+(define (run/port* thunk)
+  (receive (port proc) (run/port+proc* thunk)
+    port))
+
+(define (run/file* thunk)
+  (let ((fname (create-temp-file)))
+    (run (begin (thunk)) (> ,fname))
+    fname))
+
+(define (run/string* thunk) 
+  (close-after (run/port* thunk) port->string))
+
+(define (run/sexp* thunk)
+  (close-after (run/port* thunk) read))
+
+(define (run/sexps* thunk)
+  (close-after (run/port* thunk) port->sexp-list))
+
+(define (run/strings* thunk)
+  (close-after (run/port* thunk) port->string-list))
+
+
+;;; Read characters from PORT until EOF, collect into a string.
+
+(define (port->string port)
+  (let ((sc (make-string-collector)))
+    (letrec ((lp (lambda ()
+		   (cond ((read-string 1024 port) =>
+			  (lambda (s)
+			    (collect-string! sc s)
+			    (lp)))
+			 (else (string-collector->string sc))))))
+      (lp))))
+
+;;; (loop (initial (sc (make-string-collector)))
+;;;       (bind (s (read-string 1024 port)))
+;;;       (while s)
+;;;       (do (collect-string! sc s))
+;;;       (result (string-collector->string sc)))
+
+;;; Read items from PORT with READER until EOF. Collect items into a list.
+
+(define (port->list reader port)
+  (let lp ((ans '()))
+    (let ((x (reader port)))
+      (if (eof-object? x) (reverse! ans)
+	  (lp (cons x ans))))))
+
+(define (port->sexp-list port)
+  (port->list read port))
+
+(define (port->string-list port)
+  (port->list read-line port))
+
+(define (reduce-port port reader op . seeds)
+  (letrec ((reduce (lambda seeds
+		     (let ((x (reader port)))
+		       (if (eof-object? x) (apply values seeds)
+			   (call-with-values (lambda () (apply op x seeds))
+					     reduce))))))
+    (apply reduce seeds)))
+
+;;; Not defined:
+;;; (field-reader field-delims record-delims)
+;;; Returns a reader that reads strings delimited by 1 or more chars from
+;;; the string FIELD-DELIMS. These strings are collected in a list until
+;;; eof or until 1 or more chars from RECORD-DELIMS are read. Then the
+;;; accumulated list of strings is returned. For example, if we want
+;;; a procedure that reads one line of input, splitting it into 
+;;; whitespace-delimited strings, we can use 
+;;;     (field-reader " \t" "\n")
+;;; for a reader.
+
+
+
+;; Loop until EOF reading characters or strings and writing (FILTER char)
+;; or (FILTER string). Useful as an arg to FORK or FORK/PIPE.
+
+(define (char-filter filter)
+  (lambda ()
+    (let lp ()
+      (let ((c (read-char)))
+	(if (not (eof-object? c))
+	    (begin (write-char (filter c))
+		   (lp)))))))
+
+(define (string-filter filter . maybe-buflen)
+  (let* ((buflen (:optional maybe-buflen 1024))
+	 (buf (make-string buflen)))
+    (lambda ()
+      (let lp ()
+	(cond ((read-string! buf 0 buflen) =>
+	       (lambda (nread)
+		 (display (filter (if (= nread buflen) buf
+				      (substring buf 0 nread)))) ; last one.
+		 (lp))))))))
+
+(define (y-or-n? question . maybe-eof-value)
+  (let loop ((count *y-or-n-eof-count*))
+    (display question)
+    (display " (y/n)? ")
+    (let ((line (read-line)))
+      (cond ((eof-object? line)
+	     (newline)
+	     (if (= count 0)
+		 (:optional maybe-eof-value (error "EOF in y-or-n?"))
+		 (begin (display "I'll only ask another ")
+			(write count)
+			(display " times.")
+			(newline)
+			(loop (- count 1)))))
+	    ((< (string-length line) 1) (loop count))
+	    ((char=? (string-ref line 0) #\y) #t)
+	    ((char=? (string-ref line 0) #\n) #f)
+	    (else (loop count))))))
+
+(define *y-or-n-eof-count* 100)
+
+
 ;;; Stdio/stdport sync procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -459,3 +760,6 @@
 	      (else (if (not quietly?)
 			(warn "Starting up with no path ($PATH)."))
 		    '()))))
+
+; SIGTSTP blows s48 away. ???
+(define (suspend) (signal-process 0 signal/stop))

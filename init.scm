@@ -22,7 +22,7 @@
 (require 'values)
 (require 'format)
 
-(load-from-path "scsh/syntax.scm")
+(load-from-path "scsh/alt-syntax.scm")
 (load-from-path "scsh/receive.scm")
 (load-from-path "scsh/let-opt.scm")
 
@@ -32,19 +32,27 @@
 (load-from-path "scsh/utilities.scm")
 ;; replace procedures in utilities.scm with guile primitives.
 (set! index string-index)
-(set! rindex string-rindex)
+;; note the different convention for rindex starting position.
+(set! rindex (lambda (str char start)
+	       (string-rindex str char 0 start)))
 
 (load-from-path "scsh/fname.scm")
 (load-from-path "scsh/errno.scm")
 (load-from-path "scsh/defrec.scm")
 (load-from-path "scsh/weak.scm")
+(load-from-path "scsh/fluid.scm")
 (load-from-path "scsh/population.scm")
+(load-from-path "scsh/stringcoll.scm")
 (load-from-path "scsh/bitwise.scm")
 (load-from-path "scsh/condition.scm")
 (load-from-path "scsh/scsh-condition.scm")
 (load-from-path "scsh/re.scm")
 (load-from-path "scsh/syscalls.scm")
+(load-from-path "scsh/syntax.scm")
 (load-from-path "scsh/fileinfo.scm")
+(load-from-path "scsh/glob.scm")
+(load-from-path "scsh/filemtch.scm")
+(load-from-path "scsh/filesys.scm")
 (load-from-path "scsh/time.scm")
 (load-from-path "scsh/newports.scm")
 (load-from-path "scsh/rw.scm")
@@ -56,5 +64,6 @@
 (load-from-path "scsh/sighandlers.scm")
 (load-from-path "scsh/procobj.scm")
 (load-from-path "scsh/scsh.scm")
+
 (init-scsh-vars #f)
 (set! command-line-arguments (cdr (command-line)))

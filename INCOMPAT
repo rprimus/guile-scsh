@@ -29,7 +29,7 @@ Several scsh procedures are incompatible with Guile procedures.
 In these cases the procedures are redefined when init.scm is
 loaded.  This isn't a very good solution: hopefully use of the
 module system will help.  The following procedures are
-affected: read-delimited read-delimited! pipe sleep exit (probably
-open-file too).
+affected: read-delimited read-delimited! pipe sleep exit make-fluid
+and probably open-file.
 
 The close-on-exec flag is not currently set on unrevealed ports.

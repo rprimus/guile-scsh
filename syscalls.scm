@@ -519,6 +519,8 @@
 ;;	    (else
 ;;	     (errno-error errno %close-fdes fd))))))	; You lose.
 
+(define close-fdes close)
+
 (define-foreign %dup/errno
   (dup (integer fd))
   (multi-rep (to-scheme integer errno_or_false)
@@ -574,8 +576,8 @@
 (define-errno-syscall (%open path flags mode) %open/errno
    fd)
 
-(define (open-fdes path flags . maybe-mode) ; mode defaults to 0666
-  (%open path flags (:optional maybe-mode #o666)))
+;;(define (open-fdes path flags . maybe-mode) ; mode defaults to 0666
+;;  (%open path flags (:optional maybe-mode #o666)))
 
 
 (define-foreign pipe-fdes/errno (scheme_pipe)

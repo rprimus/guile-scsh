@@ -1,3 +1,29 @@
+Sat Aug 30 19:31:05 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* filemtch.scm (split-pat): bug fix: would fail if pattern
+	contained a slash.
+	(file-match): use catch, not with-handler.
+	* init.scm (rindex): bug fix: scsh's start argument is
+ 	string-rindex's end.
+	* init.scm, Makefile.am: add new files.
+	* glob.scm, filemtch.scm, filesys.scm: new files from scsh 0.5.1.
+	(constant-glob? pattern): bug fix: last "if" had unused third
+	branch.
+	* syscalls.scm (open-fdes): removed, primitive in Guile.
+	(close-fdes): defined.
+	* scsh.scm (call/temp-file, create-temp-file, *temp-file-template*,
+	temp-file-iterate, temp-file-channel, open-string-source): defined.
+	(run/collecting*, ..., string-filter): defined.
+	(suspend): defined.
+	(y-or-n?, *y-or-n-eof-count*): uncommented, since used in
+ 	filesys.scm.
+	* init.scm, Makefile.am: add fluid.scm, stringcoll.scm
+ 	and alt-syntax.scm.
+	* syntax.scm: new file from scsh 0.5.1.
+	* alt-syntax.scm: renamed from syntax.scm.
+	* fluid.scm: new file, implements Scheme48 fluid variables.
+	* stringcoll.scm: new file from scsh 0.5.1.
+
 Sat Aug 23 19:17:19 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* scsh.scm (exec-path-search, exec/env, exec-path/env, exec-path, 

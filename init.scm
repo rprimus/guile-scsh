@@ -38,6 +38,7 @@
 (load-from-path "scsh/errno.scm")
 
 (load-from-path "scsh/defrec.scm")
+(load-from-path "scsh/syscalls.scm")
 (load-from-path "scsh/rw.scm")
 (load-from-path "scsh/char-set.scm")
 (load-from-path "scsh/rdelim.scm")

@@ -1,3 +1,15 @@
+Wed Mar 19 04:55:51 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* syscalls.scm: define user-info record and procedures user-info,
+	->uid, ->username, %homedir.
+	define group-info record and procedures group-info, ->gid, ->groupname.
+
+Mon Mar 17 19:40:45 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load syscalls.scm.
+	* syscalls.scm: new file.  Will not include all of the contents
+	of scsh's syscalls.scm.
+
 Tue Mar 11 04:09:55 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* (let-opt.scm, utilities.scm): revert to scsh's versions, no longer

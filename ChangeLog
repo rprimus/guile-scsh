@@ -1,5 +1,17 @@
 2000-11-27  Gary Houston  <ghouston@arglist.com>
 
+	* Removed auto-generated files from the CVS repository.
+
+	* configure.in: don't use AM_MAINTAINER_MODE.  set version to 0.0.
+	check for guile-config.
+
+	* Makefile.am (scsh_DATA): updated the file list.  rename to
+	subpkgdata_DATA.
+	(EXTRA_DIST): add autogen.sh.
+	(subpkgdatadir): new variable, set via configure.
+	
+	* autogen.sh: new file.
+	
 	* USAGE, README: updated.
 
 	* lib/list-lib.scm (for-each): define

@@ -16,6 +16,7 @@
 
 (define-module (scsh rx re)
   :use-module (ice-9 receive)
+  :use-module (srfi srfi-1)
   :use-module (srfi srfi-13)
   :use-module (srfi srfi-14)
   :use-module (scsh defrec)

@@ -4,7 +4,7 @@
 ;;; char-set, or regexp value. Coerce one of these to a regexp value.
 
 (define-module (scsh rx rx-lib)
-  :use-module (scsh utilities)
+  :use-module (srfi srfi-1)
   :use-module (srfi srfi-14)
   :use-module (scsh ascii)
   :use-module (scsh rx re)

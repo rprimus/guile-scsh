@@ -11,6 +11,7 @@
 
 (define-module (scsh procobj)
   :use-module (ice-9 receive)
+  :use-module (srfi srfi-1)
   :use-module (scsh defrec)
   :use-module (scsh population)
   :use-module (scsh utilities)

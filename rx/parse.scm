@@ -45,7 +45,7 @@
 ;;; the regexp at run-time.
 
 (define-module (scsh rx parse)
-  :use-module (scsh utilities)
+  :use-module (srfi srfi-1)
   :use-module (srfi srfi-14)
   :use-module (ice-9 receive)
   :use-module (scsh ascii)

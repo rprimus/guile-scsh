@@ -2,18 +2,11 @@
 ;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
 (define-module (scsh utilities)
+  :use-module (srfi srfi-1)
   :use-module (scsh loophole)
   :use-module (scsh bitwise))
 
-(begin-deprecated
- ;; Prevent `export' from re-exporting core bindings.  This behaviour
- ;; of `export' is deprecated and will disappear in one of the next
- ;; releases.
- (define delete #f))
-
-(export del delete filter first first? nth
-	fold fold-right
-	any every
+(export del first? nth
 	mapv mapv! vector-every? copy-vector initialize-vector vector-append
 	vfold vfold-right
 	check-arg conjoin disjoin negate compose call/cc
@@ -21,6 +14,8 @@
 	deposit-bit-field
 	real->exact-integer
 	;; reverse! omitted.
+	;; delete, filter, first, fold, fold-right, any, every: use srfi-1.
+	;; first: incompatible with srfi-1.
 )
 
 (define (del elt lis)
@@ -35,42 +30,42 @@
 		      '()))))
     (del lis)))
 
-(define (delete pred lis)
-  (filter (lambda (x) (not (pred x))) lis))
+;(define (delete pred lis)
+;  (filter (lambda (x) (not (pred x))) lis))
 
-(define (fold kons knil lis)
-  (let lp ((lis lis) (ans knil))
-    (if (pair? lis)
-	(lp (cdr lis) (kons (car lis) ans))
-	ans)))
+;(define (fold kons knil lis)
+;   (let lp ((lis lis) (ans knil))
+;     (if (pair? lis)
+; 	(lp (cdr lis) (kons (car lis) ans))
+; 	ans)))
 
-(define (fold-right kons knil lis)
-  (let recur ((lis lis))
-    (if (pair? lis)
-	(let ((head (car lis)))		; Won't need LIS after RECUR call. 
-	  (kons head (recur (cdr lis))))
-	knil)))
+; (define (fold-right kons knil lis)
+;   (let recur ((lis lis))
+;     (if (pair? lis)
+; 	(let ((head (car lis)))		; Won't need LIS after RECUR call. 
+; 	  (kons head (recur (cdr lis))))
+; 	knil)))
 
-(define (filter pred list)
-  (letrec ((filter (lambda (list)
-		     (if (pair? list)
-			 (let* ((head (car list))
-				(tail (cdr list))
-				(new-tail (filter tail)))
-			   (if (pred head)
-			       (if (eq? tail new-tail) list
-				   (cons head new-tail))
-			       new-tail))
-			 '()))))
-    (filter list)))
+; (define (filter pred list)
+;   (letrec ((filter (lambda (list)
+; 		     (if (pair? list)
+; 			 (let* ((head (car list))
+; 				(tail (cdr list))
+; 				(new-tail (filter tail)))
+; 			   (if (pred head)
+; 			       (if (eq? tail new-tail) list
+; 				   (cons head new-tail))
+; 			       new-tail))
+; 			 '()))))
+;     (filter list)))
 
-(define (first pred list)
-  (letrec ((lp (lambda (list)
-		 (and (pair? list)
-		      (let ((head (car list)))
-			(if (pred head) head
-			    (lp (cdr list))))))))
-    (lp list)))
+; (define (first pred list)
+;   (letrec ((lp (lambda (list)
+; 		 (and (pair? list)
+; 		      (let ((head (car list)))
+; 			(if (pred head) head
+; 			    (lp (cdr list))))))))
+;    (lp list)))
 
 ;;; Returns the first true value produced by PRED, not the list element
 ;;; that satisfied PRED.
@@ -82,14 +77,14 @@
 			  (lp (cdr list)))))))
     (lp list)))
 
-(define any first?)
+;(define any first?)
 
-(define (every pred list)
-  (or (not (pair? list))	
-      (let lp ((head (car list))  (tail (cdr list)))
-	(if (pair? tail)
-	    (and (pred head) (lp (car tail) (cdr tail)))
-	    (pred head)))))		; Tail-call the last PRED call.
+; (define (every pred list)
+;   (or (not (pair? list))	
+;       (let lp ((head (car list))  (tail (cdr list)))
+; 	(if (pair? tail)
+; 	    (and (pred head) (lp (car tail) (cdr tail)))
+; 	    (pred head)))))		; Tail-call the last PRED call.
 
 
 (define (mapv f v)

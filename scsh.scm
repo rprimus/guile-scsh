@@ -6,6 +6,7 @@
 (define-module (scsh scsh)
   :use-module (ice-9 receive)
   :use-module (ice-9 format)
+  :use-module (srfi srfi-1)
   :use-module (scsh utilities)
   :use-module (scsh syscalls)
   :use-module (scsh syntax)

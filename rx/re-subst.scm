@@ -11,8 +11,8 @@
 
 (define-module (scsh rx re-subst)
   :use-module (ice-9 receive)
+  :use-module (srfi srfi-1)
   :use-module (srfi srfi-13)
-  :use-module (scsh utilities)
   :use-module (scsh rw)
   :use-module (scsh rx re-low)
   :use-module (scsh rx re-high)

@@ -7,7 +7,7 @@
 ;;; We only shallowly check the initial keyword of a compound form.
 
 (define-module (scsh rx re-syntax)
-  :use-module (scsh utilities)
+  :use-module (srfi srfi-1)
   :use-module (scsh alt-syntax)
   :use-module (scsh rx simp)
   :use-module (scsh rx parse)

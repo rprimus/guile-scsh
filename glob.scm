@@ -14,7 +14,7 @@
   :use-module (scsh fileinfo)
   :use-module (scsh rx re-high)
   :use-module (scsh rx re)
-  :use-module (scsh utilities)
+  :use-module (srfi srfi-1)
   :use-module (srfi srfi-14)
   :use-module (scsh scsh-condition)
   :use-module (scsh syscalls)

@@ -22,6 +22,17 @@
 	* README, USAGE, INCOMPAT: updated: now guile-scsh is based on
 	scsh 0.5.3.
 
+	* utilities.scm (delete, filter, first, fold, fold-right, any, every):
+	don't export, to avoid replacing (srfi srfi-1) definitions.
+
+	* awk.scm, defrec.scm, glob.scm, scsh.scm, rx/parse.scm,
+	procobj.scm, utilities.scm: rx/re-subst.scm, rx/re-syntax.scm,
+	rx/re.scm, rx/rx-lib.scm: use (srfi srfi-1) for procs removed from
+	utilities.scm.
+
+	* awk.scm, defrec.scm, glob.scm, rx/parse.scm, rx/re-subst.scm,
+	rx/re-syntax.scm, rx/rx-lib.scm: don't use (scsh utilities).
+
 2001-08-03  Gary Houston  <ghouston@arglist.com>
 
 	* glob.scm, fr.scm, fileinfo.scm, let-opt.scm:

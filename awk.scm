@@ -3,8 +3,8 @@
 
 (define-module (scsh awk)
   :use-module (ice-9 receive)
+  :use-module (srfi srfi-1)
   :use-module (scsh rdelim)
-  :use-module (scsh utilities)
   :use-module (scsh alt-syntax)
   :use-module (scsh rx parse)
   :use-module (scsh rx re-low)

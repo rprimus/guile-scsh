@@ -1,7 +1,5 @@
 Incompatibilities with scsh 0.4.4:
 
-many things are still missing.
-
 everything is defined at the top level, no modules.
 
 generic-receive-message! always returns 2 values: the number of
@@ -33,3 +31,13 @@ affected: read-delimited read-delimited! pipe sleep exit make-fluid
 and probably open-file.
 
 The close-on-exec flag is not currently set on unrevealed ports.
+
+the NDBM interface hasn't been implemented.
+
+the flock interface hasn't been implemented.
+
+net-to-host-32 etc., haven't been defined.
+
+the files jcontrol.scm and jcontrol2.scm haven't been ported.
+
+pty and tty support hasn't been implemented (pty.scm, tty.scm).

@@ -2,7 +2,7 @@
 ;;; Copyright (c) 1992 by Olin Shivers.
 ;;; Copyright (c) 1994 by Brian D. Carlstrom.
 
-;;; Guile port is incomplete.
+;;; modified for Guile.
 
 ;;; Call THUNK, then die.
 ;;; A clever definition in a clever implementation allows the caller's stack

@@ -1,8 +1,14 @@
 (define (foreign-source . args) #f)
 (defmacro define-foreign args #f)
 (defmacro define-record-discloser args #f)
+
 (define ascii->char integer->char)
 (define char->ascii char->integer)
+(define (make-immutable! thing) thing)
+(define (immutable? thing) #f)
+(define (unspecific) (if #f #f))
+(define (reading-error port message . irritants)
+  (apply error message (append irritants (list port))))
 
 ;; just pick out the begin forms.
 (defmacro define-structure (name interface . body)
@@ -14,9 +20,6 @@
 	      (if (eq? (caar rest) 'begin)
 		  (cons (car rest) result)
 		  result)))))
-
-(define (batch-mode?) #t)
-(define (set-batch-mode?! arg) #t)
 
 (use-modules (ice-9 slib))
 (require 'values)
@@ -36,9 +39,11 @@
 (set! rindex (lambda (str char start)
 	       (string-rindex str char 0 start)))
 
+(load-from-path "scsh/scsh-version.scm")
 (load-from-path "scsh/fname.scm")
 (load-from-path "scsh/errno.scm")
 (load-from-path "scsh/defrec.scm")
+(load-from-path "scsh/enumconst.scm")
 (load-from-path "scsh/weak.scm")
 (load-from-path "scsh/fluid.scm")
 (load-from-path "scsh/population.scm")
@@ -53,11 +58,13 @@
 (load-from-path "scsh/glob.scm")
 (load-from-path "scsh/filemtch.scm")
 (load-from-path "scsh/filesys.scm")
+(load-from-path "scsh/here.scm")
 (load-from-path "scsh/time.scm")
 (load-from-path "scsh/newports.scm")
 (load-from-path "scsh/rw.scm")
 (load-from-path "scsh/char-set.scm")
 (load-from-path "scsh/rdelim.scm")
+(load-from-path "scsh/awk.scm")
 (load-from-path "scsh/fr.scm")
 (load-from-path "scsh/netconst.scm")
 (load-from-path "scsh/network.scm")

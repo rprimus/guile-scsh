@@ -1,3 +1,30 @@
+Sat Oct 11 03:30:45 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm, Makefile.am: add scsh-version.scm.
+	* scsh-version.scm (scsh-major-version): new file from scsh.
+
+Fri Oct 10 22:48:52 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm (reading-error): defined.
+
+Thu Oct  9 02:32:41 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* here.scm (#\<): don't read-char from port.  use read-hash-extend.
+	(make-immutable!, immutable, unspecific): defined.
+
+	* Makefile.am, init.scm: add here.scm
+	* here.scm: new file from scsh.
+
+Wed Oct  8 03:50:13 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* Makefile.am: add awk.scm, ekko.scm, enumconst.scm
+	* init.scm: load awk.scm, enumconst.scm
+	* enumconst.scm: new file from scsh.
+	* ekko.scm: new file from scsh.  change interpreter to guile.
+	* awk.scm: new file from scsh.  define awk at the end.
+	* init.scm (batch-mode?, set-batch-mode?!): deleted, now in
+	boot-9.scm.
+
 Sat Aug 30 19:31:05 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* filemtch.scm (split-pat): bug fix: would fail if pattern

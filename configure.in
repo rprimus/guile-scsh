@@ -4,4 +4,5 @@
 
 AC_INIT(network.scm)
 AM_INIT_GUILE_MODULE(scsh)
+AM_MAINTAINER_MODE
 AC_OUTPUT(Makefile)

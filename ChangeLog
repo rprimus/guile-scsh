@@ -1,5 +1,16 @@
 Tue May 13 11:59:28 1997  Jim Blandy  <jimb@floss.cyclic.com>
 
+	Lie to automake in a different way, to get it to install things in
+	the right place.
+	* configure.in (AM_INIT_AUTOMAKE): Call the package guile-scsh,
+	not guile; this determines the name of the disty.
+	* Makefile.am (scshdir): Renamed from subpkgdatadir.  Use
+	$(datadir)/guile instead of $(pkgdatadir), since the latter's
+	value uses the package name given to AM_INIT_AUTOMAKE.
+	(scsh_DATA): Renamed from subpkgdata_DATA.
+	(EXTRA_DIST): Fix reference.
+	* Makefile.in, configure: Regenerated.
+
 	Make SCSH into a separate distribution.
 	* README: Renamed from README.PORT.
 	* configure.in: Use AM_INIT_AUTOMAKE, not AM_INIT_GUILE_MODULE.

@@ -93,6 +93,9 @@
   :use-module (scsh module-system))
 (export-syntax let-optionals let-optionals* :optional)
 
+;; this shouldn't be exported, but let-optionals* needs it.
+(export-syntax really-let-optionals*)
+
 (define-structure let-opt-expanders (export expand-let-optionals)
   (open scheme)
   (begin

@@ -1,6 +1,5 @@
 ;;; Basic read and write
-;;; Copyright (c) 1993 by Olin Shivers.
-;;; modified to use Guile primitives.
+;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
 ;;; Note: read ops should check to see if their string args are mutable.
 

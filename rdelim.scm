@@ -31,10 +31,10 @@
 ;;; should be quite fast.
 ;;;
 ;;; N.B.:
-;;; The C primitive %READ-DELIMITED-FDPORT!/ERRNO relies on knowing the
-;;; representation of character sets. If these are changed from their
-;;; current representation as 256-element strings, this code must be changed
-;;; as well. 
+;;; The C primitives %READ-DELIMITED-FDPORT!/ERRNO and 
+;;; %SKIP-CHAR-SET-FDPORT/ERRNO rely on knowing the representation of
+;;; character sets. If these are changed from their current representation, 
+;;; this code must be changed as well. 
 
 ;;; (read-delimited delims [port delim-action])
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -192,14 +192,16 @@
 ;	(error "Illegal START/END substring indices"
 ;	       buf start end %read-delimited!))
 
-;    (let ((delims (->char-set delims)))
+;    (let* ((delims (->char-set delims))
+;	    (sdelims (char-set:s delims)))
+ 
 
 ;      (if (fdport? port)
 
 ;	  ;; Direct C support for Unix file ports -- zippy quick.
 ;	  (let lp ((start start) (total 0))
 ;	    (receive (terminator num-read)
-;		     (%read-delimited-fdport!/errno delims buf gobble?
+;		     (%read-delimited-fdport!/errno sdelims buf gobble?
 ;						    port start end)
 ;	      (let ((total (+ num-read total)))
 ;		(cond ((not (integer? terminator)) (values terminator total))
@@ -249,8 +251,9 @@
 
 
 (define (skip-char-set skip-chars . maybe-port)
-  (let ((port (:optional maybe-port (current-input-port)))
-	(cset (->char-set skip-chars)))
+  (let* ((port (:optional maybe-port (current-input-port)))
+	 (cset (->char-set skip-chars))
+	 (scset (char-set:s cset)))
 
       (cond ((not (input-port? port))
 	     (error "Illegal value -- not an input port." port))
@@ -258,7 +261,7 @@
 ;	     ;; Direct C support for Unix file ports -- zippy quick.
 ;	     ((fdport? port)
 ;	      (let lp ((total 0))
-;		(receive (err num-read) (%skip-char-set-fdport/errno cset port)
+;		(receive (err num-read) (%skip-char-set-fdport/errno scset port)
 ;		  (let ((total (+ total num-read)))
 ;		    (cond ((not err) total)
 ;			  ((= errno/intr err) (lp total))
@@ -289,7 +292,7 @@
 ;;; (read-paragraph [port handle-delim])
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define blank-line-regexp (make-regexp "^[ \t]*\n$"))
+(define blank-line-regexp (rx bos (* white) #\newline eos))
 
 (define (read-paragraph . args)
   (let-optionals args ((port         (current-input-port))
@@ -300,14 +303,14 @@
 	(cond ((eof-object? line)
 	       (if (eq? handle-delim 'split) (values line line) line))
 
-	      ((regexp-exec blank-line-regexp line) (lp))
+	      ((regexp-search? blank-line-regexp line) (lp))
 
 	      ;; Then, read in non-blank lines.
 	      (else
 	       (let lp ((lines (list line)))
 		 (let ((line (read-line port 'concat)))
 		   (if (and (string? line)
-			    (not (regexp-exec blank-line-regexp line)))
+			    (not (regexp-search? blank-line-regexp line)))
 
 		       (lp (cons line lines))
 

@@ -1,7 +1,5 @@
 ;;; Unix wait & process objects for scsh
-;;; Copyright (c) 1993, 1994, 1995 by Olin Shivers.
-
-;;; parts rewritten for Guile.
+;;; Copyright (c) 1993, 1994, 1995 by Olin Shivers. See file COPYING.
 
 ;;; This is a GC'd abstraction for Unix process id's.
 ;;; The problem with Unix pids is (a) they clutter up the kernel
@@ -57,7 +55,7 @@
 
 ;;; Is X a pid or a proc?
 
-(define (pid/proc? x) (or (proc? x) (and (integer? x) (>= pid 0))))
+(define (pid/proc? x) (or (proc? x) (and (integer? x) (>= x 0))))
 
 
 ;;; Process reaping
@@ -313,13 +311,12 @@
 (define reaped-procs '())	; Reaped, but not yet waited. 
 
 (define (filter-weak-ptr-list pred lis)
-  (reverse (reduce (lambda (result wptr)
-		     (let ((val (weak-pointer-ref wptr)))
-		       (if (and val (pred val))
-			   (cons wptr result)
-			   result)))
-		   '()
-		   lis)))
+  (fold-right (lambda (wptr result) (let ((val (weak-pointer-ref wptr)))
+				      (if (and val (pred val))
+					  (cons wptr result)
+					  result)))
+	      '()
+	      lis))
 
 ;;; Add a newly-reaped proc to the list.
 (define (add-reaped-proc! pid status)

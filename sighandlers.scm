@@ -1,4 +1,4 @@
-;;; Copyright (c) 1993 by Olin Shivers.
+;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 ;;; Signal handler system
 
 ;;; mostly rewritten for Guile.
@@ -33,7 +33,7 @@
 ;;; Must define WITH-INTERRUPTS* and WITH-INTERRUPTS.
 
 (foreign-source
-  "extern int errno;"
+ "#include <errno.h>"
   ""
   "/* Make sure foreign-function stubs interface to the C funs correctly: */"
   "#include \"sighandlers1.h\""
@@ -78,7 +78,7 @@
   (let ((build-name (lambda (prefix signame)
 		      (string->symbol
 		       (string-append prefix
-				      (string-downcase!
+				      (string-downcase
 				       (substring (symbol->string signame)
 						  3)))))))
     `(if (defined? ',name)

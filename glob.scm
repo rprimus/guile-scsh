@@ -2,6 +2,7 @@
 
 ;;; Copyright (c) 1994 by David Albertz (dalbertz@clark.lcs.mit.edu).
 ;;; Copyright (c) 1994 by Olin Shivers   (shivers@clark.lcs.mit.edu).
+;;; See file COPYING.
 
 ;;; This code is freely available for use by anyone for any purpose,
 ;;; so long as you don't charge money for it, remove this notice, or
@@ -76,8 +77,8 @@
 	
 	(else (let* ((dots? (char=? #\. (string-ref pat 0))) ; Match dot files?
 		     (candidates (maybe-directory-files fname dots?))
-		     (re (make-regexp (glob->regexp pat))))
-		(values (filter (lambda (f) (regexp-exec re f)) candidates)
+		     (re (glob->regexp pat)))
+		(values (filter (lambda (f) (regexp-search? re f)) candidates)
 			#t))))) ; These guys exist for sure.
 
 ;;; The initial special-case above isn't really for the fast-path; it's
@@ -87,62 +88,112 @@
 
 ;;; Translate a brace-free glob pattern to a regular expression.
 
-(define (glob->regexp pat)
+(define glob->regexp
+  (let ((dot-star (re-repeat 0 #f re-any))) ; ".*" or (* any)
+    (lambda (pat)
+      (let ((pat-len (string-length pat))
+
+	    (str-cons (lambda (chars res)	; Reverse CHARS and cons the
+			(if (pair? chars)	; result string-re onto RES.
+			    (cons (re-string (list->string (reverse chars)))
+				  res)
+			    res))))
+
+	;; We accumulate chars into CHARS, and coalesce into a single string
+	;; with STR-CONS when we run across a non-char.
+	(let lp ((chars '())
+		 (res (list re-bos))
+		 (i 0))
+	  (if (= i pat-len)
+	      (re-seq (reverse (str-cons chars res)))
+
+	      (let ((c (string-ref pat i))
+		    (i (+ i 1)))
+		(case c
+		  ((#\\) (if (< i pat-len)
+			     (lp (cons (string-ref pat i) chars)
+				 res (+ i 1))
+			     (error "Ill-formed glob pattern -- ends in backslash" pat)))
+
+		  ((#\*) (lp '()
+			     (cons dot-star (str-cons chars res))
+			     i))
+		  ((#\?) (lp '()
+			     (cons re-any (str-cons chars res))
+			     i))
+				
+		  ((#\[) (receive (cset i) (parse-glob-bracket pat i)
+			   (lp '()
+			       (cons (re-char-set cset)
+				     (str-cons chars res))
+			       i)))
+
+		  (else  (lp (cons c chars) res i))))))))))
+
+
+;;; A glob bracket expression is [...] or [^...].
+;;; The body is a sequence of <char> and <char>-<char> ranges.
+;;; A <char> is any character except right-bracket, carat, hypen or backslash,
+;;; or a backslash followed by any character at all.
+
+(define (parse-glob-bracket pat i)
   (let ((pat-len (string-length pat)))
-    (let lp ((result '(#\^))
-	     (i 0)
-	     (state 'normal))
-      (if (= i pat-len)
+    (receive (negate? i) (if (and (< i pat-len) (char=? #\^ (string-ref pat i)))
+			     (values #t (+ i 1))
+			     (values #f i))
 
-	  (if (eq? state 'normal)
-	      (list->string (reverse (cons #\$ result)))
-	      (error "Illegal glob pattern" pat))
+      (let lp ((elts '()) (i i))
+	(if (>= i pat-len)
+	    (error "Ill-formed glob pattern -- no terminating close-bracket" pat)
 
+	    (let ((c (string-ref pat i))
+		  (i (+ i 1)))
+	      (case c
+		((#\])
+		 (let ((cset (fold (lambda (elt cset)
+				     (char-set-union
+				      cset
+				      (if (char? elt)
+					  (char-set elt)
+					  (ascii-range->char-set (char->ascii (car elt))
+								 (+ 1 (char->ascii (cdr elt)))))))
+				   char-set:empty
+				   elts)))
+		   (values (re-char-set (if negate?
+					    (char-set-invert cset)
+					    cset))
+			   i)))
 
-	  (let ((c (string-ref pat i))
-		(i (+ i 1)))
-	    (case state
-	      ((char-set)
-	       (lp (cons c result)
-		   i
-		   (if (char=? c #\]) 'normal 'char-set)))
+		((#\\)
+		 (if (>= i pat-len)
+		     (error "Ill-formed glob pattern -- ends in backslash" pat)
+		     (lp (cons (string-ref pat i) elts) (+ i 1))))
 
-	      ((escape)
-	       (lp (case c
-		     ((#\$ #\^ #\. #\+ #\? #\* #\| #\( #\) #\[)
-		      (cons c (cons #\\ result)))
-		     (else (cons c result)))
-		   i
-		   'normal))
+		((#\-)
+		 (cond ((>= i pat-len)
+			(error "Ill-formed glob pattern -- unterminated range." pat))
+		       ((or (null? elts) (not (char? (car elts))))
+			(error "Ill-formed glob pattern -- range has no beginning." pat))
+		       (else (lp (cons (cons (car elts) (string-ref pat i)) elts)
+				 (+ i 1)))))
 
-	      ;; Normal
-	      (else (case c
-		      ((#\\) (lp result i 'escape))
-		      ((#\*) (lp (cons #\* (cons #\. result)) i 'normal))
-		      ((#\?) (lp (cons #\. result) i 'normal))
-		      ((#\[) (lp (cons c result) i 'char-set))
-		      ((#\$ #\^ #\. #\+ #\|  #\( #\))
-		             (lp (cons c (cons #\\ result)) i 'normal))
-		      (else  (lp (cons c result) i 'normal))))))))))
+		(else (lp (cons c elts) i)))))))))
 
 
 ;;; Is the glob pattern free of *'s, ?'s and [...]'s?
 (define (constant-glob? pattern)
   (let ((patlen (string-length pattern)))
-    (let lp ((i 0)
-	     (escape? #f))	; Was last char an escape char (backslash)?
-      (if (= i patlen)
-
-	  (if escape?
-	      (error "Ill-formed glob pattern" pattern)
-	      #t)
-
+    (let lp ((i 0))
+      (or (= i patlen)
 	  (let ((next-i (+ i 1)))
-	    (if escape? (lp next-i #f)
-		(case (string-ref pattern i)
-		  ((#\* #\? #\[) #f)
-		  ((#\\) (lp next-i #t))
-		  (else  (lp next-i #f)))))))))
+	    (case (string-ref pattern i)
+	      ((#\\) ; Escape char
+	       (if (= next-i patlen)
+		   (error "Ill-formed glob pattern -- ends in backslash"
+			  pattern)
+		   (lp (+ next-i 1))))
+	      ((#\* #\? #\[) #f)
+	      (else  (lp next-i))))))))
 
 
 ;;; Make an effort to get the files in the putative directory PATH.

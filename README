@@ -1,25 +1,33 @@
-This is an incomplete port of the scheme shell (scsh) 0.5.1 to Guile.
+This is an incomplete port of the scheme shell (scsh) 0.5.2 to Guile.
 
-The original scsh is available by ftp from
-swiss-ftp.ai.mit.edu:/pub/su, which is also the place to go for scsh
-documentation.
+For the original scsh package and documentation, see:
+
+http://www.swiss.ai.mit.edu/ftpdir/scsh/
+
+To install the package, use something like:
+
+configure --prefix=/usr/local
+make
+make install
+
+The configure prefix must match the one used for Guile itself.
+
+Alternatively it's sufficient to rename (or link) the main guile-scsh
+directory to "scsh" and place it somewhere in the guile load path (type
+%load-path in an interactive Guile session to see the current
+setting).
+
+The Guile module system is not currently used.  The package can be
+loaded into a running Guile interpreter with:
+
+(load-from-path "scsh/init")
+
+Note that SLIB must be available to Guile: see the guile reference
+manual for information on installing SLIB.
 
 The Guile port uses a record type to represent the multiple values
 returned by many scsh procedures.  The values can be retrieved
 using call-with-values or receive.
-
-The Guile module system is not currently being used.  Initialization
-can be done by:
-
-(load-from-path "scsh/init")
-
-Note that SLIB must be found in %load-path, e.g., it can be unpacked
-in the "site" directory.  SLIB can be obtained by ftp from
-prep.ai.mit.edu in the pub/gnu/jacal directory.
-
-The Guile reference manual also has information about installing
-and using SLIB and scsh.
-
 
 Hacking It Yourself ==================================================
 

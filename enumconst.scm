@@ -1,4 +1,4 @@
-;;; Copyright (c) 1994 by Olin Shivers.
+;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 
 ;;; Handy for defining random flags and constants.
 ;;; (define-enum-constant "errno" intr 9) => (define errno/intr 9)

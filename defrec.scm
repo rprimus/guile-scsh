@@ -1,4 +1,4 @@
-;;; Copyright (c) 1993 by Olin Shivers.
+;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
 ;;; Syntax for defining record types.
 ;;; This implementation works with the Scheme48 system --
@@ -37,7 +37,7 @@
 ;;;   (employee:sex emp)
 ;;;   (employee:married? emp)
 ;;; 
-;;; - Setter procedures:
+;;; - Field-setting procedures:
 ;;;   (set-employee:name emp "Janet Q. Random")
 ;;;   (set-employee:id emp 8271)
 ;;;   (set-employee:salary emp 20000)
@@ -45,6 +45,13 @@
 ;;;   (set-employee:sex emp 'female)
 ;;;   (set-employee:married? emp #t)
 ;;; 
+;;; - Field-modifier procedures:
+;;;   (modify-employee:salary emp (lambda (s) (* 1.03 s))) ; 3% raise
+;;;   ...similarly for other fields.
+;;;
+;;; - Record-copy procedure:
+;;;   (copy-employee emp) -> emp'
+;;;
 ;;; - A type predicate:
 ;;;   (employee? x)
 ;;; 
@@ -63,6 +70,9 @@
 ;;; will cause (make-ship 10 20 "Valdez") to print as
 ;;;   #{ship "Valdez"}
 
+;;; Dependencies:
+;;; - Code produced by the macro needs the RECORDS package.
+;;; - Macro-expander code needs ERROR-PACKAGE and RECEIVING
 
 (define-syntax define-record
   (lambda (form rename compare)
@@ -100,6 +110,9 @@
 			   (s-conc (s->s name) ":" (s->s field-name))))
 	     (set-name (lambda (field-name)
 			 (s-conc "set-" (s->s name) ":" (s->s field-name))))
+	     (mod-name (lambda (field-name)
+			 (s-conc "modify-" (s->s name) ":" (s->s field-name))))
+	     (copy-name (s-conc "copy-" (s->s name)))
 	     (pred-name (s-conc (s->s name) "?"))
 	     (maker-name (s-conc "make-" (s->s name)))
 	     (type-name (s-conc "type/" (s->s name)))
@@ -149,16 +162,44 @@
 	  (,%define ,pred-name (,%record-predicate ,type-name))
        
 	  ;; Accessors (EMPLOYEE:NAME emp), ...
-	  ,@(map (lambda (spec)
-		   `(,%define ,(field-name (spec-name spec))
-		      (,%record-accessor ,type-name ',(spec-name spec))))
-		 field-specs)
+	  ,@(map (lambda (field)
+		   `(,%define ,(field-name field)
+		      (,%record-accessor ,type-name ',field)))
+		 fields)
 
-	  ;; Setters (SET-EMPLOYEE:NAME emp name), ...
-	  ,@(map (lambda (spec)
-		   `(,%define ,(set-name (spec-name spec))
-		      (,%record-modifier ,type-name ',(spec-name spec))))
-		 field-specs)
+	  ;; Field setters (SET-EMPLOYEE:NAME emp name), ...
+	  ,@(map (lambda (field)
+		   `(,%define ,(set-name field)
+		      (,%record-modifier ,type-name ',field)))
+		 fields)
+
+	  ;; Field modifiers (MODIFY-EMPLOYEE:NAME emp proc), ...
+	  ,@(let ((%setter (rename 'setter)); set-ship:name
+		  (%rec    (rename 'r))	    ; parameter: record to be modified. 
+		  (%proc   (rename 'proc))) ; parameter: modifying procedure.
+	      (map (lambda (field)
+		     (let ((%setter-proc `(,%record-modifier ,type-name
+							     ',field))
+			   (%sel-proc `(,%record-accessor ,type-name ',field))
+			   (%selector (rename 'getter)))
+		      `(,%define ,(mod-name field)
+		         (,%let ((,%setter ,%setter-proc)
+				 (,%selector ,%sel-proc))
+		           (,%lambda (,%rec ,%proc)
+			     (,%setter ,%rec (,%proc (,%selector ,%rec))))))))
+		   fields))
+
+	  ;; Record copy procedure
+	  ,(let ((%rec (rename 'r))
+		 (accessors (map (lambda (f) (rename (gensym "f"))) fields)))
+	     `(,%define ,copy-name
+	        (,%let ((,maker (,%record-constructor ,type-name ',fields))
+		        . ,(map (lambda (field accessor)
+			 	 `(,accessor (,%record-accessor ,type-name
+								',field)))
+				fields accessors))
+	          (,%lambda (,%rec)
+		    (,maker . ,(map (lambda (a) `(,a ,%rec)) accessors))))))
 
 	  ;; Methods (we only handle DISCLOSE methods).
 	  ,@(map (lambda (m)

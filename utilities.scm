@@ -1,5 +1,5 @@
 ;;; Random useful utilities.
-;;; Copyright (c) 1993 by Olin Shivers.
+;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
 (define (del elt lis)
   (letrec ((del (lambda (lis)
@@ -16,31 +16,19 @@
 (define (delete pred lis)
   (filter (lambda (x) (not (pred x))) lis))
 
-(define (index str c . maybe-start)
-  (let ((start (max 0 (:optional maybe-start 0)))
-	(len (string-length str)))
-    (do ((i start (+ 1 i)))
-	((or (>= i len)
-	     (char=? c (string-ref str i)))
-	 (and (< i len) i)))))
+(define (fold kons knil lis)
+  (let lp ((lis lis) (ans knil))
+    (if (pair? lis)
+	(lp (cdr lis) (kons (car lis) ans))
+	ans)))
 
-(define (rindex str c . maybe-start)
-  (let* ((len (string-length str))
-	 (start (min (:optional maybe-start len)
-		     len)))
-    (do ((i (- start 1) (- i 1)))
-	((or (< i 0)
-	     (char=? c (string-ref str i)))
-	 (and (>= i 0) i)))))
+(define (fold-right kons knil lis)
+  (let recur ((lis lis))
+    (if (pair? lis)
+	(let ((head (car lis)))		; Won't need LIS after RECUR call. 
+	  (kons head (recur (cdr lis))))
+	knil)))
 
-;;; (f (f (f zero x1) x2) x3)
-;;; [Richard's does (f x3 (f x2 (f x1 zero)))
-(define (reduce f zero l)
-  (letrec ((lp (lambda (val rest)
-		 (if (pair? rest) (lp (f val (car rest)) (cdr rest))
-		     val))))
-    (lp zero l)))
-				      
 (define (filter pred list)
   (letrec ((filter (lambda (list)
 		     (if (pair? list)
@@ -62,8 +50,6 @@
 			    (lp (cdr list))))))))
     (lp list)))
 
-(define any first)
-
 ;;; Returns the first true value produced by PRED, not the list element
 ;;; that satisfied PRED.
 
@@ -74,26 +60,27 @@
 			  (lp (cdr list)))))))
     (lp list)))
 
-(define any? first?)
+(define any first?)
 
-(define (every? pred list)
-  (letrec ((lp (lambda (list)
-		 (or (not (pair? list))
-		     (and (pred (car list))
-			  (lp (cdr list)))))))
-    (lp list)))
+(define (every pred list)
+  (or (not (pair? list))	
+      (let lp ((head (car list))  (tail (cdr list)))
+	(if (pair? tail)
+	    (and (pred head) (lp (car tail) (cdr tail)))
+	    (pred head)))))		; Tail-call the last PRED call.
+
 
 (define (mapv f v)
   (let* ((len (vector-length v))
 	 (ans (make-vector len)))
     (do ((i 0 (+ i 1)))
-	((= i len) ans)
+	((>= i len) ans)
       (vector-set! ans i (f (vector-ref v i))))))
 
 (define (mapv! f v)
   (let ((len (vector-length v)))
     (do ((i 0 (+ i 1)))
-	((= i len) v)
+	((>= i len) v)
       (vector-set! v i (f (vector-ref v i))))))
 
 (define (vector-every? pred v)
@@ -115,9 +102,42 @@
 	((< i 0) v)
       (vector-set! v i (init i)))))
 
+(define (vector-append . vecs)
+  (let* ((vlen (fold (lambda (v len) (+ (vector-length v) len)) 0 vecs))
+	 (ans (make-vector vlen)))
+    (let lp1 ((vecs vecs) (to 0))
+      (if (pair? vecs)
+	  (let* ((vec (car vecs))
+		 (len (vector-length vec)))
+	    (let lp2 ((from 0) (to to))
+	      (cond ((< from len)
+		     (vector-set! ans to (vector-ref vec from))
+		     (lp2 (+ from 1) (+ to 1)))
+		    (else (lp1 (cdr vecs) to)))))))
+    ans))
+      
+
+(define (vfold kons knil v)
+  (let ((len (vector-length v)))
+    (do ((i 0 (+ i 1))
+	 (ans knil (kons (vector-ref v i) ans)))
+	((>= i len) ans))))
+
+(define (vfold-right kons knil v)
+  (do ((i (- (vector-length v) 1) (- i 1))
+       (ans knil (kons (vector-ref v i) ans)))
+      ((< i 0) ans)))
+
+
+;;; We loophole the call to ERROR -- the point is that perhaps the
+;;; user will interact with a breakpoint, and proceed with a new
+;;; value, which we will then pass to a new invocation of CHECK-ARG
+;;; for approval.
 (define (check-arg pred val caller)
   (if (pred val) val
-      (check-arg pred (error "Bad argument" val pred caller) caller)))
+      (check-arg pred
+		 (loophole :value (error "Bad argument" val pred caller))
+		 caller)))
 
 (define (conjoin f g)
   (lambda args (and (apply f args) (apply g args))))
@@ -170,31 +190,3 @@
   (let ((f (round x)))
     (if (inexact? f) (inexact->exact f) f)))
 
-
-;;; Copy string SOURCE into TARGET[start,...]
-
-(define (string-replace! target start source)
-  (let ((len (string-length source)))
-    (do ((i (+ start len -1) (- i 1))
-	 (j (- len 1) (- j 1)))
-      ((< j 0) target)
-      (string-set! target i (string-ref source j)))))
-
-
-;;; Copy SOURCE[source-start, source-end) into TARGET[start,)
-
-(define (substring-replace! target start source source-start source-end)
-  (do ((i (+ start (- source-end source-start) -1) (- i 1))
-       (j (- source-end 1) (- j 1)))
-      ((< j source-start) target)
-    (string-set! target i (string-ref source j))))
-
-
-;;; Compute (... (f (f (f zero c0) c1) c2) ...)
-
-(define (string-reduce f zero s)
-  (let ((len (string-length s)))
-    (let lp ((v zero) (i 0))
-      (if (= i len)
-	  v
-	  (lp (f v (string-ref s i)) (+ i 1))))))

@@ -2,8 +2,7 @@
 
 ;;; Copyright (c) 1994 by David Albertz (dalbertz@clark.lcs.mit.edu).
 ;;; Copyright (c) 1994 by Olin Shivers   (shivers@clark.lcs.mit.edu).
-
-;;; minor changes for Guile.
+;;; See file COPYING.
 
 ;;; This code is freely available for use by anyone for any purpose,
 ;;; so long as you don't charge money for it, remove this notice, or
@@ -13,17 +12,28 @@
 ;;;                 root      Search starts from here. Usefully "." (cwd)
 ;;;                 dots? => if true, dot files will be matched.
 ;;;                          if false, dot files will not be matched.
-;;;                 pattern-list := a list of regular expressions or predicates
-;;;                                 Each member of the list corresponds
-;;;                                 to one or more levels in a directory.
-;;;                                 (A member with embedded "/" characters
-;;;                                  corresponds to multiple levels.)
-;;;                                 Example: ("foo" "bar" "\\.c$")
+;;;                 pattern-list := a list of 
+;;;                                   - strings
+;;;                                     These are split at /'s and then
+;;;                                     treated as Posix regexp strings.
+;;;                                   - regexps (typically made with RX macro)
+;;;                                   - predicates
+;;;                                 Each member of the list corresponds to one
+;;;                                 or more levels in a directory.  (A string
+;;;                                 with embedded "/" characters corresponds
+;;;                                 to multiple levels.)
+;;;                                 Example: 
+;;;                                 (file-match "." #f "foo" "bar" "\\.c$")
 ;;;                                     means match files that end in ".c"
 ;;;                                     if they reside in a directory with
 ;;;                                     a name that contains "bar", which
 ;;;                                     itself must reside in a directory
 ;;;                                     with a name that contains "foo".
+;;;                                  Here are two more equivalent specs
+;;;                                  for the example above:
+;;;                                  (file-match "." #f "foo/bar/\\.c$")
+;;;                                  (file-match "." #f (rx "foo") (rx "bar")
+;;;                                                     (rx ".c" eos))
 ;;;                                  If a member in the list is a predicate,
 ;;;                                  the predicate must be a procedure of
 ;;;                                  one argument.  This procedure is applied
@@ -42,16 +52,19 @@
 ;;;   when FILE-DIRECTORY? is applied to the bogus symlink.
 
 (define (file-match root dot-files? . patterns)
-  (let ((patterns (apply append (map split-pat patterns))))
+  (let ((patterns (apply append
+			 (map (lambda (p) (if (string? p)
+					      (map posix-string->regexp (split-pat p))
+					      p))
+			      patterns))))
     (let recur ((root root)
 		(patterns patterns))
       (if (pair? patterns)
 	  (let* ((pattern  (car patterns))
 		 (patterns (cdr patterns))
 		 (dir (file-name-as-directory root))
-		 (matcher (cond ((string? pattern)
-				 (let ((re (make-regexp pattern)))
-				   (lambda (f) (regexp-exec re f))))
+		 (matcher (cond ((regexp? pattern)
+				 (lambda (f) (regexp-search? re f)))
 
 				;; This arm makes a file-matcher using
 				;; predicate PATTERN. If PATTERN signals
@@ -84,7 +97,8 @@
   (if (procedure? pat) (list pat)
       (let lp ((i (string-length pat))
 	       (ans '()))
-	(cond ((rindex pat #\/ i) =>
+	(cond ((string-index-right pat #\/ i) =>
 	       (lambda (j) (lp j (cons (substring pat (+ j 1) i) ans))))
 	      (else
 	       (cons (substring pat 0 i) ans))))))
+

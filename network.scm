@@ -1,18 +1,18 @@
 ;;; Networking for the Scheme Shell
 ;;; Copyright (c) 1994-1995 by Brian D. Carlstrom.
 ;;; Copyright (c) 1994 by Olin Shivers.
+;;; See file COPYING.
 
 ;;; Scheme48 implementation.
-;;; numerous changes to interface with Guile primitives.
 
 (foreign-source
  "#include <sys/types.h>"
  "#include <sys/socket.h>"
+ "#include <errno.h>"
  ""
  "/* Make sure foreign-function stubs interface to the C funs correctly: */"
  "#include \"network1.h\""
  ""
- "extern int errno;"
  "extern int h_errno;"
  ""
  "#define errno_on_zero_or_false(x) ((x) ? SCHFALSE : ENTER_FIXNUM(errno))"
@@ -48,8 +48,18 @@
 		     (else 
 		      (error "socket-connect: unsupported protocol-family ~s"
 			     protocol-family)))))
-    (connect-socket sock addr)
-    sock))
+    ;; Close the socket and free the file-descriptors
+    ;; if the connect fails:
+    (let ((connected #f))
+      (dynamic-wind
+       (lambda () #f)
+       (lambda () (connect-socket sock addr) (set! connected #t))
+       (lambda ()
+         (if (not connected)
+             (close-socket sock))))
+      (if connected
+          sock
+          #f))))
 
 (define (bind-listen-accept-loop protocol-family proc arg)
   (let* ((sock (create-socket protocol-family socket-type/stream))
@@ -267,6 +277,7 @@
 (define-foreign %listen/errno
   (listen (integer sockfd)	; socket fdes
 	  (integer backlog))	; backlog
+	no-declare ; for Linux
   (to-scheme integer errno_or_false))
 
 (define-errno-syscall (%listen sockfd backlog) %listen/errno)

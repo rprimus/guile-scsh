@@ -1,6 +1,28 @@
-Incompatibilities with scsh 0.4.4:
+Bugs:
+
+extended process forms don't work:
+
+(run (echo hello) (> out.log)))
+
+problem with compiling regular expressions:
+
+compare the posix string in the result of (rx (- alpha ("ae")))
+with the one in (rx (- alpha ("aei"))): the latter contains garbage
+and can't be used.
+
+Incompatibilities with the original scsh:
 
 everything is defined at the top level, no modules.
+
+loading guile-scsh may redefine Guile builtins.  e.g., map is
+redefined by list-lib.scm.  This isn't very good.  Maybe use of the
+module system will make this more manageable in future.  Other
+affected procedures are: read-delimited read-delimited! pipe sleep
+exit make-fluid and probably open-file.
+
+the interfaces to the I/O system may be incompatible.
+
+[check that the following are still true in 0.5.2]
 
 generic-receive-message! always returns 2 values: the number of
 bytes read and the address received from.  Likewise for receive-message!
@@ -22,13 +44,6 @@ set-command-line-args! is not implemented.
 command-line returns the same list every time, not a copy.
 
 itimer is not implemented.
-
-Several scsh procedures are incompatible with Guile procedures.
-In these cases the procedures are redefined when init.scm is
-loaded.  This isn't a very good solution: hopefully use of the
-module system will help.  The following procedures are
-affected: read-delimited read-delimited! pipe sleep exit make-fluid
-and probably open-file.
 
 The close-on-exec flag is not currently set on unrevealed ports.
 

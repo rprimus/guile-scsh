@@ -1,15 +1,15 @@
 ;;; A Scheme shell.
-;;; Copyright (c) 1992 by Olin Shivers.
+;;; Copyright (c) 1992-1999 by Olin Shivers.
 ;;; Copyright (c) 1994 by Brian D. Carlstrom.
-
-;;; modified for Guile.
+;;; See file COPYING.
 
 ;;; Call THUNK, then die.
 ;;; A clever definition in a clever implementation allows the caller's stack
 ;;; and dynamic env to be gc'd away, since this procedure never returns.
 
 ;;; (define (call-terminally thunk)
-;;;  (with-continuation #f (lambda () (thunk) (exit 0))))
+;;;  (with-continuation (loophole :escape #f)	; Bogus
+;;;		     (lambda () (thunk) (exit 0))))
 ;;;  ;; Alternatively: (with-continuation #f thunk)
 
 ;;; More portably, but less usefully:
@@ -127,7 +127,7 @@
 
 	;; Main loop.
 	(let split ((i 0))
-	  (cond ((index clist #\: i) =>
+	  (cond ((string-index clist #\: i) =>
 		 (lambda (colon)
 		   (cons (substring clist i colon)
 			 (split (+ colon 1)))))
@@ -209,10 +209,10 @@
 
 (define (with-env* alist-delta thunk)
   (let* ((old-env #f)
-	 (new-env (reduce (lambda (alist key/val)
-			    (alist-update (car key/val) (cdr key/val) alist))
-			  (env->alist)
-			  alist-delta)))
+	 (new-env (fold (lambda (key/val alist)
+			  (alist-update (car key/val) (cdr key/val) alist))
+			(env->alist)
+			alist-delta)))
     (dynamic-wind
       (lambda ()
 	(set! old-env (env->alist))
@@ -437,12 +437,12 @@
 ;;; (port->list reader port)
 ;;;     Repeatedly applies READER to PORT, accumulating results into a list.
 ;;;     On EOF, returns the list of items thus collected.
-;;; (reduce-port port reader op . seeds)
+;;; (port-fold port reader op . seeds)
 ;;;     Repeatedly read things from PORT with READER. Each time you read
 ;;;     some value V, compute a new set of seeds with (apply OP V SEEDS).
 ;;;     (More than 1 seed means OP must return multiple values).
-;;;     On eof, return the seeds.
-;;;     PORT->LIST is just (REDUCE-PORT PORT READ CONS '())
+;;;     On eof, return the seeds: (apply value SEEDS).
+;;;     PORT->LIST is just (PORT-FOLD PORT READ CONS '())
 
 (define (run/port+proc* thunk)
   (receive (r w) (pipe)
@@ -507,13 +507,16 @@
 (define (port->string-list port)
   (port->list read-line port))
 
-(define (reduce-port port reader op . seeds)
-  (letrec ((reduce (lambda seeds
+(define (port-fold port reader op . seeds)
+  (letrec ((fold (lambda seeds
 		     (let ((x (reader port)))
 		       (if (eof-object? x) (apply values seeds)
 			   (call-with-values (lambda () (apply op x seeds))
-					     reduce))))))
-    (apply reduce seeds)))
+					     fold))))))
+    (apply fold seeds)))
+
+(define reduce-port
+  (deprecated-proc port-fold 'reduce-port "Use port-fold instead."))
 
 ;;; Not defined:
 ;;; (field-reader field-delims record-delims)
@@ -675,7 +678,7 @@
 (define (exec-path/env prog env . arglist)
   (flush-all-ports)
   (let ((prog (stringify prog)))
-    (if (index prog #\/)
+    (if (string-index prog #\/)
 
 	;; Contains a slash -- no path search.
 	(%exec prog (cons prog (map stringify arglist)) env)

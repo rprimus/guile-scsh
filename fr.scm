@@ -1,5 +1,5 @@
 ;;; Field and record parsing utilities for scsh.
-;;; Copyright (c) 1994 by Olin Shivers.
+;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 
 ;;; Notes:
 ;;; - Comment on the dependencies here...
@@ -54,42 +54,11 @@
 ;;; This has the effect you want with field parsing. For example, if you split
 ;;; a string with the empty pattern, you will explode the string into its
 ;;; individual characters:
-;;;     ((suffix-splitter "") "foo") -> #("" "f" "o" "o")
+;;;     ((suffix-splitter (rx "")) "foo") -> #("" "f" "o" "o")
 ;;; However, even though this boundary case is handled correctly, we don't
 ;;; recommend using it. Say what you mean -- just use a field splitter:
-;;;     ((field-splitter ".") "foo") -> #("f" "o" "o")
+;;;     ((field-splitter (rx any)) "foo") -> #("f" "o" "o")
 
-
-
-;;; (join-strings string-list [delimiter grammar]) => string
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Paste strings together using the delimiter string.
-;;;
-;;; (join-strings '("foo" "bar" "baz") ":") => "foo:bar:baz"
-;;;
-;;; DELIMITER defaults to a single space " "
-;;; GRAMMAR is one of the symbols {infix, suffix} and defaults to 'infix.
-
-;;; (join-strings strings [delim grammar])
-
-(define (join-strings strings . args)
-  (if (pair? strings)
-      (let-optionals args ((delim " ") (grammar 'infix))
-	(check-arg string? delim join-strings)
-	(let ((strings (reverse strings)))
-	  (let lp ((strings (cdr strings))
-		   (ans (case grammar
-			  ((infix)  (list (car strings)))
-			  ((suffix) (list (car strings) delim))
-			  (else (error "Illegal grammar" grammar)))))
-	    (if (pair? strings)
-		(lp (cdr strings)
-		    (cons (car strings) (cons delim ans)))
-	  
-		; All done
-		(apply string-append ans)))))
-
-      ""))	; Special-cased for infix grammar.
 
 ;;; FIELD PARSERS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -100,13 +69,13 @@
 
 (define (->delim-matcher x)
   (if (procedure? x) x					; matcher proc
-      (let ((re (cond ((regexp? x) x)			; regexp pattern
-		      ((string? x) (make-regexp x))	; regexp string
-		      (else (error "Illegal pattern/parser" x)))))
-
-	;; The matcher proc.
+      (let ((re (cond ((string? x) (re-string x))
+		      ((char-set? x) (re-char-set x))
+		      ((char? x) (re-string (string x)))
+		      ((regexp? x) x)
+		      (else (error "Illegal field-reader delimiter value" x)))))
 	(lambda (s i)
-	  (cond ((regexp-exec re s i) =>
+	  (cond ((regexp-search re s i) =>
 		 (lambda (m) (values (match:start m 0) (match:end m 0))))
 		(else (values #f #f)))))))
 
@@ -154,7 +123,8 @@
 				match-delim cons-field
 				num-fields nfields-exact?))))))))
 
-(define default-field-matcher (->delim-matcher "[^ \t\n]+"))
+;;; Default field spec is runs of non-whitespace chars.
+(define default-field-matcher (->delim-matcher (rx (+ (~ white)))))
 
 ;;; (field-splitter [field-spec num-fields])
 
@@ -313,8 +283,8 @@
 
 ;;; Now, build the exported procedures: {infix,suffix,sloppy-suffix}-splitter.
 
-(define default-suffix-matcher (->delim-matcher "[ \t\n]+|$"))
-(define default-infix-matcher  (->delim-matcher "[ \t\n]+"))
+(define default-suffix-matcher (->delim-matcher (rx (| (+ white) eos))))
+(define default-infix-matcher  (->delim-matcher (rx (+ white))))
 
 (define infix-splitter
   (make-field-parser-generator default-infix-matcher  infix-field-loop))
@@ -408,21 +378,17 @@
 ;;; Repeatedly do (APPLY PROC M STATE) to generate new state values,
 ;;; where M is a regexp match structure made from matching against STRING.
 
-;(define (regexp-reduce string start regexp proc . state)
-;  (let ((end (string-length string))
-;	(regexp (if (string? regexp)
-;		    (make-regexp regexp)
-;		    regexp)))
-;
+;(define (regexp-fold string start regexp proc . state)
+;  (let ((end (string-length string)))
 ;    (let lp ((i start) (state state) (last-null? #f))
 ;      (let ((j (if last-null? (+ i 1) i)))
-;	(cond ((and (<= j end) (regexp-exec regexp string j)) =>
+;	(cond ((and (<= j end) (regexp-search regexp string j)) =>
 ;               (lambda (m)
 ;		 (receive state (apply proc m state)
 ;		   (lp (match:end m) state (= (match:start m) (match:end m))))))
 ;	      (else (apply values state)))))))
 ;
 ;(define (all-regexp-matches regexp string)
-;  (reverse (regexp-reduce string 0 regexp
-;			  (lambda (m ans) (cons (match:substring m 0) ans))
-;			  '())))
+;  (reverse (regexp-fold string 0 regexp
+;			 (lambda (m ans) (cons (match:substring m 0) ans))
+;			 '())))

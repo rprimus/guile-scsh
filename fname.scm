@@ -68,7 +68,7 @@
 
 ;;; Returns FNAME's directory component in *directory form.*
 (define (file-name-directory fname)
-  (cond ((rindex fname #\/) =>
+  (cond ((string-index-right fname #\/) =>
 	 (lambda (rslash)
 	   (if (last-non-slash fname)
 	       (substring fname 0 (+ 1 rslash))
@@ -77,7 +77,7 @@
 
 
 (define (file-name-nondirectory fname)
-  (cond ((rindex fname #\/) =>
+  (cond ((string-index-right fname #\/) =>
 	 (lambda (rslash)
 	   (if (last-non-slash fname)
 	       (substring fname (+ 1 rslash) (string-length fname))
@@ -90,7 +90,7 @@
 	 (len (string-length fname)))
     (let split ((start 0))
       (cond ((>= start len) '())
-	    ((index fname #\/ start) =>
+	    ((string-index fname #\/ start) =>
 	     (lambda (slash)
 	       (cons (substring fname start slash)
 		     (split (+ slash 1)))))
@@ -128,7 +128,7 @@
 ;;; /usr/shivers/.login are not considered extensions.
 
 (define (file-name-extension-index fname)
-  (let ((dot (rindex fname #\.)))
+  (let ((dot (string-index-right fname #\.)))
     (if (and dot
 	     (> dot 0)
 	     (not (char=? #\/ (string-ref fname (- dot 1)))))
@@ -154,7 +154,7 @@
 				    (let* ((user (substring fname 1 end))
 					   (ui (name->user-info user)))
 				      (user-info:home-dir ui))))))
-	  (cond ((index fname #\/ 1) =>
+	  (cond ((string-index fname #\/ 1) =>
 		 (lambda (slash)
 		   (string-append (tilde->homedir slash) "/"
 				  (substring fname (+ slash 1) len))))
@@ -163,9 +163,8 @@
 
 (define (resolve-file-name fname . maybe-root)
   (let* ((root (ensure-file-name-is-nondirectory (:optional maybe-root ".")))
-	 (fname (ensure-file-name-is-nondirectory fname))
-	 (len (string-length fname)))
-    (if (zero? len) "/"
+	 (fname (ensure-file-name-is-nondirectory fname)))
+    (if (zero? (string-length fname)) "/"
 	(let ((c (string-ref fname 0)))
 	  (cond ((char=? #\/ c) fname) 	; Absolute file name.
 
@@ -222,6 +221,15 @@
   (simplify-file-name (apply resolve-file-name fname maybe-dir)))
 
 
+(define (absolute-file-name fname . maybe-root)
+  (let ((fname (ensure-file-name-is-nondirectory fname)))
+    (if (zero? (string-length fname)) "/"
+	(simplify-file-name
+	  (if (char=? #\/ (string-ref fname 0)) fname 	; Absolute file name.
+	      (let ((root (:optional maybe-root (cwd))))
+		(string-append (file-name-as-directory root) fname)))))))
+
+
 (define (home-dir . maybe-user)
   (if (pair? maybe-user)
       (let ((user (car maybe-user)))
@@ -248,7 +256,7 @@
     (let ((len (string-length s)))
       (cond
         ((zero? len) (apply string-append (reverse! ans)))
-	((index s #\$) =>
+	((string-index s #\$) =>
 	 (lambda (i)
 	   (let ((ans (cons (substring s 0 i) ans))
 		 (s (substring s (+ i 1) len))
@@ -256,13 +264,13 @@
 	     (if (zero? len) (lp ans "")
 		 (let ((next-char (string-ref s 0)))
 		   (cond ((char=? #\{ next-char)
-			  (cond ((index s #\}) =>
+			  (cond ((string-index s #\}) =>
 				 (lambda (i)
 				   (lp (cons (getenv (substring s 1 i)) ans)
 				       (substring s (+ i 1) len))))
 				(else (error "Unbalanced ${ delimiter in string" s))))
 			 (else
-			  (let ((i (or (index s #\/) len)))
+			  (let ((i (or (string-index s #\/) len)))
 			    (lp (cons (getenv (substring s 0 i)) ans)
 				(substring s i len))))))))))
 	(else (lp (cons s ans) ""))))))

@@ -21,6 +21,9 @@
 		  (cons (car rest) result)
 		  result)))))
 
+(defmacro structure-ref (structure symb)
+  symb)
+
 (use-modules (ice-9 slib))
 (require 'values)
 (require 'format)
@@ -33,11 +36,6 @@
 
 ;; "delete" primitive is replaced, but doesn't seem worth saving.
 (load-from-path "scsh/utilities.scm")
-;; replace procedures in utilities.scm with guile primitives.
-(set! index string-index)
-;; note the different convention for rindex starting position.
-(set! rindex (lambda (str char . start)
-	       (apply string-rindex str char 0 start)))
 
 (load-from-path "scsh/scsh-version.scm")
 (load-from-path "scsh/fname.scm")
@@ -51,7 +49,38 @@
 (load-from-path "scsh/bitwise.scm")
 (load-from-path "scsh/condition.scm")
 (load-from-path "scsh/scsh-condition.scm")
-(load-from-path "scsh/re.scm")
+(load-from-path "scsh/jar-defrecord.scm")
+(load-from-path "scsh/char-set.scm")
+
+(define guile-regexp? regexp?)
+(load-from-path "scsh/rx/re-low.scm")
+(load-from-path "scsh/rx/re-high.scm")
+(load-from-path "scsh/rx/let-match.scm")
+(load-from-path "scsh/rx/spencer.scm")
+(load-from-path "scsh/rx/oldfuns.scm")
+(load-from-path "scsh/rx/cond-package.scm")
+(load-from-path "scsh/rx/parse.scm")
+(load-from-path "scsh/rx/posixstr.scm")
+(load-from-path "scsh/rx/re-fold.scm")
+(load-from-path "scsh/rx/re-subst.scm")
+(load-from-path "scsh/rx/re-syntax.scm")
+(load-from-path "scsh/rx/rx-lib.scm")
+(load-from-path "scsh/rx/simp.scm")
+(load-from-path "scsh/rx/re.scm")
+
+(define-syntax rx expand-rx)
+(define-syntax if-sre-form
+  (lambda (exp r c)
+    (if (sre-form? (cadr exp) r c)
+	(caddr exp)
+	(cadddr exp))))
+
+(load-from-path "scsh/lib/ccp.scm")
+(load-from-path "scsh/lib/list-lib.scm")
+
+;; replaces string-downcase, string-downcase!, string-upcase, string-upcase!
+(load-from-path "scsh/lib/string-lib.scm")
+
 (load-from-path "scsh/syscalls.scm")
 (load-from-path "scsh/syntax.scm")
 (load-from-path "scsh/fileinfo.scm")
@@ -62,7 +91,6 @@
 (load-from-path "scsh/time.scm")
 (load-from-path "scsh/newports.scm")
 (load-from-path "scsh/rw.scm")
-(load-from-path "scsh/char-set.scm")
 (load-from-path "scsh/rdelim.scm")
 (load-from-path "scsh/awk.scm")
 (load-from-path "scsh/fr.scm")

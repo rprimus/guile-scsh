@@ -3,9 +3,7 @@
 ;;; Needs name-export and receive-syntax S48 packages.
 ;;; Also needs scsh's utilities package (for CHECK-ARG).
 ;;; Must be loaded into for-syntax package.
-;;; Copyright (c) 1993 by Olin Shivers.
-
-;; modified for Guile.  process forms not ported yet.
+;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
 (define-syntax define-simple-syntax
   (syntax-rules ()

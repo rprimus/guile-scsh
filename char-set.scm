@@ -1,16 +1,52 @@
 ;;; -*-Scheme-*-
 ;;;
 ;;; Character Sets package
-;;; ported from MIT Scheme runtime
-;;; by Brian D. Carlstrom
-;;; Sleazy code.
+;;; - ported from MIT Scheme runtime
+;;;   by Brian D. Carlstrom
+;;; - Rehacked & extended by Olin Shivers 6/98.
+
+;;; This is not great code. Char sets are represented as 256-char
+;;; strings. If char i is ASCII 0, then it isn't in the set; if char i
+;;; is ASCII 1, then it is in the set.
+;;; - Should be rewritten to use bit strings, or at least byte vecs.
+;;; - Is ASCII/Latin-1 specific. Would certainly have to be rewritten
+;;;   for Unicode.
+;;; - The standard character sets are not Latin-1 compliant, just ASCII.
+
+;;; This code uses jar's DEFINE-RECORD-TYPE macro to define the char-set
+;;; record type, because the scsh-standard DEFINE-RECORD form automatically
+;;; defines a COPY-FOO function, which is not the one we want, being a shallow
+;;; copy of the record fields.
+
+;;; New dfns:
+;;; (char-set=  cs1 cs2 ...)
+;;; (char-set<= cs1 cs2 ...)
+;;; (char-set-fold kons knil cs)
+;;; (char-set-for-each f cs)
+;;; (char-set-copy cs)
+;;; (char-set-size cs)
+;;; char-set:printing		(char-printing?  c)
+;;; char-set:blank		(char-blank?     c)   
+;;; char-set:control		(char-control?   c) 
+;;; char-set:hex-digit		(char-hex-digit? c)
+;;; char-set:ascii		(char-ascii?     c)   
+;;; char-set:empty
+;;; char-set:full
+;;; char-set-every? pred cs
+;;; char-set-any    pred cs
+;;; char-set-adjoin  cset char -> cset
+;;; char-set-adjoin! cset char -> cset
+;;; char-set-delete  cset char -> cset
+;;; char-set-delete! cset char -> cset
 
 (define char:newline (ascii->char 13))
-(define char:tab (ascii->char 9))
-(define char:linefeed (ascii->char 13))
-(define char:page (ascii->char 12))
-(define char:return (ascii->char 10))
-(define char:space (ascii->char 32))
+(define char:tab     (ascii->char  9))
+(define char:vtab    (ascii->char 11))
+(define char:page    (ascii->char 12))
+(define char:return  (ascii->char 10))
+(define char:space   (ascii->char 32))
+
+(define (string-copy s) (substring s 0 (string-length s)))
 
 (define (string-fill-range! str lower upper ch)
   (do ((index lower (+ index 1)))
@@ -23,42 +59,133 @@
 
 ;;;; Character Sets
 
-(define (char-set? object)
-  (and (string? object)
-       (= (string-length object) 256)))
+;(define-record char-set
+;  s)	; 256-char string; each char is either ASCII 0 or ASCII 1.
+
+;;; Use jar's record macro.
+(define-record-type char-set :char-set
+  (make-char-set s)
+  char-set?
+  (s char-set:s))
+
+(define (char-set-copy cs) (make-char-set (string-copy (char-set:s cs))))
+
+;;; The = and <= code is ugly because it's n-ary.
+
+(define (char-set= cs1 . rest)
+  (let ((s1 (char-set:s cs1)))
+    (every (lambda (cs) (string=? s1 (char-set:s cs)))
+	   rest)))
+
+(define (char-set<= cs1 . rest)
+  (let lp ((s1 (char-set:s cs1))
+	   (rest rest))
+    (or (not (pair? rest))
+	(let ((s2 (char-set:s (car rest)))
+	      (rest (cdr rest)))
+	  (let lp2 ((i 255))
+	    (if (< i 0) (lp s2 rest)
+		(and (<= (char->ascii (string-ref s1 i))
+			 (char->ascii (string-ref s2 i)))
+		     (lp2 (- i 1)))))))))
+
+
+(define (char-set-size cs)
+  (let ((s (char-set:s cs)))
+    (let lp ((i 255) (size 0))
+      (if (< i 0) size
+	  (lp (- i 1)
+	      (if (= 0 (char->ascii (string-ref s i))) size (+ size 1)))))))
+
+(define (set-char-set cs in? . chars)
+  (let ((s (string-copy (char-set:s cs)))
+	(val (if in? (ascii->char 1) (ascii->char 0))))
+    (for-each (lambda (c) (string-set! s (char->ascii c) val))
+	      chars)
+    (make-char-set s)))
+
+(define (set-char-set! cs in? . chars)
+  (let ((s (char-set:s cs))
+	(val (if in? (ascii->char 1) (ascii->char 0))))
+    (for-each (lambda (c) (string-set! s (char->ascii c) val))
+	      chars))
+  cs)
+
+(define (char-set-adjoin  cs . chars) (apply set-char-set  cs #t chars))
+(define (char-set-adjoin! cs . chars) (apply set-char-set! cs #t chars))
+(define (char-set-delete  cs . chars) (apply set-char-set  cs #f chars))
+(define (char-set-delete! cs . chars) (apply set-char-set! cs #f chars))
+
+(define (char-set-for-each proc cs)
+  (let ((s (char-set:s cs)))
+    (let lp ((i 255))
+      (cond ((>= i 0)
+	     (if (not (= 0 (char->ascii (string-ref s i))))
+		 (proc (ascii->char i)))
+	     (lp (- i 1)))))))
+
+(define (char-set-fold kons knil cs)
+  (let ((s (char-set:s cs)))
+    (let lp ((i 255) (ans knil))
+      (if (< i 0) ans
+	  (lp (- i 1)
+	      (if (= 0 (char->ascii (string-ref s i)))
+		  ans
+		  (kons (ascii->char i) ans)))))))
+
+(define reduce-char-set (deprecated-proc char-set-fold 'char-set-fold
+					 "Use char-set-fold instead."))
+
+(define (char-set-every? pred cs)
+  (let ((s (char-set:s cs)))
+    (let lp ((i 255))
+      (or (< i 0)
+	  (if (= 0 (char->ascii (string-ref s i)))
+	      (lp (- i 1))
+	      (and (pred (ascii->char i))
+		   (lp (- i 1))))))))
+
+(define (char-set-any pred cs)
+  (let ((s (char-set:s cs)))
+    (let lp ((i 255))
+      (and (>= i 0)
+	   (if (= 0 (char->ascii (string-ref s i)))
+	       (lp (- i 1))
+	       (or (pred (ascii->char i))
+		   (lp (- i 1))))))))
+
 
 (define (char-set . chars)
   (chars->char-set chars))
 
 (define (chars->char-set chars)
-  (let ((char-set (make-string 256 (ascii->char 0))))
+  (let ((s (make-string 256 (ascii->char 0))))
     (for-each (lambda (char) 
-		(string-set! char-set (char->ascii char) (ascii->char 1)))
+		(string-set! s (char->ascii char) (ascii->char 1)))
 	      chars)
-    char-set))
+    (make-char-set s)))
 
 (define (string->char-set str)
-  (let ((char-set (make-string 256 (ascii->char 0))))
+  (let ((s (make-string 256 (ascii->char 0))))
     (do ((i (- (string-length str) 1) (- i 1)))
-	((< i 0) char-set)
-      (string-set! char-set (char->ascii (string-ref str i))
+	((< i 0) (make-char-set s))
+      (string-set! s (char->ascii (string-ref str i))
 		   (ascii->char 1)))))
 
 (define (ascii-range->char-set lower upper)
-  (let ((char-set (make-string 256 (ascii->char 0))))
-    (string-fill-range! char-set lower upper (ascii->char 1))
-    char-set))
+  (let ((s (make-string 256 (ascii->char 0))))
+    (string-fill-range! s lower upper (ascii->char 1))
+    (make-char-set s)))
 
 (define (predicate->char-set predicate)
-  (let ((char-set (make-string 256)))
-    (let loop ((code 0))
-      (if (< code 256)
-	  (begin (string-set! char-set code
-				 (if (predicate (ascii->char code)) 
-				     (ascii->char 1)
-				     (ascii->char 0)))
-		 (loop (+ 1 code)))))
-    char-set))
+  (let ((s (make-string 256)))
+    (let lp ((i 255))
+      (if (>= i 0)
+	  (begin (string-set! s i (if (predicate (ascii->char i)) 
+				      (ascii->char 1)
+				      (ascii->char 0)))
+		 (lp (- i 1)))))
+    (make-char-set s)))
 
 
 ;;; {string, char, char-set, char predicate} -> char-set
@@ -74,12 +201,13 @@
 
 ;;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-(define (char-set-members char-set)
-  (define (loop code)
-    (cond ((>= code 256) '())
-	  ((zero? (char->ascii (string-ref char-set code))) (loop (+ 1 code)))
-	  (else (cons (ascii->char code) (loop (+ 1 code))))))
-  (loop 0))
+(define (char-set-members cs)
+  (let ((s (char-set:s cs)))
+    (let lp ((i 255) (ans '()))
+      (if (< i 0) ans
+	  (lp (- i 1)
+	      (if (zero? (char->ascii (string-ref s i))) ans
+		  (cons (ascii->char i) ans)))))))
 
 ;;; De-releasing CHAR-SET-MEMBER?
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -90,108 +218,134 @@
 ;;; break code. I ended up just choosing a new proc name that consistent with
 ;;; its arg order -- (CHAR-SET-CONTAINS? cset char).
 
-(define (char-set-contains? char-set char)
-  (not (zero? (char->ascii (string-ref char-set (char->ascii char))))))
+(define (char-set-contains? cs char)
+  (not (zero? (char->ascii (string-ref (char-set:s cs)
+				       (char->ascii char))))))
 
 ;;; This actually isn't exported. Just CYA.
 (define (char-set-member? . args)
   (error "CHAR-SET-MEMBER? is no longer provided. Use CHAR-SET-CONTAINS? instead."))
 
-(define (char-set-invert char-set)
-  (predicate->char-set
-   (lambda (char) (not (char-set-contains? char-set char)))))
 
-(define (char-set-union char-set-1 char-set-2)
-  (predicate->char-set
-   (lambda (char)
-     (or (char-set-contains? char-set-1 char)
-	 (char-set-contains? char-set-2 char)))))
+;;; Set algebra
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (char-set-intersection char-set-1 char-set-2)
-  (predicate->char-set
-   (lambda (char)
-     (and (char-set-contains? char-set-1 char)
-	  (char-set-contains? char-set-2 char)))))
+(define (char-set-invert cs)
+  (predicate->char-set (lambda (char)
+			 (not (char-set-contains? cs char)))))
 
-(define (char-set-difference char-set-1 char-set-2)
-  (predicate->char-set
-   (lambda (char)
-     (and (char-set-contains? char-set-1 char)
-	  (not (char-set-contains? char-set-2 char))))))
+(define (char-set-union . csets)
+  (if (pair? csets)
+      (apply char-set-union! (char-set-copy (car csets)) (cdr csets))
+      char-set:empty))
+
+(define (char-set-intersection . csets)
+  (if (pair? csets)
+      (apply char-set-intersection! (char-set-copy (car csets)) (cdr csets))
+      char-set:full))
+
+(define (char-set-difference cs1 . csets)
+  (if (pair? csets)
+      (apply char-set-difference! (char-set-copy cs1) csets)
+      cs1))
+
+
+;;; Linear set-algebraic ops
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; These guys are allowed, but not required, to side-effect their first
+;;; argument when computing their result. In other words, you must use them
+;;; as if they were completely functional, just like their non-! counterparts,
+;;; and you must additionally ensure that their first arguments are "dead"
+;;; at the point of call. In return, we promise a more efficient result, plus
+;;; allowing you to always assume char-sets are unchangeable values.
+
+;;; Apply P to each index and it's char in S: (P I C).
+;;; Used by the intersection & difference.
+
+;;; char-set- prefix added for Guile to avoid conflict with 
+;;; string-iter defined in lib/string-lib.scm.
+(define (char-set-string-iter p s)
+  (let lp ((i (- (string-length s) 1)))
+    (cond ((>= i 0)
+	   (p i (string-ref s i))
+	   (lp (- i 1))))))
+
+(define (char-set-invert! cset)
+  (let ((s (char-set:s cset)))
+    (char-set-string-iter (lambda (i c)
+		     (string-set! s i (ascii->char (- 1 (char->ascii c)))))
+		 s))
+  cset)
+
+(define (char-set-union! cset1 . csets)
+  (let ((s (char-set:s cset1)))
+    (for-each (lambda (cset)
+		(char-set-for-each (lambda (c)
+				     (string-set! s (char->ascii c)
+						  (ascii->char 1)))
+				   cset))
+	      csets))
+  cset1)
+
+(define (char-set-intersection! cset1 . csets)
+  (let ((s (char-set:s cset1)))
+    (for-each (lambda (cset)
+		(char-set-string-iter (lambda (i c)
+			       (if (zero? (char->ascii c))
+				   (string-set! s i (ascii->char 0))))
+			     (char-set:s cset)))
+	      csets))
+  cset1)
+
+(define (char-set-difference! cset1 . csets)
+  (let ((s (char-set:s cset1)))
+    (for-each (lambda (cset)
+		(char-set-for-each (lambda (c)
+					  (string-set! s (char->ascii c)
+						       (ascii->char 0)))
+				   cset))
+	      csets))
+  cset1)
+
+
 
 ;;;; System Character Sets
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define char-set:upper-case (ascii-range->char-set #x41 #x5B))
 (define char-set:lower-case (ascii-range->char-set #x61 #x7B))
-(define char-set:numeric (ascii-range->char-set #x30 #x3A))
-(define char-set:graphic (ascii-range->char-set #x20 #x7F))
-(define char-set:not-graphic (char-set-invert char-set:graphic))
-(define char-set:whitespace
-  (char-set char:newline char:tab char:linefeed 
-	    char:page char:return char:space))
-(define char-set:not-whitespace (char-set-invert char-set:whitespace))
+(define char-set:upper-case (ascii-range->char-set #x41 #x5B))
 (define char-set:alphabetic
   (char-set-union char-set:upper-case char-set:lower-case))
+(define char-set:numeric (ascii-range->char-set #x30 #x3A))
 (define char-set:alphanumeric
   (char-set-union char-set:alphabetic char-set:numeric))
-(define char-set:standard
-  (char-set-union char-set:graphic (char-set char:newline)))
+(define char-set:graphic  (ascii-range->char-set #x21 #x7F))
+(define char-set:printing (ascii-range->char-set #x20 #x7F))
+(define char-set:whitespace (char-set char:tab  char:newline char:vtab
+				      char:page char:return  char:space))
+(define char-set:blank (char-set char:space char:tab))
+(define char-set:control (char-set-union (ascii-range->char-set 0 32)
+					 (char-set (ascii->char 127))))
+(define char-set:punctuation
+  (string->char-set "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"))
+(define char-set:hex-digit (string->char-set "0123456789abcdefABCDEF"))
+(define char-set:ascii (ascii-range->char-set 0 128))
+(define char-set:empty (char-set))
+(define char-set:full (char-set-invert char-set:empty))
 
-(define (char-upper-case? char)
-  (char-set-contains? char-set:upper-case char))
 
-(define (char-lower-case? char)
-  (char-set-contains? char-set:lower-case char))
+(define (char-set->pred cs) (lambda (c) (char-set-contains? cs c)))
 
-(define (char-numeric? char)
-  (char-set-contains? char-set:numeric char))
-
-(define (char-graphic? char)
-  (char-set-contains? char-set:graphic char))
-
-(define (char-whitespace? char)
-  (char-set-contains? char-set:whitespace char))
-
-(define (char-alphabetic? char)
-  (char-set-contains? char-set:alphabetic char))
-
-(define (char-alphanumeric? char)
-  (char-set-contains? char-set:alphanumeric char))
-
-(define (char-standard? char)
-  (char-set-contains? char-set:standard char))
-
-;;; Bullshit legalese
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;$Header: /sources/guile/guile/guile-scsh/Attic/char-set.scm,v 1.1 1997/01/25 18:26:38 ghouston Exp $
-
-;Copyright (c) 1988 Massachusetts Institute of Technology
-
-;This material was developed by the Scheme project at the Massachusetts
-;Institute of Technology, Department of Electrical Engineering and
-;Computer Science.  Permission to copy this software, to redistribute
-;it, and to use it for any purpose is granted, subject to the following
-;restrictions and understandings.
-
-;1. Any copy made of this software must include this copyright notice
-;in full.
-
-;2. Users of this software agree to make their best efforts (a) to
-;return to the MIT Scheme project any improvements or extensions that
-;they make, so that these may be included in future releases; and (b)
-;to inform MIT of noteworthy uses of this software.
-
-;3. All materials developed as a consequence of the use of this
-;software shall duly acknowledge such use, in accordance with the usual
-;standards of acknowledging credit in academic research.
-
-;4. MIT has made no warrantee or representation that the operation of
-;this software will be error-free, and MIT is under no obligation to
-;provide any services, by way of maintenance, update, or otherwise.
-
-;5. In conjunction with products arising from the use of this material,
-;there shall be no use of the name of the Massachusetts Institute of
-;Technology nor of any adaptation thereof in any advertising,
-;promotional, or sales literature without prior written consent from
-;MIT in each case. 
-
+(define char-lower-case?	(char-set->pred char-set:lower-case))
+(define char-upper-case?	(char-set->pred char-set:upper-case))
+(define char-alphabetic?	(char-set->pred char-set:alphabetic))
+(define char-numeric?		(char-set->pred char-set:numeric))
+(define char-alphanumeric?	(char-set->pred char-set:alphanumeric))
+(define char-graphic?		(char-set->pred char-set:graphic))
+(define char-printing?		(char-set->pred char-set:printing))
+(define char-whitespace?	(char-set->pred char-set:whitespace))
+(define char-blank?		(char-set->pred char-set:blank))
+(define char-control?		(char-set->pred char-set:control))
+(define char-punctuation?	(char-set->pred char-set:punctuation))
+(define char-hex-digit?		(char-set->pred char-set:hex-digit))
+(define char-ascii?		(char-set->pred char-set:ascii))

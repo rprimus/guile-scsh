@@ -1,7 +1,7 @@
 ;;; POSIX system-call Scheme binding.
-;;; Copyright (c) 1993 by Olin Shivers.
+;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
-;; Rewritten for Guile in places, incomplete.
+;;; Scheme48 implementation.
 
 ;;; Need to rationalise names here. getgid. get-gid. "effective" as morpheme?
 
@@ -12,6 +12,7 @@
   "#include <sys/time.h>"
   "#include <fcntl.h>		/* for O_RDWR */" ; ???
   "#include <sys/stat.h>"
+  "#include <errno.h>"
   "#include <netdb.h>"
   "#include <pwd.h>"
   "#include <unistd.h>"
@@ -22,8 +23,6 @@
   "#include \"select1.h\""
   "#include \"syscalls1.h\""
   "#include \"userinfo1.h\""
-  ""
-  "extern int errno;"
   ""
   "#define errno_on_zero_or_false(x) ((x) ? SCHFALSE : ENTER_FIXNUM(errno))"
   "#define errno_or_false(x) (((x) == -1) ? ENTER_FIXNUM(errno) : SCHFALSE)"
@@ -298,7 +297,7 @@
   (to-scheme integer errno_or_false))
 
 (define-foreign set-fdes-uid&gid/errno
-  (fchown (integer fd) (uid_t uid) (gid_t gid))
+  (fchown (integer fd) (uid_t uid) (gid_t gid)) no-declare ; for NT Cygwin
   (to-scheme integer errno_or_false))
 
 (define-errno-syscall (set-file-owner thing uid)
@@ -789,25 +788,42 @@
 
 ;;; I do this one in C, I'm not sure why:
 ;;; It is used by MATCH-FILES.
-;;; For Guile it's done in Scheme.
 
-(define-foreign %filter-C-strings!
-  (filter_stringvec (string pattern) ((C "char const ** ~a") cvec))
-  static-string	; error message -- #f if no error.
-  integer)	; number of files that pass the filter.
+;;; 99/7: No one is using this function, so I'm commenting it out.
+;;; Later, we could tune up the globber or regexp file-matcher to use
+;;; it (but should shift it into the rx directory). But I should also go
+;;; to a file-at-a-time cursor model for directory fetching. -Olin
 
-(define (%filter-C-strings! pattern vec)
-  (let ((rx (make-regexp pattern))
-	(len (vector-length vec)))
-    (let loop ((i 0) (j 0))
-      (if (= i len)
-	  (values #f j)
-	  (loop (+ i 1)
-		(if (regexp-exec rx (vector-ref vec i))
-		    (begin
-		      (vector-set! vec j (vector-ref vec i))
-		      (+ j 1))
-		    j))))))
+;(define-foreign %filter-C-strings!
+;  (filter_stringvec (string-desc pattern) ((C "char const ** ~a") cvec))
+;  integer)	; number of files that pass the filter.
+
+; guile version.
+; (define (%filter-C-strings! pattern vec)
+;   (let ((rx (make-regexp pattern))
+; 	(len (vector-length vec)))
+;     (let loop ((i 0) (j 0))
+;       (if (= i len)
+; 	  (values #f j)
+; 	  (loop (+ i 1)
+; 		(if (regexp-exec rx (vector-ref vec i))
+; 		    (begin
+; 		      (vector-set! vec j (vector-ref vec i))
+; 		      (+ j 1))
+; 		    j))))))
+
+
+;(define (match-files regexp . maybe-dir)
+;  (let ((dir (:optional maybe-dir ".")))
+;    (check-arg string? dir match-files)
+;    (receive (err cvec numfiles)
+;	     (%open-dir (ensure-file-name-is-nondirectory dir))
+;      (if err (errno-error err match-files regexp dir))
+;      (receive (numfiles) (%filter-C-strings! regexp cvec)
+;	;(if err (error err match-files))
+;	(%sort-file-vector cvec numfiles)
+;	(let ((files (C-string-vec->Scheme&free cvec numfiles)))
+;	  (vector->list files))))))
 
 
 ;;; Environment manipulation
@@ -816,7 +832,7 @@
 ;;; (var . val) / "var=val" rep conversion:
 
 (define (split-env-string var=val)
-  (let ((i (index var=val #\=)))
+  (let ((i (string-index var=val #\=)))
     (if i (values (substring var=val 0 i)
 		  (substring var=val (+ i 1) (string-length var=val)))
 	(error "No \"=\" in environment string" var=val))))

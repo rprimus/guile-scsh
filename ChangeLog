@@ -1,3 +1,67 @@
+2000-09-04  Gary Houston  <ghouston@arglist.com>
+
+	* README: updated.  guile-scsh is now based on scsh 0.5.2.
+	mention some bugs in the INCOMPAT file: more work is needed.
+
+2000-08-30  Gary Houston  <ghouston@arglist.com>
+
+	* char-set.scm (string-iter): renamed to char-set-string-iter,
+	so it doesn't conflict with lib/string-lib.scm:string-iter.
+	should be fixed by module system instead.
+	only called by char-set-invert! and char-set-intersection! in
+	char-set.scm.
+
+2000-08-28  Gary Houston  <ghouston@arglist.com>
+
+	* rx/oldfuns.scm: don't redefine Guile primitives.
+
+2000-08-23  Gary Houston  <ghouston@arglist.com>
+
+	* compile-posix-re->c-struct, cre-search, cre-search?: rewritten
+	using Guile regexp primitives.  not particularly optimal nor
+	necessarily complete.
+
+2000-08-21  Gary Houston  <ghouston@arglist.com>
+
+	* rx/re-low.scm (clean-up-cres): make this a no-op.
+
+2000-08-20  Gary Houston  <ghouston@arglist.com>
+
+	* sighandlers.scm (maybe-define-signal), errno.scm (maybe-define-eno):
+	use string-downcase, not string-downcase!.
+
+	* init.scm (structure-ref): defined bogusly: scheme48 module system
+	is not supported.
+
+	* init: load new files.
+	* lib: ccp.scm, list-lib.scm, string-lib.scm: new files from
+	scsh-0.5.2.
+
+	* lib: new directory.
+
+	* init.scm (rx, if-sre-form): defined, from scsh old-packages.scm.
+
+	* init.scm: load new files.
+
+	* rx: new subdirectory.
+	
+	* jar-defrecord.scm, re-low.scm, re-high.scm,
+	 cond-package.scm let-match.scm oldfuns.scm parse.scm posixstr.scm,
+	 re-fold.scm re-subst.scm re-syntax.scm rx-lib.scm simp.scm,
+	 spencer.scm: new files from scsh-0.5.2.
+
+2000-08-10  Gary Houston  <ghouston@arglist.com>
+
+	* init.scm: don't define index, rrindex.
+
+	* updates from scsh-0.5.2: COPYING, awk.scm, char-set.scm,
+	defrec.scm, enumconst.scm, fileinfo.scm, filemtch.scm,
+	filesys.scm, fname.scm, fr.scm, glob.scm, here.scm, network.scm,
+	procobj.scm, rdelim.scm, re.scm, rw.scm, scsh-condition.scm,
+	scsh-version.scm, scsh.scm, sighandlers.scm, stringcoll.scm,
+	syntax-helpers.scm, syntax.scm, syscalls.scm, time.scm,
+	utilities.scm
+	
 1998-04-05  Mikael Djurfeldt  <mdj@nada.kth.se>
 
 	* init.scm (rindex): Bugfix: start is an optional argument.

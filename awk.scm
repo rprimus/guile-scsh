@@ -1,16 +1,27 @@
 ;;; An awk loop, after the design of David Albertz and Olin Shivers.
-;;; Copyright (c) 1994 by Olin Shivers.
+;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 
-;;; the only change for Guile is the awk definition on the last line.
+;;; This uses the new RX SRE syntax. Defines a Clinger-Rees expander for
+;;; the old, pre-SRE syntax AWK, and one for the new SRE-syntax AWK.
 
+;;; Imports:
 ;;; - Requires RECEIVE from RECEIVING package.
 ;;; - Would require DESTRUCTURE from DESTRUCTURING package, but it appears
 ;;;   to be broken, so we hack it w/cars and cdrs.
-;;; - Requires STRING-MATCH from SCSH package.
+;;; - Requires STRING-MATCH and STRING-MATCH? from RE-EXPORTS package.
+;;; - Requires regexp manipulation stuff from SRE-SYNTAX-TOOLS
+;;; - Requires ERROR from ERROR-PACKAGE.
+;;; - Requires ANY and FILTER frm SCSH-UTILITIES.
+;;;
+;;; Needs error-package receiving sre-syntax-tools scsh-utilities
+;;;
+;;; Exports:
+;;; (expand-awk exp r c)		Clinger-Rees macro expander, new syntax
+;;; (expand-awk/obsolete exp r c)	Clinger-Rees macro expander, old syntax
+;;;
+;;; next-range next-:range 		These four functions are used in the
+;;; next-range: next-:range:			code output by the expander.
 
-;;; This should be hacked to convert regexp strings into regexp structures
-;;; at the top of the form, and then just refer to the structs in the
-;;; tests.
 
 ;;; Examples:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -21,13 +32,14 @@
 ;;;
 ;;; ;;; Count the number of non-comment lines of code in my Scheme source.
 ;;; (awk (read-line) (line) ((nlines 0))
-;;;   ("^[ \t]*;" nlines)		; A comment line.
-;;;   (else       (+ nlines 1)))	; Not a comment line.
+;;;   ((: bos (* white) ";")	nlines)		; A comment line.
+;;;   (else       		(+ nlines 1)))	; Not a comment line.
 ;;;
-;;;  ;;; Read numbers, counting the evens and odds.
+;;;  ;;; Read numbers, counting the evens and odds,
+;;;  ;;; and printing out sign information.
 ;;;  (awk (read) (val) ((evens 0) (odds 0))
-;;;     ((zero? val) (display "zero ") (values evens odds)) ; Tell me about
-;;;     ((> val 0)   (display "pos ")  (values evens odds)) ; sign, too.
+;;;     ((zero? val) (display "zero ") (values evens odds))
+;;;     ((> val 0)   (display "pos ")  (values evens odds))
 ;;;     (else        (display "neg ")  (values evens odds))
 ;;;
 ;;;     ((even? val) (values (+ evens 1) odds))
@@ -39,6 +51,17 @@
 ;;;       .
 ;;;       .
 ;;;   <clausen>)
+;;;
+;;; <clause> ::= (ELSE body ...)
+;;;          |   (:RANGE test1 test2 body ...) ; RANGE :RANGE RANGE: :RANGE:
+;;;          |   (AFTER body ...)
+;;;          |   (test => proc)
+;;;          |   (test ==> vars body ...)
+;;;          |   (test body ...)
+;;;
+;;;  test ::= integer | sre | (WHEN exp) | exp
+;;;  (sre/exp ambiguities resolved in favor of SRE)
+
 
 ;;; This macro is written using Clinger/Rees explicit-renaming low-level 
 ;;; macros. So it is pretty ugly. It takes a little care to generate 
@@ -147,17 +170,23 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (expand-awk exp r c)
+;;; If STRING-REGEXPS? is true, we use the old, obsolete syntax, where
+;;; a test form that is a string, such as "shivers|bdc", is treated as
+;;; a regular expression in the Posix string syntax. Otherwise, we use the
+;;; new SRE syntax, where strings are treated as SRE constants.
+
+(define (expand-awk exp r c)          (really-expand-awk exp r c #f))
+(define (expand-awk/obsolete exp r c) (really-expand-awk exp r c #t))
+
+(define (really-expand-awk exp r c string-regexps?)
   (let* ((%lambda  	(r 'lambda))	; Bind a mess of keywords.
 	 (%let	    	(r 'let))
-	 (%receive 	(r 'receive))
-	 (%values  	(r 'values))
 	 (%if		(r 'if))
 	 (%eof-object?	(r 'eof-object?))
 	 (%after	(r 'after))
 	 (%else		(r 'else))
 	 (%+		(r '+))
-	 (%make-regexp  (r 'make-regexp))
+	 (%rx		(r 'rx))
 
 	 (gensym (let ((i 0))
 		   (lambda (s)
@@ -175,7 +204,9 @@
 
 	 ;; Rip the form apart.
 	 (reader-exp (cadr exp))
-	 (rec/field-vars (caddr exp))
+	 ;; Replace #F's with gensym'd variables in the record/field vars.
+	 (rec/field-vars (map (lambda (v) (or v (r (gensym "anon-rfval"))))
+			      (caddr exp)))
 	 (rec-var (car rec/field-vars))	; The var bound to the record.
 	 (rest (cdddr exp)))		; Stuff after the rec&field-vars.
       
@@ -184,40 +215,48 @@
 		 (values #f (car rest) (cdr rest)) 	; form.
 		 (values (car rest) (cadr rest) (cddr rest)))
 
-      ;; Some analysis: what have we got?
-      ;; Range clauses, else clauses, line num tests,...
-      (let* ((recnum-tests?		; Do any of the clauses test the record
-	      (any? (lambda (clause)	; count? (I.e., any integer tests?)
-		      (let ((test (car clause)))
-			(or (integer? test)
-			    (and (range? clause)
-				 (or (integer? (cadr clause))
-				     (integer? (caddr clause)))))))
-		    clauses))
+      ;; If we are doing the old, obsolete Posix-string syntax, map
+      ;; the clause tests over to the new syntax.
+      (let* ((clauses (if string-regexps?
+			  (map (lambda (clause)
+				 (hack-clause-for-posix-string-syntax clause r c))
+			       clauses)
+			  clauses))
+
+	     ;; Some analysis: what have we got?
+	     ;; Range clauses, else clauses, line num tests,...
+	     (recnum-tests?		; Do any of the clauses test the record
+	      (any (lambda (clause)	; count? (I.e., any integer tests?)
+		     (let ((test (car clause)))
+		       (or (integer? test)
+			   (and (range? clause)
+				(or (integer? (cadr clause))
+				    (integer? (caddr clause)))))))
+		   clauses))
 
 	     ;; If any ELSE clauses, bind this to the var in which we
 	     ;; will keep the else state, otherwise #f.
-	     (else-var (and (any? (lambda (clause)
-				    (c (car clause) %else))
-				  clauses)
-			    (r 'else)))
+	     (else-var (and (any (lambda (clause)
+				   (c (car clause) %else))
+				 clauses)
+			    (r 'else-state)))
 
-	     ;; We compile all of the regexp patterns into regexp 
+	     ;; We compile all of the *static* regexp patterns into regexp 
 	     ;; data structures outside the AWK loop. So we need to
 	     ;; make a list of all the regexps that are used as tests.
 	     (patterns (apply append
 			      (map (lambda (clause)
 				     (let ((test (car clause)))
-				       (cond ((string? test) (list test))
+				       (cond ((sre-form? test r c) (list test))
 					     ((range? clause)
 					      (let ((t1 (cadr clause))
 						    (t2 (caddr clause)))
-						(append (if (string? t1)
+						(append (if (sre-form? t1 r c)
 							    (list t1)
 							    '())
-							(if (string? t2)
-							    (list t2)
-							    '()))))
+							 (if (sre-form? t2 r c)
+							     (list t2)
+							     '()))))
 					     (else '()))))
 				   clauses)))
 
@@ -229,16 +268,28 @@
 			       (if (member pat ans) ans (cons pat ans)))
 			     '())))
 
-	     ;; An alist matching regexp patterns with the vars to which
-	     ;; we will bind their compiled regexp data structure.
-	     (pats/vars (map (lambda (p) (cons p (r (gensym "re."))))
-			     patterns))
+	     (pats-static? (map (lambda (sre)
+				  (static-regexp? (parse-sre sre r c)))
+				patterns))
 
-	     ;; A LET-list binding the regexp vars to their compiled regexps.
-	     (regexp-inits (map (lambda (p/v)
-				  `(,(cdr p/v) (,%make-regexp ,(car p/v))))
-				pats/vars))
+	     ;; An alist matching each pattern with the exp that refers
+	     ;; to it -- a var if it's static, a Scheme (RX ...) exp otw.
+	     (pats/refs (map (lambda (pat static?)
+			       (cons pat
+				     (if static?
+					 (r (gensym "re."))
+					 `(,%rx ,pat))))
+			     patterns pats-static?))
 
+	     ;; A LET-list binding the regexp vars to their
+	     ;; compiled static regexps.
+	     (regexp-inits (apply append
+				  (map (lambda (p/r static?)
+					 (if static?
+					     `((,(cdr p/r) (,%rx ,(car p/r))))
+					     '()))
+				       pats/refs
+				       pats-static?)))
 
 	     ;; Make a list of state vars for the range clauses.
 	     ;; For each range clause, we need a boolean var to track
@@ -285,7 +336,7 @@
 
 	     (loop-body (awk-loop-body lp-var rec-var else-var
 				       rec-counter range-vars svars
-				       clauses pats/vars r c))
+				       clauses pats/refs r c))
 
 	     ;; Variables that have to be updated per-iteration, as a LET list.
 	     ;; Note that we are careful not to increment the record counter
@@ -308,12 +359,32 @@
 	        `(,%if (,%eof-object? ,rec-var) ,after-exp
 		       ,loop-body))))))))
 
+;;; This maps a clause in the old, obsolete syntax over to a clause
+;;; in the new, SRE syntax.
+(define (hack-clause-for-posix-string-syntax clause r c)
+  (let ((hack-simple-test (lambda (test)
+			    (cond ((string? test)
+				   `(,(r 'posix-string) ,test))
+				  ((integer? test) test)
+				  (else `(,(r 'when) ,test)))))
+	(test (car clause)))
+    (cond ((range-keyword? test r c)
+	   `(,test ,(hack-simple-test (cadr clause))
+		   ,(hack-simple-test (caddr clause))
+		   . ,(cdddr clause)))
+
+	  ((or (c test (r 'else))
+	       (c test (r 'after)))
+	   clause)
+
+	  (else `(,(hack-simple-test test) . ,(cdr clause))))))
+	  
 
 ;;; Expand into the body of the awk loop -- the code that tests & executes
 ;;; each clause, and then jumps to the top of the loop.
 
 (define (awk-loop-body lp-var rec-var else-var rec-counter 
-		       range-vars svars clauses pats/vars r c)
+		       range-vars svars clauses pats/refs r c)
   (let ((clause-vars (if else-var (cons else-var svars) svars))
 	(loop-vars (append (if rec-counter (list rec-counter) '())
 			   range-vars
@@ -331,7 +402,7 @@
 		   (let ((tail (expand (cdr clauses) (cdr range-vars))))
 		     (expand-range-clause clause tail (car range-vars)
 					  rec-var else-var rec-counter svars
-					  pats/vars
+					  pats/refs
 					  r c)))
 
 		  ((c test %after)	; An AFTER clause. Skip it.
@@ -345,7 +416,7 @@
 		   (let ((tail (expand (cdr clauses) range-vars)))
 		     (expand-simple-clause clause tail
 					   rec-var else-var rec-counter svars
-					   pats/vars r c)))))
+					   pats/refs r c)))))
 
 	  ;; No clauses -- just jump to top of loop.
 	  `(,lp-var . ,loop-vars)))))
@@ -353,49 +424,92 @@
 
 ;;; Make a Scheme expression out of a test form.
 ;;; Integer i		=>  (= i <record-counter>)
-;;; String  s		=>  (regexp-exec s <record>)
+;;; SRE s		=>  (regexp-search <re> <record>)
+;;; (when e)		=>  e
 ;;; Expression e	=>  e
+;;; 
+;;; If FOR-VALUE? is true, then we do regexp searches with REGEXP-SEARCH,
+;;; otherwise, we use the cheaper REGEXP-SEARCH?.
 
-(define (->simple-clause-test test-form rec-var rec-counter pats/vars r)
+(define (->simple-clause-test test-form for-value? rec-var rec-counter pats/refs r c)
   (cond ((integer? test-form) `(,(r '=) ,rec-counter ,test-form))
-	((string?  test-form)
-	 (let ((re-var (cond ((assoc test-form pats/vars) => cdr)
-			     (else (error "Impossible AWK error -- unknown regexp"
-					  test-form pats/vars)))))
-	   `(,(r 'regexp-exec) ,re-var ,rec-var)))
+
+	((sre-form? test-form r c)
+	 `(,(r (if for-value? 'regexp-search 'regexp-search?))
+	   ,(cdr (assoc test-form pats/refs))
+	   ,rec-var))
+
+	((and (pair? test-form)
+	      (c (r 'when) (car test-form)))
+	 (if (= 2 (length test-form)) (cadr test-form)
+	     (error "Illegal WHEN test in AWK" test-form)))
+
 	(else test-form)))
 
 
 (define (expand-simple-clause clause tail
 			      rec-var else-var rec-counter svars
-			      pats/vars r c)
+			      pats/refs r c)
   (let* ((%let          (r 'let))
-	 (%=            (r '=))
-	 (%string-match (r 'string-match))
 	 (%arrow        (r '=>))
+	 (%long-arrow   (r '==>))
 	 (%if           (r 'if))
+	 (%mss		(r 'match:substring))
 
          (test (car clause))
-	 (test (->simple-clause-test test rec-var rec-counter pats/vars r))
+	 (mktest (lambda (for-value?)
+		   (->simple-clause-test test for-value? rec-var
+					 rec-counter pats/refs r c)))
 
 	 ;; Is clause of the form (test => proc)
 	 (arrow? (and (= 3 (length clause))
 		      (c (cadr clause) %arrow)))
 
+	 ;; How about (test ==> (var ...) body ...)?
+	 (long-arrow? (and (< 3 (length clause))
+			   (c (cadr clause) %long-arrow)))
+
 	 (null-clause-list (null-clause-action else-var svars r))
 
 	 ;; The core form conditionally executes the body.
 	 ;; It returns the new else var and the new state vars, if any.
-	 (core (if arrow?
-		   (let* ((tv (r 'tval))		; APP is the actual 
-			  (app `(,(caddr clause) ,tv)))	; body: (proc tv).
-		     `(,%let ((,tv ,test))
-		        (,%if ,tv
-			      ,(clause-action (list app) else-var svars r c)
-			      . ,null-clause-list)))
+	 (core (cond (arrow?
+		      (let* ((tv (r 'tval))		   ; APP is the actual 
+			     (app `(,(caddr clause) ,tv))  ; body: (proc tv).
+			     (test (mktest #t)))
+			`(,%let ((,tv ,test))
+		           (,%if ,tv
+				 ,(clause-action (list app) else-var svars r c)
+				 . ,null-clause-list))))
 
-		   `(,%if ,test ,(clause-action (cdr clause) else-var svars r c)
-			  . ,null-clause-list)))
+		     (long-arrow?
+		      (let* ((tv (r 'tval))
+			     (test (mktest #t))
+			     (bindings ; List of LET bindings for submatches. 
+			      (let lp ((i 0)
+				       (vars (caddr clause))
+				       (bindings '()))
+				(if (pair? vars)
+				    (let ((var (car vars)))
+				      (lp (+ i 1) (cdr vars)
+					  (if var
+					      `((,var (,%mss ,tv ,i)) . ,bindings)
+					      bindings))) ; #F = "don't-care"
+				    bindings))))
+
+			`(,%let ((,tv ,test))
+		           (,%if ,tv 
+				 (,%let ,bindings ; Bind submatches.
+			           . ,(deblock (clause-action (cdddr clause)
+							      else-var svars
+							      r c)
+					       r c))
+				 . ,null-clause-list))))
+
+		     (else
+		      `(,%if ,(mktest #f) ,(clause-action (cdr clause)
+							  else-var svars r c)
+			     . ,null-clause-list))))
 
 	 (loop-vars (if else-var (cons else-var svars) svars)))
     
@@ -408,7 +522,7 @@
 
 (define (expand-range-clause clause tail range-var
 			     rec-var else-var rec-counter svars 
-			     pats/vars r c)
+			     pats/refs r c)
   (let* ((start-test (cadr clause))
 	 (stop-test (caddr clause))
 	 (body (cdddr clause))
@@ -425,10 +539,10 @@
 			  (else (error "Unrecognised range keyword!" clause)))))
 
 	 ;; Convert the start and stop test forms to code.
-	 (start-test (->simple-clause-test start-test rec-var
-					   rec-counter pats/vars r))
-	 (stop-test  (->simple-clause-test stop-test rec-var
-					   rec-counter pats/vars r))
+	 (start-test (->simple-clause-test start-test #f rec-var
+					   rec-counter pats/refs r c))
+	 (stop-test  (->simple-clause-test stop-test #f rec-var
+					   rec-counter pats/refs r c))
 
 	 (start-thunk `(,%lambda () ,start-test))	; ...and thunkate them.
 	 (stop-thunk  `(,%lambda () ,stop-test))
@@ -450,7 +564,6 @@
 	 (tail-exps (deblock tail r c))
 
 	 (%if      (r 'if))
-	 (%receive (r 'receive))
 	 (%let     (r 'let))
 	 
 	 ;; We are hard-wiring the else var to #t after this, so the core
@@ -553,4 +666,5 @@
 		(and start?			; Start,
 		     (not (stop-test)))))))	;   but stop, too.
 
+;;; guile
 (define-syntax awk expand-awk)

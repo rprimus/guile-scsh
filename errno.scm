@@ -3,7 +3,7 @@
 (defmacro maybe-define-eno (value)
   (let ((scsh-name (string->symbol
 		    (string-append "errno/" 
-				   (string-downcase! 
+				   (string-downcase
 				    (let ((str (symbol->string value)))
 				      (substring str 1
 						 (string-length str))))))))

@@ -1,4 +1,4 @@
-;;; Copyright (c) 1994 by Olin Shivers
+;;; Copyright (c) 1994 by Olin Shivers.  See file COPYING.
 
 ;;; String collectors
 ;;; ===========================================================================
@@ -132,14 +132,14 @@
     (cond (chunk
 	   (string-set! chunk (- 128 chunk-left) c)
 	   (cond ((> chunk-left 1)
-		  (set-string-collector:chunk-left (- chunk-left 1)))
+		  (set-string-collector:chunk-left sc (- chunk-left 1)))
 		 (else
 		  (set-string-collector:chunks sc
 		       (cons chunk (string-collector:chunks sc)))
 		  (set-string-collector:chunk sc #f))))
 	  (else
 	   (let ((new-chunk (make-string 128 c)))
-	     (set-string-collector:chunk-left 127)
+	     (set-string-collector:chunk-left sc 127)
 	     (set-string-collector:chunk sc new-chunk)))))
 
   ;; We don't actually do anything with this, but we keep it updated anyway.

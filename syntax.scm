@@ -1,6 +1,6 @@
 ;;; Syntax definitions for scsh.
 ;;; Translating process forms into Scheme code.
-;;; Copyright (c) 1993 by Olin Shivers.
+;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
 (define-syntax define-simple-syntax
   (syntax-rules ()

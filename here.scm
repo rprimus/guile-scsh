@@ -1,9 +1,7 @@
 ;;; Here documents in Scheme for scsh scripts.
 ;;; These are like "here documents" for sh and csh shell scripts
 ;;; (i.e., the <<EOF redirection).
-;;; Copyright (c) 1995 by Olin Shivers.
-
-;;; minor changes for Guile.
+;;; Copyright (c) 1995 by Olin Shivers. See file COPYING.
 
 ;;; There are two kinds of here string, both introduced by the #< read macro.
 ;;; 
@@ -114,8 +112,8 @@
 
 		     (else (lp `(,(string terminator) ,line . ,text))))))))))
 
+;; guile
 ;; scheme48's define-sharp-macro is not quite compatible.
 (read-hash-extend #\<
   (lambda (c port)
-;    (read-char port)		; Snarf the first < char.
     (read-here-string port)))

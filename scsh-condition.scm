@@ -1,7 +1,5 @@
-;;; Copyright (c) 1994 by Olin Shivers
+;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 ;;; Add scsh conditions to s48.
-
-;;; modified for Guile.
 
 ;;; A syscall-error condition-type:
 

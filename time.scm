@@ -1,7 +1,5 @@
 ;;; Time interface for scsh.
-;;; Copyright (c) 1994 by Olin Shivers.
-
-;;; Modified to use Guile primitives.
+;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 
 ;;; Should I have a (FILL-IN-DATE! date) procedure that fills in
 ;;; the redundant info in a date record?
@@ -66,6 +64,18 @@
 (define set-date:summer?	set-%date:summer?)
 (define set-date:week-day	set-%date:week-day)
 (define set-date:year-day	set-%date:year-day)
+
+(define modify-date:seconds	modify-%date:seconds)
+(define modify-date:minute	modify-%date:minute)
+(define modify-date:hour	modify-%date:hour)
+(define modify-date:month-day	modify-%date:month-day)
+(define modify-date:month	modify-%date:month)
+(define modify-date:year	modify-%date:year)
+(define modify-date:tz-name	modify-%date:tz-name)
+(define modify-date:tz-secs	modify-%date:tz-secs)
+(define modify-date:summer?	modify-%date:summer?)
+(define modify-date:week-day	modify-%date:week-day)
+(define modify-date:year-day	modify-%date:year-day)
 
 (define (make-date s mi h md mo y . args)
   (let-optionals args ((tzn #f) (tzs #f) (s?  #f) (wd  0)  (yd  0))
@@ -303,8 +313,8 @@
 	       (if (< offset 0)
 		   (values #\+ (- offset)) ; Notice the flipped sign
 		   (values #\- offset))	   ; of SIGN.
-        (let* ((offset (modulo offset 86400))
-	       (h (quotient offset 3600))
+        (let* ((offset (modulo offset 86400))	; seconds/day
+	       (h (quotient offset 3600))	; seconds/hour
 	       (m (quotient (modulo offset 3600) 60))
 	       (s (modulo offset 60)))
 	  (if (zero? s)
@@ -313,4 +323,5 @@
 		  (format #f "~a~a~a:~a"		; name+hh:mm
 			  name sign (two-digits h) (two-digits m)))
 	      (format #f "~a~a~a:~a:~a"			; name+hh:mm:ss
-		      name sign (two-digits h) (two-digits m) (two-digits s)))))))
+		      name sign
+		      (two-digits h) (two-digits m) (two-digits s)))))))

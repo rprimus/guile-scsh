@@ -1,5 +1,10 @@
-Changes in guile-scsh 2.0.0, compared to earlier versions (such as the
-version distributed with Debian GNU/Linux circa 1998):
+Changes between guile-scsh versions 2.0.0 and 2.0.1:
+
+* Fixed the "run" macro, by exporting open-string-source from the
+(scsh scsh) module (from Paul Emsley).
+
+Changes between 2.0.0 and earlier versions (such as the version
+distributed with Debian GNU/Linux circa 1998):
 
 * Based on a more recent version of scsh.
 

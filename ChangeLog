@@ -1,3 +1,9 @@
+2003-10-19  Gary Houston  <ghouston@arglist.com>
+
+	* configure.in: version 2.0.1.
+	* USAGE: added open-string-source.
+	* scsh.scm: export open-string-source (from Paul Emsley).
+
 2002-10-27  Gary Houston  <ghouston@arglist.com>
 
 	* USAGE: fix (scsh newports) exports list.

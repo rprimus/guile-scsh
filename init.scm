@@ -5,7 +5,6 @@
 
 (define (foreign-source . args) #f)
 (defmacro define-foreign args #f)
-(defmacro define-errno-syscall args #f)
 (defmacro define-record-discloser args #f)
 (define ascii->char integer->char)
 (define char->ascii char->integer)
@@ -20,10 +19,6 @@
 	      (if (eq? (caar rest) 'begin)
 		  (cons (car rest) result)
 		  result)))))
-
-;; waitcodes.scm.
-(define wait/poll 		WNOHANG)
-(define wait/stopped-children	WUNTRACED)
 
 (use-modules (ice-9 slib))
 (require 'values)
@@ -46,8 +41,11 @@
 (load-from-path "scsh/defrec.scm")
 (load-from-path "scsh/weak.scm")
 (load-from-path "scsh/population.scm")
+(load-from-path "scsh/condition.scm")
+(load-from-path "scsh/scsh-condition.scm")
 (load-from-path "scsh/re.scm")
 (load-from-path "scsh/syscalls.scm")
+(load-from-path "scsh/fileinfo.scm")
 (load-from-path "scsh/time.scm")
 (load-from-path "scsh/newports.scm")
 (load-from-path "scsh/rw.scm")
@@ -60,3 +58,4 @@
 (load-from-path "scsh/procobj.scm")
 (load-from-path "scsh/scsh.scm")
 (init-scsh-vars #f)
+(set! command-line-arguments (cdr (command-line)))

@@ -19,3 +19,17 @@ c) doesn't gain much anyway.
 set-enabled-interrupts and with-interrupts have not been 
 implemented.  Within a with-enabled-interrupts form, all interrupts are
 disabled.
+
+set-command-line-args! is not implemented.
+command-line returns the same list every time, not a copy.
+
+itimer is not implemented.
+
+Several scsh procedures are incompatible with Guile procedures.
+In these cases the procedures are redefined when init.scm is
+loaded.  This isn't a very good solution: hopefully use of the
+module system will help.  The following procedures are
+affected: read-delimited read-delimited! pipe sleep (probably
+open-file too).
+
+The close-on-exec flag is not currently set on unrevealed ports.

@@ -1,3 +1,28 @@
+Sat Aug 16 08:10:24 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load fileinfo.scm, condition.scm, scsh-condition.scm.
+	* Makefile.am: add fileinfo.scm, condition.scm, scsh-condition.scm.
+	* scsh-condition.scm: new file from scsh-0.5.1.
+	* condition.scm: new file from scsh-0.5.1/rts/.
+	* fileinfo.scm: new file from scsh-0.5.1.
+	* init.scm: initialize command-line-arguments.
+	* scsh.scm (arg*, arg, argv): defined.
+	(stringify): defined.
+	* syscalls.scm (define-errno-syscall): moved from init.scm.
+	(%exec, %%fork): defined.
+	(user-gid, user-effective-gid, set-gid, user-supplementary-gids,
+	user-uid, user-effective-uid, set-uid, user-login-name, pid,
+	parent-pid, process-group, set-process-group, become-session-leader):
+	defined.
+	(set-file-mode, set-file-owner, set-file-group, read-symlink,
+	delete-directory, set-file-times): defined.
+	(file-info, sync-file, sync-file-system, seek): defined.
+	(process-times, cpu-ticks/sec): defined.
+	(%filter-C-strings!): update regexp usage.
+	(directory-files): defined.
+	(fdes-flags, set-fdes-flags, fdes-status, set-fdes-status,
+	open/read etc.): defined.
+
 Sat Aug  9 08:34:09 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* syscalls.scm: signals: signal-process, signal-process-group,

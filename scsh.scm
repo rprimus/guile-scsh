@@ -198,6 +198,62 @@
   (dup (current-output-port) 1)
   (dup (error-output-port)   2))
 
+
+;;; Command-line argument access
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Some globals.
+;;(define %command-line '())		; Includes program.
+(define command-line-arguments #f)	; Doesn't include program.
+
+;; not implemented in Guile.
+;;(define (set-command-line-args! args)
+;;  (set! %command-line args)
+;;  (set! command-line-arguments (append (cdr args) '())))
+
+(define (arg* arglist n . maybe-default-thunk)
+  (let ((oops (lambda () (error "argument out of bounds" arglist n))))
+    (if (< n 1) (oops)
+	(let lp ((al arglist) (n n))
+	  (if (pair? al)
+	      (if (= n 1) (car al)
+		  (lp (cdr al) (- n 1)))
+	      (if (and (pair? maybe-default-thunk)
+		       (null? (cdr maybe-default-thunk)))
+		  ((car maybe-default-thunk))
+		  (oops)))))))
+
+(define (arg arglist n . maybe-default)
+  (if (pair? maybe-default) (arg* arglist n (lambda () (car maybe-default)))
+      (arg* arglist n)))
+
+(define (argv n . maybe-default)
+  (apply arg (cdr (command-line)) n maybe-default))
+
+;; Guile primitive.
+;;(define (command-line) (append %command-line '()))
+
+;;; EXEC support
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Assumes a low-level %exec procedure:
+;;; (%exec prog arglist env)
+;;;   ENV is either #t, meaning the current environment, or a string->string
+;;;       alist.
+;;;   %EXEC stringifies PROG and the elements of ARGLIST.
+
+(define (stringify thing)
+  (cond ((string? thing) thing)
+	((symbol? thing)
+	 (symbol->string thing))
+;	((symbol? thing)
+;	 (list->string (map char-downcase
+;			    (string->list (symbol->string thing)))))
+	((integer? thing)
+	 (number->string thing))
+	(else (error "Can only stringify strings, symbols, and integers."
+		     thing))))
+
+
 (define (exit . maybe-status)
   (flush-all-ports)
   (primitive-exit (:optional  maybe-status 0))

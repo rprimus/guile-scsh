@@ -1,3 +1,13 @@
+2000-10-14  Gary Houston  <ghouston@arglist.com>
+
+	* remove dependency on slib:
+
+	* syscalls.scm (directory-files): don't (require 'sort): sort! is
+	defined by Guile.
+
+	* init.scm: use (ice-9 format) module instead of format from slib.
+	don't (require) 'format or 'values.  don't load slib module.
+
 2000-10-12  Gary Houston  <ghouston@arglist.com>
 
 	* rx/re-low.scm (compile-posix-re->c-struct cre-search, cre-search?):

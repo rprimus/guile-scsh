@@ -6,14 +6,17 @@ http://www.swiss.ai.mit.edu/ftpdir/scsh/
 
 Prerequisites for guile-scsh:
 
-SLIB must be available to Guile: see the guile reference manual for
-information on installing SLIB (FIXME: we may be able to do without
-SLIB).
+1) guile-core, version 1.4.  The CVS version of guile-scsh should also
+work with the CVS version of guile-core: please report it as a bug if
+it doesn't.
 
-The guilerxspencer module must be installed.  It's available from
-http://arglist.com/guile/
+2) The guilerxspencer module, available from http://arglist.com/guile/
 (FIXME: use modules, so that guilerxspencer is only needed if using
 the scsh regex stuff).
+
+Please send bug reports to:
+
+bug-guile@gnu.org
 
 To install the package, use something like:
 

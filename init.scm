@@ -24,10 +24,7 @@
 (defmacro structure-ref (structure symb)
   symb)
 
-;; FIXME: check whether slib is still necessary.
-(use-modules (ice-9 slib))
-(require 'values)
-(require 'format)
+(use-modules (ice-9 format))
 
 (load-from-path "scsh/alt-syntax.scm")
 (load-from-path "scsh/receive.scm")

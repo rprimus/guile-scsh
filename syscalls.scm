@@ -766,7 +766,6 @@
 		    (integer    veclen))
   ignore)
 
-(require 'sort)
 (define (directory-files . args)
   (let-optionals args ((dir ".")
 		       (dotfiles? #f))

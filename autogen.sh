@@ -1,4 +1,5 @@
 #!/bin/sh
 aclocal
 autoconf -Wall --force
-automake -Wall --add-missing --force-missing
+# automake --force will overwrite COPYING with the GPL.
+automake -Wall --add-missing

@@ -34,9 +34,9 @@
 
 (maybe-define level/socket	SOL_SOCKET)
 
-(define options/boolean ())
-(define options/value ())
-(define options/linger ())
+(define options/boolean '())
+(define options/value '())
+(define options/linger '())
 
 (maybe-define-so socket/debug		SO_DEBUG	boolean)
 (maybe-define-so socket/reuse-address	SO_REUSEADDR	boolean)

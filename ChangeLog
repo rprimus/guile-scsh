@@ -1,3 +1,8 @@
+2001-05-25  Gary Houston  <ghouston@arglist.com>
+
+	* netconst.scm (options/linger etc.) use '() not () for recent CVS
+	guile.  Thanks to Paul Emsley.
+
 2001-04-29  Gary Houston  <ghouston@arglist.com>
 
 	* rw.scm: use module (ice-9 rw).

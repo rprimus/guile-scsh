@@ -53,6 +53,18 @@
 ;;; Multiple-value return: VALUES RECEIVE CALL-WITH-VALUES
 ;;; SORT-LIST
 
+(define-module (scsh rx posixstr)
+  :use-module (scsh receive)
+  :use-module (scsh utilities)
+  :use-module (scsh char-set)
+  :use-module (scsh ascii)
+  :use-module (scsh rx re)
+  :use-module (scsh rx simp)
+  :use-module (scsh rx cond-package)
+  :use-module (scsh rx parse)
+  :use-module (scsh lib string-lib)
+)
+(export regexp->posix-string)
 
 ;;; Useful little utility -- pad vector V with 
 ;;; PRE initial and POST following #f's.

@@ -38,6 +38,14 @@
 ;;; where Ji is the index of the start of NMi, MTCHi is a match value
 ;;; describing Mi, and Q is the index of the beginning of NMlast.
 
+(define-module (scsh rx re-fold)
+  :use-module (scsh let-opt)
+  :use-module (scsh rx cond-package)
+  :use-module (scsh rx re-low)
+  :use-module (scsh rx re-high)
+)
+(export regexp-fold regexp-fold-right regexp-for-each)
+
 (define (regexp-fold re kons knil s . maybe-finish+start)
   (let-optionals maybe-finish+start ((finish (lambda (i x) x))
 				     (start 0))

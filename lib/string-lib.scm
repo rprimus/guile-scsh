@@ -88,6 +88,56 @@
 ;;; - The R5RS SUBSTRING function is accessed using the Scheme 48
 ;;;   STRUCTURE-REF magic accessor.
 
+(define-module (scsh lib string-lib)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh receive)
+  :use-module (scsh let-opt)
+  :use-module (scsh char-set)
+)
+(export string-map    string-map!
+	string-fold       string-unfold
+	string-fold-right string-unfold-right 
+	string-tabulate
+	string-for-each string-iter
+	string-every string-any
+	string-compare string-compare-ci
+	substring-compare substring-compare-ci
+	string= string< string> string<= string>= string<>
+	string-ci= string-ci< string-ci> string-ci<= string-ci>= string-ci<> 
+	substring=     substring<>		substring-ci=  substring-ci<>
+	substring<     substring>		substring-ci<  substring-ci>
+	substring<=    substring>=		substring-ci<= substring-ci>=
+	string-upper-case? string-lower-case?
+	capitalize-string  capitalize-words  string-downcase  string-upcase
+	capitalize-string! capitalize-words! string-downcase! string-upcase!
+	string-take string-take-right
+	string-drop string-drop-right
+	string-pad string-pad-right
+	string-trim string-trim-right string-trim-both
+	string-filter string-delete
+	string-index string-index-right string-skip string-skip-right
+	string-prefix-count string-prefix-count-ci
+	string-suffix-count string-suffix-count-ci
+	substring-prefix-count substring-prefix-count-ci
+	substring-suffix-count substring-suffix-count-ci
+	string-prefix? string-prefix-ci?
+	string-suffix? string-suffix-ci?
+	substring-prefix? substring-prefix-ci?
+	substring-suffix? substring-suffix-ci?
+	substring? substring-ci?
+	string-fill! string-copy! string-copy ; substring
+	string-reverse string-reverse! reverse-list->string
+	string->list
+	string-concat string-concat/shared string-append/shared
+	xsubstring string-xcopy!
+	; string-null?
+	join-strings
+
+	make-kmp-restart-vector
+	parse-final-start+end
+	parse-start+end
+	check-substring-spec
+)
 
 ;;; Support for START/END substring specs
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -146,10 +196,12 @@
 ;;; the code in this file uses the simple SUBSTRINGX, so you can
 ;;; easily port this code.
 
-(define substringx (structure-ref scheme substring))	; Simple R5RS SUBSTRING
+;; guile's substring has optional 2nd arg.
+;(define substringx (structure-ref scheme substring))	; Simple R5RS SUBSTRING
+(define substringx substring)
 
-(define (substring s start . maybe-end)			; Our SUBSTRING
-  (substringx s start (:optional maybe-end (string-length s))))
+;(define (substring s start . maybe-end)			; Our SUBSTRING
+;  (substringx s start (:optional maybe-end (string-length s))))
 
 (define (string-copy s . maybe-start+end)
   (let-start+end (start end) string-copy s maybe-start+end
@@ -1101,7 +1153,8 @@
 ;;; (string-reverse! s [start end])
 ;;; (string-null? s)
 
-(define (string-null? s) (zero? (string-length s)))
+; guile's got this.
+;(define (string-null? s) (zero? (string-length s)))
 
 (define (string-reverse s . maybe-start+end)
   (let-start+end (start end) string-reverse s maybe-start+end

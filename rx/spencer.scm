@@ -5,6 +5,13 @@
 
 ;;; Need better error checking on {m,n} brace parsing.
 
+(define-module (scsh rx spencer)
+  :use-module (scsh receive)
+  :use-module (scsh char-set)
+  :use-module (scsh ascii)
+  :use-module (scsh rx re))
+(export posix-string->regexp)
+
 (define (parse-posix-regexp-string s)
   (receive (re i) (parse-posix-exp s 0)
     (if (= i (string-length s)) re

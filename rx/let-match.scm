@@ -1,5 +1,10 @@
 ;;; These are some macros to support using regexp matching.
 
+(define-module (scsh rx let-match)
+  :use-module (scsh module-system)
+  :use-module (scsh alt-syntax))
+(export-syntax let-match if-match match-cond)
+
 (define-structure let-match-package
   (export (let-match  :syntax)
 	  (if-match   :syntax)

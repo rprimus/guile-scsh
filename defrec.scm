@@ -74,7 +74,15 @@
 ;;; - Code produced by the macro needs the RECORDS package.
 ;;; - Macro-expander code needs ERROR-PACKAGE and RECEIVING
 
-(defmacro define-record-discloser args #f)  ;; guile.
+(define-module (scsh defrec)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh receive)
+  :use-module (scsh utilities)
+)
+(export-syntax define-record-discloser define-record)
+
+;;; added for guile.  perhaps use a separate module for rts/record.scm?
+(defmacro define-record-discloser args #f)
 
 (define-syntax define-record
   (lambda (form rename compare)

@@ -15,4 +15,4 @@ scsh_DATA = alt-syntax.scm awk.scm bitwise.scm char-set.scm condition.scm \
 	syntax.scm syntax-helpers.scm syscalls.scm \
 	time.scm utilities.scm weak.scm
 
-EXTRA_DIST = $(scsh_DATA) INCOMPAT
+EXTRA_DIST = $(scsh_DATA) INCOMPAT USAGE make-module-list

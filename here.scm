@@ -71,6 +71,14 @@
 ;;; encountered before reading the end of the here string, an error is
 ;;; signalled.
 
+(define-module (scsh here)
+  :use-module (scsh reading)
+  :use-module (scsh features)
+  :use-module (scsh receive)
+  :use-module (scsh char-set)
+  :use-module (scsh rdelim))
+;; export nothing, just install a read macro.
+
 (define (read-here-string port)
   (make-immutable!
    (let ((delim-char (read-char port)))

@@ -1,3 +1,9 @@
+(define-module (scsh rx cond-package)
+  :use-module (scsh module-system)
+  :use-module (scsh alt-syntax))
+(export-syntax define-simple-syntax when unless ? switchq switch prog0 land*)
+(export %switch %switchq)
+
 (define-structure conditionals
   (export (define-simple-syntax :syntax)
 	  (when    :syntax)

@@ -44,6 +44,18 @@
 ;;; -- the expander instead produces Scheme ADT constructors to build
 ;;; the regexp at run-time.
 
+(define-module (scsh rx parse)
+  :use-module (scsh utilities)
+  :use-module (scsh char-set)
+  :use-module (scsh receive)
+  :use-module (scsh ascii)
+  :use-module (scsh rx re-low)
+  :use-module (scsh rx re)
+  :use-module (scsh rx cond-package)
+  :use-module (scsh rx spencer)
+)
+(export static-regexp? sre->regexp parse-sre parse-sres regexp->scheme
+	char-set->in-pair)
 
 ;;; Parser
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -1,6 +1,16 @@
 ;;; Regular expression matching for scsh
 ;;; Copyright (c) 1994 by Olin Shivers.
 
+(define-module (scsh rx re-low)
+  :use-module (regex spencer)
+  :use-module (scsh define-foreign-syntax)
+  :use-module (scsh defrec)
+  :use-module (scsh let-opt)
+  :use-module (scsh utilities)
+)
+(export match:start match:end match:substring)
+(export new-cre cre-search cre-search? cre:string cre:tvec)
+
 (foreign-source
   "/* Make sure foreign-function stubs interface to the C funs correctly: */"
   "#include <sys/types.h>"

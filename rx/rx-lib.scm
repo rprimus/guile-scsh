@@ -3,6 +3,15 @@
 ;;; In sexp syntax, a ,<exp> or ,@<exp> form may evaluate to a string, char,
 ;;; char-set, or regexp value. Coerce one of these to a regexp value.
 
+(define-module (scsh rx rx-lib)
+  :use-module (scsh utilities)
+  :use-module (scsh char-set)
+  :use-module (scsh ascii)
+  :use-module (scsh rx re)
+  :use-module (scsh rx cond-package)
+)
+(export coerce-dynamic-regexp spec->char-set)
+
 (define (coerce-dynamic-regexp x)
   (? ((string? x)   (make-re-string x))
      ((char? x)     (make-re-string (string x)))

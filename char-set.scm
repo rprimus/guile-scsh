@@ -39,6 +39,84 @@
 ;;; char-set-delete  cset char -> cset
 ;;; char-set-delete! cset char -> cset
 
+(define-module (scsh char-set)
+  :use-module (scsh ascii)
+  :use-module (scsh utilities)
+  :use-module (scsh jar-defrecord))
+
+(export char:newline char:tab char:page char:return char:space char:vtab
+	char-ascii?
+
+	char-set?
+	char-set-copy
+	char-set=
+	char-set<=
+	char-set-size
+
+	char-set-adjoin  char-set-delete
+	char-set-adjoin! char-set-delete!
+	char-set-for-each
+	char-set-fold reduce-char-set
+
+	char-set
+	chars->char-set
+	string->char-set
+	ascii-range->char-set
+	predicate->char-set
+	->char-set
+
+	char-set-members
+	char-set-contains?
+
+	char-set-every?
+	char-set-any
+
+	char-set-invert
+	char-set-union
+	char-set-intersection
+	char-set-difference
+
+	char-set-invert!
+	char-set-union!
+	char-set-intersection!
+	char-set-difference!
+
+	char-set:lower-case
+	char-set:upper-case
+	char-set:alphabetic
+	char-set:numeric
+	char-set:alphanumeric
+	char-set:graphic
+	char-set:printing
+	char-set:whitespace
+	char-set:blank
+	char-set:control
+	char-set:punctuation
+	char-set:hex-digit
+	char-set:ascii
+	char-set:empty
+	char-set:full
+
+	char-lower-case?
+	char-upper-case?
+	char-alphabetic?
+	char-numeric?
+	char-alphanumeric?
+	char-graphic?
+	char-printing?
+	char-whitespace?
+	char-blank?
+	char-control?
+	char-punctuation?
+	char-hex-digit?
+	char-ascii?
+
+	;; This is not properly part of the interface,
+	;; and should be moved to an internals interface --
+	;; it is used by rdelim.scm code.
+	char-set:s
+	)
+
 (define char:newline (ascii->char 13))
 (define char:tab     (ascii->char  9))
 (define char:vtab    (ascii->char 11))

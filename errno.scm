@@ -1,5 +1,8 @@
 ;;; define errno/perm for EPERM etc.
 
+(define-module (scsh errno))
+;; export list is generated below.
+
 (defmacro maybe-define-eno (value)
   (let ((scsh-name (string->symbol
 		    (string-append "errno/" 
@@ -7,8 +10,9 @@
 				    (let ((str (symbol->string value)))
 				      (substring str 1
 						 (string-length str))))))))
-    `(if (defined? ',value)
-	 (define ,scsh-name ,value))))
+    `(cond ((defined? ',value)
+	    (define ,scsh-name ,value)
+	    (export ,scsh-name)))))
 
 (maybe-define-eno E2BIG)
 (maybe-define-eno EACCES)
@@ -132,5 +136,3 @@
 (maybe-define-eno EWOULDBLOCK)
 (maybe-define-eno EXDEV)
 (maybe-define-eno EXFULL)
-
-(undefine maybe-define-eno)

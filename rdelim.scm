@@ -4,27 +4,36 @@
 ;;; read-line is redefined below.
 ;;; skip-char-set isn't mentioned in the scsh manual, but is used in fr.scm.
 
+(define-module (scsh rdelim)
+  :use-module (scsh char-set)
+  :use-module (scsh rx re-high)
+  :use-module (scsh rx re)
+  :use-module (scsh rx re-syntax)
+)
+
+(export read-line read-paragraph read-delimited read-delimited! skip-char-set)
+
 (if (not (defined? 'guile-read-delimited))
     (define guile-read-delimited read-delimited))
-(set! read-delimited
-      (lambda (delims . args)
-	(let ((rv
-	       (apply guile-read-delimited (list->string
-					    (char-set-members delims)) args)))
-	  (if (pair? rv)
-	      (values (car rv) (cdr rv))
-	      rv))))
+
+(define (read-delimited delims . args)
+  (let ((rv
+	 (apply guile-read-delimited (list->string
+				      (char-set-members delims)) args)))
+    (if (pair? rv)
+	(values (car rv) (cdr rv))
+	rv)))
 
 (if (not (defined? 'guile-read-delimited!))
     (define guile-read-delimited! read-delimited!))
-(set! read-delimited!
-      (lambda (delims . args)
-	(let ((rv
-	       (apply guile-read-delimited! (list->string
-					     (char-set-members delims)) args)))
-	  (if (pair? rv)
-	      (values (car rv) (cdr rv))
-	      rv))))
+
+(define (read-delimited! delims . args)
+  (let ((rv
+	 (apply guile-read-delimited! (list->string
+				       (char-set-members delims)) args)))
+    (if (pair? rv)
+	(values (car rv) (cdr rv))
+	rv)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; These procedures run their inner I/O loop in a C primitive, so they

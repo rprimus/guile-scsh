@@ -9,6 +9,15 @@
 ;;; a circular dependency in the modules: scsh-level-0 needs the regexp
 ;;; package which needs WRITE-STRING, which comes from the regexp package.
 
+(define-module (scsh rx re-subst)
+  :use-module (scsh utilities)
+  :use-module (scsh rw)
+  :use-module (scsh lib string-lib)
+  :use-module (scsh rx re-low)
+  :use-module (scsh rx re-high)
+)
+(export regexp-substitute)
+
 (define (regexp-substitute port match . items)
   (let* ((str (regexp-match:string match))
 	 (sv (regexp-match:start match))

@@ -1,3 +1,76 @@
+2000-10-29  Gary Houston  <ghouston@arglist.com>
+
+	* rx/rx-lib.scm: define module (scsh rx rx-lib).
+	* rx/parse.scm: define module (scsh rx parse).
+	* rx/re-syntax.scm: define module (scsh rx re-syntax)
+	* rx/re-fold.scm: define module (scsh rx re-fold).
+	* errno.scm: define module (scsh errno).
+	* rw.scm: define module (scsh rw).
+	* rx/re-subst.scm: define module (scsh rx re-subst).
+	* rx/oldfuns.scm: define module (scsh rx oldfuns).
+	* init.scm: load new modules.
+	
+2000-10-28  Gary Houston  <ghouston@arglist.com>
+
+	* rx/re-syntax.scm (expand-rx): take rx and if-sre-form definitions
+	from init.scm.
+
+2000-10-27  Gary Houston  <ghouston@arglist.com>
+
+	* rx/re-high.scm: define module (scsh rx re-high).
+	* rx/spencer.scm: define module (scsh rx spencer).
+	* lib/string-lib.scm: define module (scsh lib string-lib).
+	don't redefine string-null? or substring.
+	* rx/simp.scm: define module (scsh rx simp).
+	* rx/posixstr.scm: define module (scsh rx posixstr).
+	* rx/let-match.scm: define module (scsh rx let-match).
+	* init.scm: don't load rxspencer module.  do it in rx/re-low.scm.
+	load new modules.
+
+2000-10-25  Gary Houston  <ghouston@arglist.com>
+
+	* rx/cond-package.scm: define module (scsh rx cond-package).
+	* rx/re.scm: define module (scsh rx re)
+	* rx/re-low.scm: define module (scsh rx re-low).
+	* defrec.scm: define module: (scsh defrec).
+	* init.scm: load new modules.
+
+2000-10-22  Gary Houston  <ghouston@arglist.com>
+
+	* USAGE: new file, partly generated from make-module-list output.
+	* make-module-list: new script: create the module exports list
+	for the USAGE file.
+	* Makefile.am (EXTRA_DIST): add USAGE, make-module-list.
+
+	* rdelim.scm: define module (scsh rdelim).
+	* init.scm: load new module.
+
+2000-10-16  Gary Houston  <ghouston@arglist.com>
+
+	* jar-defrecord.scm: define module (scsh jar-defrecord).
+
+	* char-set.scm: define module (scsh char-set).
+
+	* here.scm: define module (scsh here).
+
+	* reading.scm: new file. take reading-error from init.scm.
+	define module (scsh reading).
+
+	* primitives.scm: new file. take unspecific from init.scm.
+	define module (scsh primitives).
+
+	* features.scm: new file.  take immutable?, make-immutable! dummy
+	defs from init.scm.  define module (scsh features).
+
+	* ascii.scm: new file.  take ascii->char, char->ascii from init.scm.
+	define module (scsh ascii).
+
+	* define-foreign-syntax.scm: new file.  take dummy definitions for
+	foreign-source and define-foreign from init.scm.  define
+	(scsh define-foreign-syntax) module.
+	
+	* init.scm: use new modules.
+
 2000-10-15  Gary Houston  <ghouston@arglist.com>
 
 	* bitwise.scm: define module (scsh bitwise).

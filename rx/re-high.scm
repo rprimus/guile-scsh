@@ -1,6 +1,15 @@
 ;;; Regular expression matching for scsh
 ;;; Copyright (c) 1998 by Olin Shivers.
 
+(define-module (scsh rx re-high)
+  :use-module (scsh receive)
+  :use-module (scsh let-opt)
+  :use-module (scsh rx cond-package)
+  :use-module (scsh rx re-low)
+  :use-module (scsh rx re)
+  :use-module (scsh rx posixstr)
+)
+(export compile-regexp regexp-search regexp-search?)
 
 ;;; Translates the re to a Posix string, and returns a CRE record,
 ;;; but doesn't actually compile the Posix string into a C regex_t struct.

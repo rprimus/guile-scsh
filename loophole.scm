@@ -4,6 +4,8 @@
 (define-module (scsh loophole)
   :use-module (scsh alt-syntax))
 
+(export-syntax loophole)
+
 (define-syntax loophole
   (syntax-rules ()
     ((loophole ?type ?form)

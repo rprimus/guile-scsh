@@ -1,0 +1,140 @@
+The entire guile-scsh package can be loaded into a running Guile
+interpreter with:
+
+(load-from-path "scsh/init")
+
+Warning: this will take a while and will clobber various Guile
+definitions.
+
+It's probably more useful to import parts of scsh individually using
+the Guile module system, but this is not yet possible for all parts of
+the library.
+
+The remainder of this file lists the modules and the exported symbols
+for each.  The modules don't necessarily correspond with scsh
+structures, since the Guile module system requires a correspondence
+between module names and files.  It was considered desirable to leave
+the scsh file layouts relatively intact, to simplify ungrading to
+newer versions of scsh.
+
+This list was generated with help from the make-module-list script.
+
+(scsh alt-syntax)
+;; not compatible with (ice-9 syncase)
+(define-syntax syntax-rules)
+
+(scsh receive)
+;; compatible with (ice-9 receive), which is not available in Guile 1.4
+(receive)
+
+(scsh module-system)
+;; dummy definitions.
+(define-structure structure-ref)
+
+(scsh let-opt)
+;; not compatible with (ice-9 optargs).
+(let-optionals let-optionals* :optional)
+
+(scsh loophole)
+;; dummy definition.
+(loophole)
+
+(scsh signals)
+(syntax-error)
+
+(scsh syntax-helpers)
+(transcribe-process-form)
+
+(scsh bitwise)
+(arithmetic-shift bitwise-not bitwise-and bitwise-ior bitwise-xor)
+
+(scsh utilities)
+;; "delete" is incompatile with guile primitive.
+(del delete filter first first? nth fold fold-right any every mapv mapv! vector-every? copy-vector initialize-vector vector-append vfold vfold-right check-arg conjoin disjoin negate compose call/cc deprecated-proc deposit-bit-field real->exact-integer)
+
+(scsh define-foreign-syntax)
+;; dummy definitions.
+(foreign-source define-foreign)
+
+(scsh ascii)
+(ascii->char char->ascii)
+
+(scsh features)
+(immutable? make-immutable!)
+
+(scsh primitives)
+(unspecific)
+
+(scsh reading)
+(reading-error)
+
+(scsh jar-defrecord)
+(define-record-type define-accessor define-accessors)
+
+(scsh char-set)
+(char:newline char:tab char:page char:return char:space char:vtab char-ascii? char-set? char-set-copy char-set= char-set<= char-set-size char-set-adjoin char-set-delete char-set-adjoin! char-set-delete! char-set-for-each char-set-fold reduce-char-set char-set chars->char-set string->char-set ascii-range->char-set predicate->char-set ->char-set char-set-members char-set-contains? char-set-every? char-set-any char-set-invert char-set-union char-set-intersection char-set-difference char-set-invert! char-set-union! char-set-intersection! char-set-difference! char-set:lower-case char-set:upper-case char-set:alphabetic char-set:numeric char-set:alphanumeric char-set:graphic char-set:printing char-set:whitespace char-set:blank char-set:control char-set:punctuation char-set:hex-digit char-set:ascii char-set:empty char-set:full char-lower-case? char-upper-case? char-alphabetic? char-numeric? char-alphanumeric? char-graphic? char-printing? char-whitespace? char-blank? char-control? char-punctuation? char-hex-digit? char-ascii? char-set:s)
+
+(scsh defrec)
+(define-record-discloser define-record)
+
+(scsh lib string-lib)
+(string-map string-map! string-fold string-unfold string-fold-right string-unfold-right string-tabulate string-for-each string-iter string-every string-any string-compare string-compare-ci substring-compare substring-compare-ci string= string< string> string<= string>= string<> string-ci= string-ci< string-ci> string-ci<= string-ci>= string-ci<> substring= substring<> substring-ci= substring-ci<> substring< substring> substring-ci< substring-ci> substring<= substring>= substring-ci<= substring-ci>= string-upper-case? string-lower-case? capitalize-string capitalize-words string-downcase string-upcase capitalize-string! capitalize-words! string-downcase! string-upcase! string-take string-take-right string-drop string-drop-right string-pad string-pad-right string-trim string-trim-right string-trim-both string-filter string-delete string-index string-index-right string-skip string-skip-right string-prefix-count string-prefix-count-ci string-suffix-count string-suffix-count-ci substring-prefix-count substring-prefix-count-ci substring-suffix-count substring-suffix-count-ci string-prefix? string-prefix-ci? string-suffix? string-suffix-ci? substring-prefix? substring-prefix-ci? substring-suffix? substring-suffix-ci? substring? substring-ci? string-fill! string-copy! string-copy string-reverse string-reverse! reverse-list->string string->list string-concat string-concat/shared string-append/shared xsubstring string-xcopy! join-strings make-kmp-restart-vector parse-final-start+end parse-start+end check-substring-spec)
+
+(scsh errno)
+;; defines symbols such as errno/perm.
+()
+
+(scsh rw)
+(bogus-substring-spec? read-string!/partial read-string/partial read-string! read-string write-string write-string/partial)
+
+(scsh rx re-low)
+(match:start match:end match:substring new-cre cre-search cre-search? cre:string cre:tvec)
+
+(scsh rx cond-package)
+(define-simple-syntax when unless ? switchq switch prog0 land* %switch %switchq)
+
+(scsh rx let-match)
+(let-match if-match match-cond)
+
+(scsh rx re)
+;; redefines regexp?
+(%make-re-dsm %make-re-dsm/posix re-dsm? re-dsm:body re-dsm:pre-dsm re-dsm:tsm re-dsm:posix set-re-dsm:posix re-dsm:post-dsm re-dsm open-dsm %make-re-seq %make-re-seq/posix re-seq? re-seq:elts re-seq:tsm re-seq:posix set-re-seq:posix make-re-seq re-seq %make-re-choice %make-re-choice/posix re-choice? re-choice:elts re-choice:tsm re-choice:posix set-re-choice:posix make-re-choice re-choice %make-re-repeat %make-re-repeat/posix re-repeat? re-repeat:from re-repeat:to re-repeat:body re-repeat:tsm re-repeat:posix set-re-repeat:posix make-re-repeat re-repeat reduce-repeat %make-re-submatch %make-re-submatch/posix re-submatch? re-submatch:body re-submatch:pre-dsm re-submatch:tsm re-submatch:posix set-re-submatch:posix re-submatch:post-dsm make-re-submatch re-submatch re-string:chars re-string:posix set-re-string:posix re-string re-string? make-re-string make-re-string/posix re-trivial re-trivial? re-char-set:cset re-char-set:posix set-re-char-set:posix re-char-set? re-char-set make-re-char-set make-re-char-set/posix re-empty re-empty? re-bos make-re-bos re-bos? re-eos make-re-eos re-eos? re-bol make-re-bol re-bol? re-eol make-re-eol re-eol? re-bow make-re-bow re-bow? re-eow make-re-eow re-eow? re-any re-any? re-nonl regexp? re-tsm re-word flush-submatches map/changed uncase uncase-char-set uncase-string char-set-full? char-set-empty? static-char-class?)
+
+(scsh rx spencer)
+(posix-string->regexp)
+
+(scsh rx simp)
+(simplify-regexp)
+
+(scsh rx posixstr)
+(regexp->posix-string)
+
+(scsh rx re-high)
+(compile-regexp regexp-search regexp-search?)
+
+(scsh rx oldfuns)
+(->regexp)
+
+(scsh rx re-subst)
+(regexp-substitute)
+
+(scsh rx re-fold)
+(regexp-fold regexp-fold-right regexp-for-each)
+
+(scsh rx re-syntax)
+(sre-form? expand-rx if-sre-form rx)
+
+(scsh rx parse)
+(static-regexp? sre->regexp parse-sre parse-sres regexp->scheme char-set->in-pair)
+
+(scsh rx rx-lib)
+(coerce-dynamic-regexp spec->char-set)
+
+(scsh rdelim)
+;; replaces guile procs: read-line, read-delimited, read-delimited!
+(read-line read-paragraph read-delimited read-delimited! skip-char-set)
+
+(scsh here)
+;; exports nothing, but installs a read macro for #<
+()
+

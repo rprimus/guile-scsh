@@ -31,6 +31,14 @@
 ;;; This is useful because the RX macro can build such a regexp as part
 ;;; of its expansion process.
 
+(define-module (scsh rx simp)
+  :use-module (scsh receive)
+  :use-module (scsh rx re)
+  :use-module (scsh rx cond-package)
+  :use-module (scsh char-set)
+)
+(export simplify-regexp)
+
 (define (simplify-regexp re)
   (receive (simp-re pre-dsm) (simp-re re)
     (re-dsm simp-re pre-dsm (- (re-tsm re) (+ (re-tsm simp-re) pre-dsm)))))

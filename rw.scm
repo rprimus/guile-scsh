@@ -3,6 +3,14 @@
 
 ;;; Note: read ops should check to see if their string args are mutable.
 
+(define-module (scsh rw)
+  :use-module (scsh errno)
+  :use-module (scsh let-opt)
+)
+(export bogus-substring-spec? read-string!/partial read-string/partial
+	read-string! read-string write-string write-string/partial)
+	
+
 (define (bogus-substring-spec? s start end)
   (or (< start 0)
       (< (string-length s) end)
@@ -136,4 +144,4 @@
 		       (start   0)
 		       (end     (string-length s)))
 		 (generic-write-string s start end
-				 uniform-array-write fd/port)))
+				       uniform-array-write fd/port)))

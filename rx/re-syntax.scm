@@ -6,6 +6,16 @@
 ;;; Is the form an SRE expression?
 ;;; We only shallowly check the initial keyword of a compound form.
 
+(define-module (scsh rx re-syntax)
+  :use-module (scsh utilities)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh rx simp)
+  :use-module (scsh rx parse)
+  :use-module (scsh rx re-high)
+)
+(export sre-form? expand-rx)
+(export-syntax if-sre-form rx)
+
 (define (sre-form? exp r same?)			; An SRE is
   (let ((kw? (lambda (x kw) (same? x (r kw)))))		
     (or (string? exp)				; "foo"
@@ -81,6 +91,11 @@
 ;;;         (caddr exp)
 ;;;         (cadddr exp))))
 
+(define-syntax if-sre-form
+  (lambda (exp r c)
+    (if (sre-form? (cadr exp) r c)
+	(caddr exp)
+	(cadddr exp))))
 
 ;;; (RX re ...)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -96,6 +111,7 @@
 
       (regexp->scheme re r)))
 
+(define-syntax rx expand-rx)
 
 ;(define-syntax rx (syntax-rules () ((rx stuff ...) (really-rx stuff ...))))
 ;(define-syntax really-rx

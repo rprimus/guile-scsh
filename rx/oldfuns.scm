@@ -2,6 +2,12 @@
 ;;; regexps over to SREs. They are retained for backwards compatibility.
 ;;; 	-Olin 8/98
 
+(define-module (scsh rx oldfuns)
+  :use-module (scsh rx re)
+  :use-module (scsh rx spencer)
+)
+(export ->regexp)
+
 ;(define (string-match re str . maybe-start)
 ;  (apply regexp-search (->regexp re) str maybe-start))
 

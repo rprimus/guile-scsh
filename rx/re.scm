@@ -14,6 +14,44 @@
 ;;; PRE-DSM come first as dead submatches, then the regexp BODY with its 
 ;;; submatches, then POST-DSM as dead submatches.
 
+(define-module (scsh rx re)
+  :use-module (scsh defrec)
+  :use-module (scsh jar-defrecord)
+  :use-module (scsh rx re-low)
+  :use-module (scsh receive)
+  :use-module (scsh utilities)
+  :use-module (scsh char-set)
+  :use-module (scsh rx cond-package)
+  :use-module (scsh lib string-lib))
+
+(export %make-re-dsm %make-re-dsm/posix re-dsm? re-dsm:body re-dsm:pre-dsm
+	re-dsm:tsm re-dsm:posix set-re-dsm:posix re-dsm:post-dsm re-dsm
+	open-dsm)
+(export %make-re-seq %make-re-seq/posix re-seq? re-seq:elts re-seq:tsm
+	re-seq:posix set-re-seq:posix make-re-seq re-seq)
+(export %make-re-choice %make-re-choice/posix re-choice? re-choice:elts
+	re-choice:tsm re-choice:posix set-re-choice:posix make-re-choice
+	re-choice)
+(export %make-re-repeat %make-re-repeat/posix re-repeat? re-repeat:from
+	re-repeat:to re-repeat:body re-repeat:tsm re-repeat:posix
+	set-re-repeat:posix make-re-repeat re-repeat reduce-repeat)
+(export %make-re-submatch %make-re-submatch/posix re-submatch?
+	re-submatch:body re-submatch:pre-dsm re-submatch:tsm re-submatch:posix
+	set-re-submatch:posix re-submatch:post-dsm make-re-submatch
+	re-submatch)
+(export re-string:chars re-string:posix set-re-string:posix re-string
+	re-string? make-re-string make-re-string/posix)
+(export re-trivial re-trivial?)
+(export re-char-set:cset re-char-set:posix set-re-char-set:posix re-char-set?
+	re-char-set make-re-char-set make-re-char-set/posix)
+(export re-empty re-empty?)
+(export re-bos make-re-bos re-bos? re-eos make-re-eos re-eos?)
+(export	re-bol make-re-bol re-bol? re-eol make-re-eol re-eol?)
+(export	re-bow make-re-bow re-bow? re-eow make-re-eow re-eow?)
+(export re-any re-any? re-nonl regexp? re-tsm re-word flush-submatches
+	map/changed uncase uncase-char-set uncase-string char-set-full?
+	char-set-empty? static-char-class?)
+
 (define-record-type re-dsm :re-dsm
   (%%make-re-dsm body pre-dsm tsm posix)
   re-dsm?

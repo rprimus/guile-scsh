@@ -811,7 +811,7 @@
 		 (check-arg string? dir directory-files)
 		 (let ((dport (opendir
 			       (ensure-file-name-is-nondirectory dir))))
-		   (let loop ((result ()))
+		   (let loop ((result '()))
 		     (let ((entry (readdir dport)))
 		       (cond ((eof-object? entry)
 			      (closedir dport)

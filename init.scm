@@ -37,7 +37,7 @@
 (set! index string-index)
 ;; note the different convention for rindex starting position.
 (set! rindex (lambda (str char . start)
-	       (apply string-rindex str char 0 start)))
+	       (apply string-rindex str char start)))
 
 (load-from-path "scsh/scsh-version.scm")
 (load-from-path "scsh/fname.scm")

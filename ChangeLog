@@ -1,8 +1,41 @@
+Sat Dec 21 01:49:23 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* network.scm: (close-socket, bind-socket, create-socket,
+	connect-socket, listen-socket, accept-connection,
+	socket-remote-address, socket-local-address, shutdown-socket,
+	create-socket-pair, receive-message,
+
+	use Guile network primitives.
+	(socket-address->list family address): new procedure.
+	(make-addr): comment out.
+	(address-vector->socket-address): new procedure.
+
+Thu Dec 19 05:29:30 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* network.scm (internet-address->socket-address): store the
+	address/port in a pair instead of packing them into a string.
+	(socket-address->internet-address): equal and opposite change.
+	(throughout): replace :optional with optional.
+	(socket->port sock): replaces socket->fdes.
+
+	* init.scm: define integer->string, load netconst.scm.
+	define define-foreign, define-errno-syscall,
+	define-record-dicloser (do nothing.)
+	load network.scm.
+
+Wed Dec 18 22:44:02 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* netconst.scm: new file, defines network constants.
+
 Tue Dec 17 06:24:39 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* network.scm: copied from SCSH
+
+	* init.scm: define foreign-source, does nothing.
 
 	* init.scm: load syntax.scm instead of slib's macro-by-example.
 	load defrec.scm.
-	
+
 	* defrec.scm: copied from SCSH.
 
 	* syntax.scm: copied from SCSH.

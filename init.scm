@@ -3,6 +3,13 @@
 (define (bitwise-ior a b) (logior a b))
 (define (bitwise-xor a b) (logxor a b))
 
+(define (foreign-source . args) #f)
+(defmacro define-foreign args #f)
+(defmacro define-errno-syscall args #f)
+(defmacro define-record-discloser args #f)
+
+(define integer->string number->string)
+
 (define-module (guile) :use-module (ice-9 slib))
 
 (load-from-path "scsh/syntax.scm")
@@ -17,3 +24,5 @@
 (load-from-path "scsh/utilities.scm")
 
 (load-from-path "scsh/defrec.scm")
+(load-from-path "scsh/netconst.scm")
+(load-from-path "scsh/network.scm")

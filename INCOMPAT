@@ -1,4 +1,4 @@
 Incompatibilities with SCSH 0.4.4:
 a lot of stuff is missing
 :optional renamed to optional
-utilities.scm shouldn't be at the top level.
+everything is defined at the top level, no modules

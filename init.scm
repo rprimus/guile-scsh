@@ -47,6 +47,7 @@
 (load-from-path "scsh/re.scm")
 (load-from-path "scsh/syscalls.scm")
 (load-from-path "scsh/time.scm")
+(load-from-path "scsh/newports.scm")
 (load-from-path "scsh/rw.scm")
 (load-from-path "scsh/char-set.scm")
 (load-from-path "scsh/rdelim.scm")

@@ -1,3 +1,12 @@
+Tue Jul 29 01:39:40 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load newports.scm.
+
+	* newports.scm: new file, excerpts from scsh's version modified
+	for Guile.
+
+	* scsh.scm: include stdio/stdport sync procedures.
+
 Sat Jul 26 06:22:36 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm: load syntax-helpers.scm.

@@ -17,11 +17,12 @@
 (define-module (scsh rx re)
   :use-module (ice-9 receive)
   :use-module (srfi srfi-13)
+  :use-module (srfi srfi-14)
+  :use-module (scsh cset-obsolete)
   :use-module (scsh defrec)
   :use-module (scsh jar-defrecord)
   :use-module (scsh rx re-low)
   :use-module (scsh utilities)
-  :use-module (scsh char-set)
   :use-module (scsh rx cond-package))
 
 (begin-deprecated

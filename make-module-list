@@ -22,7 +22,7 @@
 	 primitives
 	 reading
 	 jar-defrecord
-	 char-set
+	 cset-obsolete
 	 char-p
 	 defrec
 	 errno

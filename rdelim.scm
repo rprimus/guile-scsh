@@ -6,7 +6,8 @@
 
 (define-module (scsh rdelim)
   :use-module (ice-9 rdelim)
-  :use-module (scsh char-set)
+  :use-module (srfi srfi-14)
+  :use-module (scsh cset-obsolete)
   :use-module (scsh rx re-high)
   :use-module (scsh rx re)
   :use-module (scsh rx re-syntax)
@@ -274,8 +275,8 @@
 
 (define (skip-char-set skip-chars . maybe-port)
   (let* ((port (:optional maybe-port (current-input-port)))
-	 (cset (->char-set skip-chars))
-	 (scset (char-set:s cset)))
+	 (cset (->char-set skip-chars)))
+;	 (scset (char-set:s cset)))
 
       (cond ((not (input-port? port))
 	     (error "Illegal value -- not an input port." port))

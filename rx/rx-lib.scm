@@ -5,7 +5,8 @@
 
 (define-module (scsh rx rx-lib)
   :use-module (scsh utilities)
-  :use-module (scsh char-set)
+  :use-module (srfi srfi-14)
+  :use-module (scsh cset-obsolete)
   :use-module (scsh ascii)
   :use-module (scsh rx re)
   :use-module (scsh rx cond-package)

@@ -35,7 +35,8 @@
   :use-module (ice-9 receive)
   :use-module (scsh rx re)
   :use-module (scsh rx cond-package)
-  :use-module (scsh char-set)
+  :use-module (srfi srfi-14)
+  :use-module (scsh cset-obsolete)
 )
 (export simplify-regexp)
 

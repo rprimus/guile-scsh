@@ -3,7 +3,7 @@
 pkgdatadir = ${datadir}/guile/site/scsh
 
 pkgdata_DATA = alt-syntax.scm ascii.scm awk.scm bitwise.scm \
-	char-set.scm char-p.scm define-foreign-syntax.scm \
+	cset-obsolete.scm char-p.scm define-foreign-syntax.scm \
 	defrec.scm ekko.scm errno.scm fdports.scm features.scm \
 	fileinfo.scm filesys.scm \
 	fluid.scm fname.scm fr.scm glob.scm here.scm \

@@ -7,7 +7,8 @@
 
 (define-module (scsh rx spencer)
   :use-module (ice-9 receive)
-  :use-module (scsh char-set)
+  :use-module (srfi srfi-14)
+  :use-module (scsh cset-obsolete)
   :use-module (scsh ascii)
   :use-module (scsh rx re))
 (export posix-string->regexp)

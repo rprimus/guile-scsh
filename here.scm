@@ -75,7 +75,7 @@
   :use-module (scsh reading)
   :use-module (scsh features)
   :use-module (ice-9 receive)
-  :use-module (scsh char-set)
+  :use-module (srfi srfi-14)
   :use-module (scsh rdelim))
 ;; export nothing, just install a read macro.
 

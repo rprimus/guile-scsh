@@ -6,10 +6,23 @@
 	from char-set.scm.
 	(char-letter? char-digit? char-letter+digit? char-iso-control?
 	char-symbol?): new from scsh-0.5.3.
-	* init.scm, USAGE, Makefile.am, make-module-list: updated.
-
 	* utilities.scm (deprecated-proc): redefined using Guile's deprecation
 	mechanism.
+
+	* cset-obsolete.scm: new file from scsh-0.5.3.  defines module
+	(scsh cset-obsolete).   Add reduce-char-set from char-set.scm.
+
+	* char-set.scm: deleted.  (scsh char-set) is replaced by
+	(srfi srfi-14), (scsh char-p) and (scsh cset-obsolete).
+
+	* rdelim.scm (skip-char-set): don't use char-set:s.
+
+	fr.scm, glob.scm, here.scm, rdelim.scm,
+	rx/parse.scm, rx/posixstr, rx/re.scm, rx/rx-lib.scm, rx/simp.scm,
+	rx/spencer.scm: use (srfi srfi-14) and/or (scsh cset-obsolete)
+	instead of (scsh char-set).
+
+	* init.scm, USAGE, Makefile.am, make-module-list: updated.
 
 2001-07-30  Gary Houston  <ghouston@arglist.com>
 

@@ -12,6 +12,8 @@
 	     ;; string-fill! string-copy string->list
 	     (srfi srfi-13)
 
+	     (srfi srfi-14)
+
 	     (scsh alt-syntax)
 	     (scsh module-system)
 	     (scsh let-opt)
@@ -27,7 +29,7 @@
 	     (scsh primitives)
 	     (scsh reading)
 	     (scsh jar-defrecord)
-	     (scsh char-set)
+	     (scsh cset-obsolete)
 	     (scsh char-p)
 	     (scsh defrec)
 	     (scsh errno)

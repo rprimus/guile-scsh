@@ -63,6 +63,9 @@ should be listed here.
 ;; string-fill! string-copy string->list
 (string-any string-every string-tabulate string->list reverse-list->string string-join string-copy substring/shared string-copy! string-take string-take-right string-drop string-drop-right string-pad string-pad-right string-trim string-trim-right string-trim-both string-fill! string-compare string-compare-ci string= string<> string< string> string<= string>= string-ci= string-ci<> string-ci< string-ci> string-ci<= string-ci>= string-hash string-hash-ci string-prefix-length string-prefix-length-ci string-suffix-length string-suffix-length-ci string-prefix? string-prefix-ci? string-suffix? string-suffix-ci? string-index string-index-right string-skip string-skip-right string-count string-contains string-contains-ci string-upcase string-upcase! string-downcase string-downcase! string-titlecase string-titlecase! string-reverse string-reverse! string-append/shared string-concatenate string-concatenate-reverse string-concatenate/shared string-concatenate-reverse/shared string-map string-map! string-fold string-fold-right string-unfold string-unfold-right string-for-each xsubstring string-xcopy! string-replace string-tokenize string-filter string-delete)
 
+(srfi srfi-14)
+(char-set? char-set= char-set<= char-set-hash char-set-cursor char-set-ref char-set-cursor-next end-of-char-set? char-set-fold char-set-unfold char-set-unfold! char-set-for-each char-set-map char-set-copy char-set list->char-set list->char-set! string->char-set string->char-set! char-set-filter char-set-filter! ucs-range->char-set ucs-range->char-set! ->char-set char-set-size char-set-count char-set->list char-set->string char-set-contains? char-set-every char-set-any char-set-adjoin char-set-adjoin! char-set-delete char-set-delete! char-set-complement char-set-union char-set-intersection char-set-difference char-set-xor char-set-diff+intersection char-set-complement! char-set-union! char-set-intersection! char-set-difference! char-set-xor! char-set-diff+intersection! char-set:lower-case char-set:upper-case char-set:title-case char-set:letter char-set:digit char-set:letter+digit char-set:graphic char-set:printing char-set:whitespace char-set:iso-control char-set:punctuation char-set:symbol char-set:hex-digit char-set:blank char-set:ascii char-set:empty char-set:full)
+
 modules from guile-scsh
 =======================
 
@@ -119,11 +122,11 @@ modules from guile-scsh
 (scsh jar-defrecord)
 (define-record-type define-accessor define-accessors)
 
-(scsh char-set)
-(char:newline char:tab char:page char:return char:space char:vtab char-ascii? char-set? char-set-copy char-set= char-set<= char-set-size char-set-adjoin char-set-delete char-set-adjoin! char-set-delete! char-set-for-each char-set-fold reduce-char-set char-set chars->char-set string->char-set ascii-range->char-set predicate->char-set ->char-set char-set-members char-set-contains? char-set-every? char-set-any char-set-invert char-set-union char-set-intersection char-set-difference char-set-invert! char-set-union! char-set-intersection! char-set-difference! char-set:lower-case char-set:upper-case char-set:alphabetic char-set:numeric char-set:alphanumeric char-set:graphic char-set:printing char-set:whitespace char-set:blank char-set:control char-set:punctuation char-set:hex-digit char-set:ascii char-set:empty char-set:full char-set:s)
-
 (scsh char-p)
 (char-letter? char-digit? char-letter+digit? char-graphic? char-printing? char-blank? char-iso-control? char-punctuation? char-symbol? char-hex-digit? char-ascii? char-alphanumeric? char-control?)
+
+(scsh cset-obsolete)
+(char-set-members chars->char-set ascii-range->char-set predicate->char-set char-set-every? char-set-any? char-set-invert char-set-invert! reduce-char-set char-set:alphabetic char-set:numeric char-set:alphanumeric char-set:control)
 
 (scsh defrec)
 (define-record-discloser define-record)

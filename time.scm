@@ -176,25 +176,41 @@
 (define (date->string date)	; Sun Sep 16 01:03:52 1973
   (format-date "~a ~b ~d ~H:~M:~S ~Y" date))
 
-;(define (format-date fmt date)
-;  (check-arg date? date format-date)
-;  (receive (err result)
-;	   (%format-date/errno fmt
-;			       (date:seconds   date)
-;			       (date:minute    date)
-;			       (date:hour      date)
-;			       (date:month-day date)
-;			       (date:month     date)
-;			       (date:year      date)
-;			       (if (string? (date:tz-name date))
-;				   (date:tz-name date)
-;				   (deintegerize-time-zone (date:tz-secs date)))
-;			       (date:summer?   date)
-;			       (date:week-day  date)
-;			       (date:year-day  date))
-;    (cond ((not err) result)
-;	  ((= errno/intr err) (format-date fmt date))
-;	  (else (errno-error err format-date fmt date)))))
+(define (format-date fmt date)
+  (check-arg date? date format-date)
+  (let* ((tm (gmtime 0))
+	 (fmt2
+	  ;; convert format string: ~x -> %x, ~~ -> ~, % -> %%
+	  (let loop ((result "")
+		     (rest fmt)
+		     (got-tilde #f))	; if previous char was ~
+	    (let ((rest-length (string-length rest)))
+	      (if (= rest-length 0)
+		  result
+		  (let* ((ch (string-ref rest 0))
+			 (double-tilde (and got-tilde (char=? ch #\~))))
+		    (loop (if double-tilde
+			      (begin
+				(string-set! result
+					     (- (string-length result) 1)
+					     #\~)
+				result)
+			      (case ch
+				((#\%) (string-append result "%%"))
+				((#\~) (string-append result "%"))
+				(else (string-append result (string ch)))))
+			  (substring rest 1 rest-length)
+			  (and (char=? ch #\~) (not double-tilde)))))))))
+
+    (set-tm:sec tm (date:seconds date))
+    (set-tm:min tm (date:minute date))
+    (set-tm:hour tm (date:hour date))
+    (set-tm:mday tm (date:month-day date))
+    (set-tm:mon tm (date:month date))
+    (set-tm:year tm (date:year date))
+    (set-tm:isdst tm (if (date:summer? date) 1 0))
+
+    (strftime fmt2 tm)))
 
 (define-foreign %format-date/errno (format_date (string fmt)
 						(fixnum seconds)

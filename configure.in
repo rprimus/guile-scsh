@@ -1,8 +1,5 @@
-#
 # Process this file with autoconf to produce a configure script.
-#
-
 AC_INIT(network.scm)
-AM_INIT_GUILE_MODULE(scsh)
+AM_INIT_AUTOMAKE(guile, 1.1a, no-define)
 AM_MAINTAINER_MODE
 AC_OUTPUT(Makefile)

@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-subpkgdatadir = $(pkgdatadir)/$(VERSION)/@module@
+subpkgdatadir = $(pkgdatadir)/$(VERSION)/scsh
 subpkgdata_DATA = char-set.scm \
 	defrec.scm errno.scm fname.scm fr.scm \
 	init.scm let-opt.scm netconst.scm \

@@ -7,7 +7,7 @@
   :use-module (scsh errno)
   :use-module (scsh let-opt)
 )
-(export bogus-substring-spec? read-string!/partial read-string/partial
+(export bogus-substring-spec? read-string/partial
 	read-string! read-string write-string write-string/partial)
 	
 
@@ -19,32 +19,6 @@
 
 ;;; Best-effort/forward-progress reading 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (generic-read-string!/partial s start end reader source)
-  (if (bogus-substring-spec? s start end)
-      (error "Bad substring indices" reader source s start end))
-
-  (if (= start end) 0 ; Vacuous request.
-      (let loop ()
-	(catch 'system-error
-	       (lambda ()
-		 (let ((nread (reader s source start end)))
-		   (and (not (zero? nread)) nread)))
-	       (lambda args 
-		 (let ((err (car (list-ref args 4))))
-		   (cond ;; ((= err errno/intr) (loop)) ; handled by primitive.
-			((or (= err errno/wouldblock); No forward-progess here.
-			     (= err errno/again))
-			 0)
-			(else (apply scm-error args)))))))))
-
-(define (read-string!/partial s . args)
-  (let-optionals args ((fd/port (current-input-port))
-		       (start   0)
-		       (end     (string-length s)))
-		 (generic-read-string!/partial s start end
-					       uniform-array-read!
-					       fd/port)))
 
 (define (read-string/partial len . maybe-fd/port) 
   (let* ((s (make-string len))

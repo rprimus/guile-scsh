@@ -33,6 +33,8 @@
 (load-from-path "scsh/receive.scm")
 (load-from-path "scsh/let-opt.scm")
 
+(load-from-path "scsh/syntax-helpers.scm")
+
 ;; "delete" primitive is replaced, but doesn't seem worth saving.
 (load-from-path "scsh/utilities.scm")
 ;; replace procedures in utilities.scm with guile primitives.

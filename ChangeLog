@@ -1,3 +1,19 @@
+Sat Jul 26 06:22:36 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load syntax-helpers.scm.
+
+	* Makefile.am (scsh_DATA): add syntax-helpers.scm.
+	* syntax-helpers.scm: new file from scsh 0.5.1.
+	(name?): make it the same as symbol?
+
+	* scsh.scm: define call-terminally.
+	define with-env*, with-total-env*, with-cwd*, with-umask* and
+	the macro versions.
+
+	* syscalls.scm: redefine exit, pipe (ugh).
+	Define cwd, set-umask.
+	Include environment stuff, gives only alist->env and env->alist.
+
 Fri Jul 18 07:31:03 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm: load re.scm.

@@ -7,6 +7,7 @@ scsh_DATA = char-set.scm \
 	defrec.scm errno.scm fname.scm fr.scm \
 	init.scm let-opt.scm netconst.scm \
 	network.scm rdelim.scm re.scm receive.scm \
-	rw.scm scsh.scm syntax.scm syscalls.scm time.scm utilities.scm
+	rw.scm scsh.scm syntax.scm syntax-helpers.scm syscalls.scm \
+	time.scm utilities.scm
 
 EXTRA_DIST = $(scsh_DATA) INCOMPAT

@@ -4,6 +4,19 @@
 
 ;;; Guile port is incomplete.
 
+;;; Call THUNK, then die.
+;;; A clever definition in a clever implementation allows the caller's stack
+;;; and dynamic env to be gc'd away, since this procedure never returns.
+
+;;; (define (call-terminally thunk)
+;;;  (with-continuation #f (lambda () (thunk) (exit 0))))
+;;;  ;; Alternatively: (with-continuation #f thunk)
+
+;;; More portably, but less usefully:
+(define (call-terminally thunk)
+  (thunk)
+  (exit 0))
+
 ;;; Environment stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -98,6 +111,70 @@
 ;;; Or, just say...
 ;;; (reverse (add-before elt after (reverse list)))
 
+(define (with-env* alist-delta thunk)
+  (let* ((old-env #f)
+	 (new-env (reduce (lambda (alist key/val)
+			    (alist-update (car key/val) (cdr key/val) alist))
+			  (env->alist)
+			  alist-delta)))
+    (dynamic-wind
+      (lambda ()
+	(set! old-env (env->alist))
+	(alist->env new-env))
+      thunk
+      (lambda ()
+	(set! new-env (env->alist))
+	(alist->env old-env)))))
+
+(define (with-total-env* alist thunk)
+  (let ((old-env (env->alist)))
+    (dynamic-wind
+      (lambda ()
+	(set! old-env (env->alist))
+	(alist->env alist))
+      thunk
+      (lambda ()
+	(set! alist (env->alist))
+	(alist->env old-env)))))
+
+
+(define (with-cwd* dir thunk)
+  (let ((old-wd #f))
+    (dynamic-wind
+      (lambda ()
+	(set! old-wd (cwd))
+	(chdir dir))
+      thunk
+      (lambda ()
+	(set! dir (cwd))
+	(chdir old-wd)))))
+
+(define (with-umask* mask thunk)
+  (let ((old-mask #f))
+    (dynamic-wind
+      (lambda ()
+	(set! old-mask (umask))
+	(set-umask mask))
+      thunk
+      (lambda ()
+	(set! mask (umask))
+	(set-umask old-mask)))))
+
+;;; Sugar:
+
+(define-simple-syntax (with-cwd dir . body)
+  (with-cwd* dir (lambda () . body)))
+
+(define-simple-syntax (with-umask mask . body)
+  (with-umask* mask (lambda () . body)))
+
+(define-simple-syntax (with-env delta . body)
+  (with-env* `delta (lambda () . body)))
+
+(define-simple-syntax (with-total-env env . body)
+  (with-total-env* `env (lambda () . body)))
+
+
 ;;; Some globals:
 (define home-directory "")
 (define exec-path-list '())

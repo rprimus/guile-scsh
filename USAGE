@@ -1,3 +1,24 @@
+The entire guile-scsh package can be loaded into a running Guile
+interpreter with:
+
+(load-from-path "scsh/init")
+
+Warning: this will take a while and will clobber various Guile
+definitions.
+
+It's probably more useful to import parts of scsh individually using
+the Guile module system, but this is not yet possible for all parts of
+the library.
+
+The remainder of this file lists the modules and the exported symbols
+for each.  The modules don't necessarily correspond with scsh
+structures, since the Guile module system requires a correspondence
+between module names and files.  It was considered desirable to leave
+the scsh file layouts relatively intact, to simplify ungrading to
+newer versions of scsh.
+
+This list was generated with help from the make-module-list script.
+
 (scsh alt-syntax)
 ;; not compatible with (ice-9 syncase)
 (define-syntax syntax-rules)
@@ -115,6 +136,7 @@
 (read-line read-paragraph read-delimited read-delimited! skip-char-set)
 
 (scsh here)
+;; exports nothing, but installs a read macro for #<
 ()
 
 (scsh scsh-version)

@@ -1,4 +1,11 @@
 Incompatibilities with SCSH 0.4.4:
-a lot of stuff is missing
-:optional renamed to optional
-everything is defined at the top level, no modules
+
+a lot of stuff is missing.
+
+:optional renamed to optional.
+
+everything is defined at the top level, no modules.
+
+generic-receive-message! always returns 2 values: the number of
+bytes read and the address received from.  Likewise for receive-message!
+and receive-message (bug in SCSH?)

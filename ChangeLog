@@ -1,3 +1,15 @@
+Mon Jan  6 05:00:19 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* network.scm (generic-receive-message!): use guile primitives.
+	(receive-message!): minor change.
+	(receive-message): use the SCSH definition.
+	(generic-receive-mesage/partial, receive-message/partial,
+	receive-message!/partial): similar.
+
+	* init.scm: load rw.scm
+
+	* rw.scm: copied from SCSH.
+
 Sat Jan  4 02:48:02 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm (define-structure): simple substitute.
@@ -15,9 +27,7 @@ Sat Dec 21 01:49:23 1996  Gary Houston  <ghouston@actrix.gen.nz>
 	* network.scm: (close-socket, bind-socket, create-socket,
 	connect-socket, listen-socket, accept-connection,
 	socket-remote-address, socket-local-address, shutdown-socket,
-	create-socket-pair, receive-message,
-
-	use Guile network primitives.
+	create-socket-pair, receive-message: use Guile network primitives.
 	(socket-address->list family address): new procedure.
 	(make-addr): comment out.
 	(address-vector->socket-address): new procedure.

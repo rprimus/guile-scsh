@@ -374,7 +374,14 @@
 	       (not (integer? len)))
 	   (error "receive-message: integer expected ~s ~s" flags len))
 	  (else 
-	   (recv (socket->port socket) len flags)))))
+	   (let ((s (make-string len)))
+	     (receive (nread from)
+		      (receive-message! socket s 0 len flags)
+               (values
+		(cond ((not nread) #f)	; EOF
+		      ((= nread len) s)
+		      (else (substring s 0 nread)))
+		from)))))))
 
 (define (receive-message! socket s . args)
   (if (not (string? s))
@@ -388,32 +395,28 @@
 	       (error "receive-message!: integer expected ~s ~s ~s"
 		      flags start end))
 	      (else 
-	       (recv (socket->port socket) flags
+	       (generic-receive-message! (socket->port socket) flags
 					 s start end 
-					 recv-substring!/errno
+					 'dummy
 					 (socket:family socket)))))))
 
 (define (generic-receive-message! sockfd flags s start end reader from)
   (if (bogus-substring-spec? s start end)
-      (error "Bad substring indices" 
-	     reader sockfd flags
-	     s start end from))
-  (let ((addr (make-addr from)))
-    (let loop ((i start))
-      (if (>= i end) (- i start)
-	  (receive (err nread) 
-		   (reader sockfd flags s i end addr)
-	     (cond (err (if (= err errno/intr) (loop i)
-		         ;; Give info on partially-read data in error packet.
-			    (errno-error err reader sockfd flags
-					 s start i end addr)))
-
-		   ((zero? nread)	; EOF
-		    (values
-		     (let ((result (- i start)))
-		       (and (not (zero? result)) result))
-		     from))
-		   (else (loop (+ i nread)))))))))
+      (error "Bad substring indices" s start end))
+  (let loop ((i start)
+	     (addr #f))
+    (if (>= i end) (values (- i start)
+			   (make-socket-address from addr))
+	(let* ((rv (recvfrom sockfd (list s i end) flags))
+	       (nread (cadr rv))
+	       (addr (caddr rv)))
+	  (cond
+	   ((zero? nread)	; EOF
+	    (values
+	     (let ((result (- i start)))
+	       (and (not (zero? result)) result))
+	     (make-socket-address from addr)))
+	   (else (loop (+ i nread) addr)))))))
 
 (define (receive-message/partial socket len . maybe-flags)
   (let ((flags (optional maybe-flags 0)))
@@ -443,10 +446,10 @@
 	       (error "receive-message!/partial: integer expected ~s"
 		      flags))
 	      (else 
-	       (generic-receive-message!/partial (socket->fdes socket)
+	       (generic-receive-message!/partial (socket->port socket)
 						 flags 
 						 s start end
-						 recv-substring!/errno
+						 'dummy
 						 (socket:family socket)))))))
 
 (define (generic-receive-message!/partial sockfd flags s start end reader from)
@@ -454,24 +457,11 @@
       (error "Bad substring indices" reader s start end))
 
   (if (= start end) 0 ; Vacuous request.
-      (let ((addr (make-addr from)))
-	(let loop ()
-	  (receive (err nread) 
-		   (reader sockfd flags s start end addr)
-
-	     (cond ((not err)
-		    (values (and (not (zero? nread)) nread)
-			    (make-socket-address from addr)))
-
-		   ((= err errno/intr) (loop))
-
-		   ; No forward-progess here.
-		   ((or (= err errno/wouldblock)
-			(= err errno/again))
-		    0) 
-
-		   (else (errno-error err reader sockfd flags
-				      s start start end addr))))))))
+      (let* ((rv (recvfrom sockfd (list s start end) flags))
+	     (nread (cadr rv))
+	     (addr (caddr rv)))
+	(values (and (not (zero? nread)) nread)
+		(make-socket-address from addr)))))
 
 (define-foreign recv-substring!/errno
   (recv_substring (integer sockfd)

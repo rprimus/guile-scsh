@@ -8,11 +8,6 @@
 (defmacro define-errno-syscall args #f)
 (defmacro define-record-discloser args #f)
 
-(define-module (guile) :use-module (ice-9 slib))
-(require 'values)
-
-(load-from-path "scsh/syntax.scm")
-
 ;; just pick out the begin forms.
 (defmacro define-structure (name interface . body)
   (let loop ((rest body)
@@ -24,13 +19,17 @@
 		  (cons (car rest) result)
 		  result)))))
 
-(load-from-path "scsh/receive.scm")
+(define-module (guile) :use-module (ice-9 slib))
+(require 'values)
 
+(load-from-path "scsh/syntax.scm")
+(load-from-path "scsh/receive.scm")
 (load-from-path "scsh/let-opt.scm")
 
 ;; "delete" primitive is replaced, but doesn't seem worth saving.
 (load-from-path "scsh/utilities.scm")
 
 (load-from-path "scsh/defrec.scm")
+(load-from-path "scsh/rw.scm")
 (load-from-path "scsh/netconst.scm")
 (load-from-path "scsh/network.scm")

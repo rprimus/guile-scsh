@@ -1,18 +1,12 @@
 Bugs:
+====
 
 extended process forms don't work:
 
 (run (echo hello) (> out.log)))
 
-there's a problem with compiling regular expressions: the POSIX regex
-library doesn't support imbedded NUL characters.  this probably causes
-numerous problems, e.g.,:
-
-compare the posix string in the result of (rx (- alpha ("ae")))
-with the one in (rx (- alpha ("aei"))): the latter contains garbage
-and can't be used.
-
 Incompatibilities with the original scsh:
+========================================
 
 everything is defined at the top level, no modules.
 

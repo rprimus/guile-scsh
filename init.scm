@@ -24,6 +24,7 @@
 (defmacro structure-ref (structure symb)
   symb)
 
+;; FIXME: check whether slib is still necessary.
 (use-modules (ice-9 slib))
 (require 'values)
 (require 'format)
@@ -51,6 +52,8 @@
 (load-from-path "scsh/scsh-condition.scm")
 (load-from-path "scsh/jar-defrecord.scm")
 (load-from-path "scsh/char-set.scm")
+
+(use-modules (regex spencer))
 
 (define guile-regexp? regexp?)
 (load-from-path "scsh/rx/re-low.scm")

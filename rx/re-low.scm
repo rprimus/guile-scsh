@@ -62,9 +62,7 @@
 ; 	       compile-posix-re->c-struct re-string sm?))))
 
 (define (compile-posix-re->c-struct re-string sm?)
-  ;; Guile make-regexp, regexp-exec can't handle REG_NOSUB so ignore "sm?"
-  ;; for now.
-  (make-regexp re-string))
+  (regcomp re-string (logior REG_EXTENDED REG_PEND (if sm? 0 REG_NOSUB))))
 
 (define-foreign %compile-re (compile_re (string-desc pattern) (bool submatches?))
   integer ; 0 or error code
@@ -100,17 +98,17 @@
 					     re-str #t)))
  			       (set-cre:bytes cre C-bytes)
  			       C-bytes)))
-		(retcode (regexp-exec C-bytes str start))
+		(retcode (regexec C-bytes str REG_STARTEND -1 start))
 		(tvec (cre:tvec cre)))
 	   (cond (retcode
-		  (vector-set! start-vec 0 (car (vector-ref retcode 1)))
-		  (vector-set! end-vec 0 (cdr (vector-ref retcode 1)))
+		  (vector-set! start-vec 0 (regmatch:start retcode 0))
+		  (vector-set! end-vec 0 (regmatch:end retcode 0))
 		  (do ((i (- (vector-length start-vec) 2) (- i 1)))
 		      ((< i 0))
 		    (let ((j-scm (vector-ref tvec i)))
 		      (cond (j-scm
-			     (let ((k (car (vector-ref retcode j-scm)))
-				   (l (cdr (vector-ref retcode j-scm))))
+			     (let ((k (regmatch:start retcode j-scm))
+				   (l (regmatch:end retcode j-scm)))
 			       (vector-set! start-vec (+ i 1)
 					    (if (= k -1) #f k))
 			       (vector-set! end-vec (+ i 1)
@@ -134,13 +132,12 @@
 (define (cre-search? cre str start)
   (let ((re-str (cre:string cre)))	;; RE-STR = #F => empty match.
     (and re-str
- 	 (let* ((C-bytes (or (cre:bytes cre)
+ 	 (let* ((C-bytes (or (cre:bytes/nm cre)
  			     (let ((C-bytes (compile-posix-re->c-struct
-					     re-str #t)))
- 			       (set-cre:bytes cre C-bytes)
- 			       C-bytes)))
-		(retcode (regexp-exec C-bytes str start)))
-	   (and retcode #t)))))
+					     re-str #f)))
+ 			       (set-cre:bytes/nm cre C-bytes)
+ 			       C-bytes))))
+	   (regexec C-bytes str REG_STARTEND 0 start)))))
 
 (define-foreign %cre-search
   (re_search ((C "const regex_t *~a") compiled-regexp)

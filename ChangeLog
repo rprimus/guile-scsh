@@ -1,3 +1,13 @@
+2000-10-12  Gary Houston  <ghouston@arglist.com>
+
+	* rx/re-low.scm (compile-posix-re->c-struct cre-search, cre-search?):
+	use (regex spencer).
+
+	* init.scm: use the guilerxspencer module, distributed
+	separately, instead of the regex routines in guile-core.
+	Scsh takes advantage of the support for embedded ASCII nuls
+	in Spencer's library.
+
 2000-09-14  Gary Houston  <ghouston@arglist.com>
 
 	* lib/string-lib.scm (string->list): fix a known scsh bug:

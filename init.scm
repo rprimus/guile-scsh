@@ -28,6 +28,7 @@
 	     (scsh reading)
 	     (scsh jar-defrecord)
 	     (scsh char-set)
+	     (scsh char-p)
 	     (scsh defrec)
 	     (scsh errno)
 	     (scsh rw)

@@ -97,20 +97,6 @@
 	char-set:empty
 	char-set:full
 
-	char-lower-case?
-	char-upper-case?
-	char-alphabetic?
-	char-numeric?
-	char-alphanumeric?
-	char-graphic?
-	char-printing?
-	char-whitespace?
-	char-blank?
-	char-control?
-	char-punctuation?
-	char-hex-digit?
-	char-ascii?
-
 	;; This is not properly part of the interface,
 	;; and should be moved to an internals interface --
 	;; it is used by rdelim.scm code.
@@ -408,20 +394,3 @@
 (define char-set:ascii (ascii-range->char-set 0 128))
 (define char-set:empty (char-set))
 (define char-set:full (char-set-invert char-set:empty))
-
-
-(define (char-set->pred cs) (lambda (c) (char-set-contains? cs c)))
-
-(define char-lower-case?	(char-set->pred char-set:lower-case))
-(define char-upper-case?	(char-set->pred char-set:upper-case))
-(define char-alphabetic?	(char-set->pred char-set:alphabetic))
-(define char-numeric?		(char-set->pred char-set:numeric))
-(define char-alphanumeric?	(char-set->pred char-set:alphanumeric))
-(define char-graphic?		(char-set->pred char-set:graphic))
-(define char-printing?		(char-set->pred char-set:printing))
-(define char-whitespace?	(char-set->pred char-set:whitespace))
-(define char-blank?		(char-set->pred char-set:blank))
-(define char-control?		(char-set->pred char-set:control))
-(define char-punctuation?	(char-set->pred char-set:punctuation))
-(define char-hex-digit?		(char-set->pred char-set:hex-digit))
-(define char-ascii?		(char-set->pred char-set:ascii))

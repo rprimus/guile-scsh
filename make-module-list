@@ -23,6 +23,7 @@
 	 reading
 	 jar-defrecord
 	 char-set
+	 char-p
 	 defrec
 	 errno
 	 rw

@@ -1,3 +1,21 @@
+2001-08-01  Gary Houston  <ghouston@arglist.com>
+
+	* char-p.scm: new file, for new module (scsh char-p).
+	(char-alphanumeric? char-graphic? char-printing? char-blank?
+	char-control? char-punctuation? char-hex-digit? char-ascii?): moved
+	from char-set.scm.
+	(char-letter? char-digit? char-letter+digit? char-iso-control?
+	char-symbol?): new from scsh-0.5.3.
+	* init.scm, USAGE, Makefile.am, make-module-list: updated.
+
+2001-07-30  Gary Houston  <ghouston@arglist.com>
+
+	* char-set.scm (char:newline, char:tab, char:page, char:return,
+	char:space, char:vtab): don't export, since they are not part of
+	the interface in scsh 0.5.3.
+	(char-alphabetic?, char-numeric?, char-lower-case?, char-upper-case?,
+	char-whitespace?): removed, since all R5RS and in guile-core.
+
 2001-07-22  Thien-Thi Nguyen  <ttn@revel.glug.org>
 
 	* rw.scm (generic-write-string): Fix typo in `writer' call.

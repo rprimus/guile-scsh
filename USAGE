@@ -40,7 +40,7 @@ modules from guile-core
 =======================
 
 FIXME: various scsh facilities are available by default in guile-core and
-should be list here.
+should be listed here.
 
 (ice-9 format)
 (format)
@@ -120,7 +120,10 @@ modules from guile-scsh
 (define-record-type define-accessor define-accessors)
 
 (scsh char-set)
-(char:newline char:tab char:page char:return char:space char:vtab char-ascii? char-set? char-set-copy char-set= char-set<= char-set-size char-set-adjoin char-set-delete char-set-adjoin! char-set-delete! char-set-for-each char-set-fold reduce-char-set char-set chars->char-set string->char-set ascii-range->char-set predicate->char-set ->char-set char-set-members char-set-contains? char-set-every? char-set-any char-set-invert char-set-union char-set-intersection char-set-difference char-set-invert! char-set-union! char-set-intersection! char-set-difference! char-set:lower-case char-set:upper-case char-set:alphabetic char-set:numeric char-set:alphanumeric char-set:graphic char-set:printing char-set:whitespace char-set:blank char-set:control char-set:punctuation char-set:hex-digit char-set:ascii char-set:empty char-set:full char-lower-case? char-upper-case? char-alphabetic? char-numeric? char-alphanumeric? char-graphic? char-printing? char-whitespace? char-blank? char-control? char-punctuation? char-hex-digit? char-ascii? char-set:s)
+(char:newline char:tab char:page char:return char:space char:vtab char-ascii? char-set? char-set-copy char-set= char-set<= char-set-size char-set-adjoin char-set-delete char-set-adjoin! char-set-delete! char-set-for-each char-set-fold reduce-char-set char-set chars->char-set string->char-set ascii-range->char-set predicate->char-set ->char-set char-set-members char-set-contains? char-set-every? char-set-any char-set-invert char-set-union char-set-intersection char-set-difference char-set-invert! char-set-union! char-set-intersection! char-set-difference! char-set:lower-case char-set:upper-case char-set:alphabetic char-set:numeric char-set:alphanumeric char-set:graphic char-set:printing char-set:whitespace char-set:blank char-set:control char-set:punctuation char-set:hex-digit char-set:ascii char-set:empty char-set:full char-set:s)
+
+(scsh char-p)
+(char-letter? char-digit? char-letter+digit? char-graphic? char-printing? char-blank? char-iso-control? char-punctuation? char-symbol? char-hex-digit? char-ascii? char-alphanumeric? char-control?)
 
 (scsh defrec)
 (define-record-discloser define-record)
@@ -251,7 +254,7 @@ modules from guile-scsh
 
 (scsh awk)
 ;; the awk macro generates code that requires:
-;; (scsh rx re-syntax), (scsh rx re) (scsh rx re-high)
+;; (scsh rx re-syntax) (scsh rx re) (scsh rx re-high)
 (awk)
 
 (scsh netconst)

@@ -1,3 +1,7 @@
+2001-07-22  Thien-Thi Nguyen  <ttn@revel.glug.org>
+
+	* rw.scm (generic-write-string): Fix typo in `writer' call.
+
 2001-07-22  Gary Houston  <ghouston@arglist.com>
 
 	* let-opt.scm (really-let-optionals*): export: a kludge to make
@@ -169,11 +173,11 @@
 	* Makefile.am (pkgdata_DATA): remove receive.scm.
 	some *.scm, init.scm: use (ice-9 receive) module, not (scsh receive).
 	(pkgdata_DATA): add jar-defrecord.scm, define-foreign-syntax.scm.
-	
+
 2000-11-29  Gary Houston  <ghouston@arglist.com>
 
 	* Makefile.am (install-exec-local): a temporary kludge to create rx
-	and lib	dirs before installing files there. 
+	and lib	dirs before installing files there.
 
 2000-11-27  Gary Houston  <ghouston@arglist.com>
 
@@ -186,26 +190,26 @@
 	subpkgdata_DATA.
 	(EXTRA_DIST): add autogen.sh.
 	(subpkgdatadir): new variable, set via configure.
-	
+
 	* autogen.sh: new file.
-	
+
 	* USAGE, README: updated.
 
 	* lib/list-lib.scm (for-each): define
 
 	* lib/list-lib.scm: define module (scsh lib list-lib).
 	comment out procedures which are already compatibly defined in
-	Guile (cons*, make-list, list-copy, last-pair, append!, 
+	Guile (cons*, make-list, list-copy, last-pair, append!,
 	reverse!)
 	(for-each): define, since it's supposed to be here but was missing.
 
-	* lib/ccp.scm: file removed.  doesn't seem to be required by 
+	* lib/ccp.scm: file removed.  doesn't seem to be required by
 	anything else or documented.
 
 	* scsh-condition.scm: define module (scsh scsh-condition).
 
 	* condition.scm: file removed.
-	
+
 	* stringcoll.scm: define module (scsh stringcoll).
 
 	* enumconst.scm: file deleted: defines a couple of macros which
@@ -235,7 +239,7 @@
 	* rx/re-subst.scm: define module (scsh rx re-subst).
 	* rx/oldfuns.scm: define module (scsh rx oldfuns).
 	* init.scm: load new modules.
-	
+
 2000-10-28  Gary Houston  <ghouston@arglist.com>
 
 	* rx/re-syntax.scm (expand-rx): take rx and if-sre-form definitions
@@ -294,7 +298,7 @@
 	* define-foreign-syntax.scm: new file.  take dummy definitions for
 	foreign-source and define-foreign from init.scm.  define
 	(scsh define-foreign-syntax) module.
-	
+
 	* init.scm: use new modules.
 
 2000-10-15  Gary Houston  <ghouston@arglist.com>
@@ -311,7 +315,7 @@
 	init.scm.
 	* loophole.scm: new file from scsh-0.5.2: alt/loophole.scm.
 	define module (scsh loopholes).  used by check-arg in utilities.scm.
-	
+
 	* defrec.scm (define-record-discloser): moved from init.scm.
 	* let-opt.scm: define module (scsh let-opt).
 	define module (scsh receive).
@@ -394,7 +398,7 @@
 	* init.scm: load new files.
 
 	* rx: new subdirectory.
-	
+
 	* jar-defrecord.scm, re-low.scm, re-high.scm,
 	 cond-package.scm let-match.scm oldfuns.scm parse.scm posixstr.scm,
 	 re-fold.scm re-subst.scm re-syntax.scm rx-lib.scm simp.scm,
@@ -411,7 +415,7 @@
 	scsh-version.scm, scsh.scm, sighandlers.scm, stringcoll.scm,
 	syntax-helpers.scm, syntax.scm, syscalls.scm, time.scm,
 	utilities.scm
-	
+
 1998-04-05  Mikael Djurfeldt  <mdj@nada.kth.se>
 
 	* init.scm (rindex): Bugfix: start is an optional argument.
@@ -472,7 +476,7 @@ Sat Aug 30 19:31:05 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 Sat Aug 23 19:17:19 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
-	* scsh.scm (exec-path-search, exec/env, exec-path/env, exec-path, 
+	* scsh.scm (exec-path-search, exec/env, exec-path/env, exec-path,
 	exec, fork, %fork, really-fork): defined.
 	(fork/pipe, %fork/pipe, really-fork/pipe, %fork/pipe+, fork/pipe+,
 	really-fork/pipe+, tail-pipe, tail-pipe+, pipe*): defined.
@@ -529,7 +533,7 @@ Sat Aug  9 08:34:09 1997  Gary Houston  <ghouston@actrix.gen.nz>
 	* weak.scm: new file, implements scheme48-style weak pointers.
 
 Tue Jul 29 01:39:40 1997  Gary Houston  <ghouston@actrix.gen.nz>
-	
+
 	* Makefile.am (scsh_DATA): add newports.scm.
 
 	* scsh.scm (exit): defined here instead of in syscalls.scm.
@@ -715,7 +719,7 @@ Sat Jan 25 01:03:03 1997  Gary Houston  <ghouston@actrix.gen.nz>
 	generic-write-string/partial, generic-write-string: adapt
 	to change in uniform-array-read/write arguments.
 
-	* network.scm (generic-receive-message!, 
+	* network.scm (generic-receive-message!,
 	generic-receive-message!/partial): adapt to changes in recvfrom!
 	primitive.
 
@@ -849,7 +853,7 @@ Wed Dec 11 22:15:18 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* let-opt.scm: comment out everything but the `optional'
  	macro, renamed from :optional.
-	
+
 	* COPYING, let-opt.scm, utilities.scm: from scsh 0.4.4.
 	* ChangeLog, INCOMPAT, init.scm: new files.
 	* new directory.

@@ -36,8 +36,8 @@
 ;; replace procedures in utilities.scm with guile primitives.
 (set! index string-index)
 ;; note the different convention for rindex starting position.
-(set! rindex (lambda (str char start)
-	       (string-rindex str char 0 start)))
+(set! rindex (lambda (str char . start)
+	       (apply string-rindex str char 0 start)))
 
 (load-from-path "scsh/scsh-version.scm")
 (load-from-path "scsh/fname.scm")

@@ -1,3 +1,8 @@
+1998-04-05  Mikael Djurfeldt  <mdj@nada.kth.se>
+
+	* init.scm (rindex): Bugfix: start is an optional argument.
+	(Thanks to David Lutterkort.)
+
 Sat Oct 11 03:30:45 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm, Makefile.am: add scsh-version.scm.

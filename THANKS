@@ -1,2 +1,6 @@
 The Guile SCSH port is the work of volunteer Gary Houston, as well as
 the Guile core system call support upon which SCSH rests.
+
+Bug reports and fixes from:
+
+David Lutterkort

@@ -6,6 +6,12 @@
 	     ;; delete delete!
 	     (srfi srfi-1)
 
+	     ;; replaces:
+	     ;; string-downcase string-downcase!
+	     ;; string-upcase string-upcase! string-index
+	     ;; string-fill! string-copy string->list
+	     (srfi srfi-13)
+
 	     (scsh alt-syntax)
 	     (scsh module-system)
 	     (scsh let-opt)
@@ -23,13 +29,6 @@
 	     (scsh jar-defrecord)
 	     (scsh char-set)
 	     (scsh defrec)
-
-	     ;; replaces:
-	     ;; string-downcase string-downcase!
-	     ;; string-upcase string-upcase! string-index
-	     ;; string-fill! string-copy string->list
-	     (scsh lib string-lib)
-
 	     (scsh errno)
 	     (scsh rw)
 

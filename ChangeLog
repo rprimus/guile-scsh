@@ -1,3 +1,10 @@
+2001-07-06  Gary Houston  <ghouston@arglist.com>
+
+	* lib/string-lib.scm: removed.
+	* init.scm: load (srfi srfi-13) instead of (scsh lib string-lib).
+	* Makefile.am: references to lib/string-lib.scm removed.
+	* USAGE: updated.
+
 2001-07-03  Gary Houston  <ghouston@arglist.com>
 
 	* lib/list-lib.scm: removed.

@@ -56,6 +56,13 @@ should be list here.
 ;; delete filter first fold fold-right any every
 (xcons list-tabulate circular-list proper-list? circular-list? dotted-list? null-list? not-pair? list= first second third fourth fifth sixth seventh eighth ninth tenth car+cdr take drop take-right drop-right take! drop-right! split-at split-at! last length+ concatenate concatenate! append-reverse append-reverse! zip unzip1 unzip2 unzip3 unzip4 unzip5 count fold fold-right pair-fold pair-fold-right reduce reduce-right unfold unfold-right append-map append-map! map! pair-for-each filter-map filter partition remove filter! partition! remove! find find-tail take-while take-while! drop-while span span! break break! any every delete-duplicates delete-duplicates! alist-cons alist-copy alist-delete alist-delete! lset<= lset= lset-adjoin lset-union lset-intersection lset-difference lset-xor lset-diff+intersection lset-union! lset-intersection! lset-difference! lset-xor! lset-diff+intersection! iota map map-in-order for-each list-index member delete delete! assoc)
 
+(srfi srfi-13)
+;; replaces:
+;; string-downcase string-downcase!
+;; string-upcase string-upcase! string-index
+;; string-fill! string-copy string->list
+(string-any string-every string-tabulate string->list reverse-list->string string-join string-copy substring/shared string-copy! string-take string-take-right string-drop string-drop-right string-pad string-pad-right string-trim string-trim-right string-trim-both string-fill! string-compare string-compare-ci string= string<> string< string> string<= string>= string-ci= string-ci<> string-ci< string-ci> string-ci<= string-ci>= string-hash string-hash-ci string-prefix-length string-prefix-length-ci string-suffix-length string-suffix-length-ci string-prefix? string-prefix-ci? string-suffix? string-suffix-ci? string-index string-index-right string-skip string-skip-right string-count string-contains string-contains-ci string-upcase string-upcase! string-downcase string-downcase! string-titlecase string-titlecase! string-reverse string-reverse! string-append/shared string-concatenate string-concatenate-reverse string-concatenate/shared string-concatenate-reverse/shared string-map string-map! string-fold string-fold-right string-unfold string-unfold-right string-for-each xsubstring string-xcopy! string-replace string-tokenize string-filter string-delete)
+
 modules from guile-scsh
 =======================
 
@@ -117,13 +124,6 @@ modules from guile-scsh
 
 (scsh defrec)
 (define-record-discloser define-record)
-
-(scsh lib string-lib)
-;; replaces:
-;; string-downcase string-downcase!
-;; string-upcase string-upcase! string-index
-;; string-fill! string-copy string->list
-(string-map string-map! string-fold string-unfold string-fold-right string-tabulate string-for-each string-iter string-every string-any string-compare string-compare-ci substring-compare substring-compare-ci string= string< string> string<= string>= string<> string-ci= string-ci< string-ci> string-ci<= string-ci>= string-ci<> substring= substring<> substring-ci= substring-ci<> substring< substring> substring-ci< substring-ci> substring<= substring>= substring-ci<= substring-ci>= string-upper-case? string-lower-case? capitalize-string capitalize-words string-downcase string-upcase capitalize-string! capitalize-words! string-downcase! string-upcase! string-take string-drop string-pad string-pad-right string-trim string-trim-right string-trim-both string-filter string-delete string-index string-index-right string-skip string-skip-right string-prefix-count string-prefix-count-ci string-suffix-count string-suffix-count-ci substring-prefix-count substring-prefix-count-ci substring-suffix-count substring-suffix-count-ci string-prefix? string-prefix-ci? string-suffix? string-suffix-ci? substring-prefix? substring-prefix-ci? substring-suffix? substring-suffix-ci? substring? substring-ci? string-fill! string-copy! string-copy string-reverse string-reverse! reverse-list->string string->list string-concat string-concat/shared string-append/shared xsubstring string-xcopy! make-kmp-restart-vector parse-final-start+end parse-start+end check-substring-spec)
 
 (scsh errno)
 ;; defines symbols such as errno/perm.

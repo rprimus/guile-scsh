@@ -90,7 +90,7 @@
 
 (define-module (scsh lib string-lib)
   :use-module (scsh alt-syntax)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh let-opt)
   :use-module (scsh char-set)
 )

@@ -18,7 +18,7 @@
   :use-module (scsh defrec)
   :use-module (scsh jar-defrecord)
   :use-module (scsh rx re-low)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh utilities)
   :use-module (scsh char-set)
   :use-module (scsh rx cond-package)

@@ -1,3 +1,10 @@
+2000-12-02  Gary Houston  <ghouston@arglist.com>
+
+	* receive.scm: removed.
+	* Makefile.am (pkgdata_DATA): remove receive.scm.
+	some *.scm, init.scm: use (ice-9 receive) module, not (scsh receive).
+	(pkgdata_DATA): add jar-defrecord.scm, define-foreign-syntax.scm.
+	
 2000-11-29  Gary Houston  <ghouston@arglist.com>
 
 	* Makefile.am (install-exec-local): a temporary kludge to create rx

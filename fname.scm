@@ -14,7 +14,7 @@
 (define-module (scsh fname)
   :use-module (scsh lib string-lib)
   :use-module (scsh let-opt)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh syscalls))
 
 (export file-name-as-directory

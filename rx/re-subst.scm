@@ -10,6 +10,7 @@
 ;;; package which needs WRITE-STRING, which comes from the regexp package.
 
 (define-module (scsh rx re-subst)
+  :use-module (ice-9 receive)
   :use-module (scsh utilities)
   :use-module (scsh rw)
   :use-module (scsh lib string-lib)

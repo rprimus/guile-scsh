@@ -7,7 +7,7 @@
 
 (define-module (scsh syscalls)
   :use-module (scsh define-foreign-syntax)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh utilities)
   :use-module (scsh let-opt)
   :use-module (scsh fname)

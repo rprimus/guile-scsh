@@ -8,7 +8,7 @@
 (define-module (scsh syntax-helpers)
   :use-module (scsh alt-syntax)
   :use-module (scsh signals)
-  :use-module (scsh receive))
+  :use-module (ice-9 receive))
 (export transcribe-process-form)
 
 (define-syntax define-simple-syntax

@@ -209,7 +209,7 @@
 ;;; The SRFI discussion record contains more discussion on this topic.
 
 (define-module (scsh lib list-lib)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh utilities)
   :use-module (scsh let-opt)
 )

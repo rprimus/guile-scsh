@@ -5,16 +5,16 @@
 pkgdatadir = @GUILE_SCSH_DIR@
 
 pkgdata_DATA = alt-syntax.scm ascii.scm awk.scm bitwise.scm \
-	char-set.scm \
+	char-set.scm define-foreign-syntax.scm \
 	defrec.scm ekko.scm errno.scm features.scm \
 	fileinfo.scm filemtch.scm filesys.scm \
 	fluid.scm fname.scm fr.scm glob.scm here.scm \
-	init.scm let-opt.scm \
+	init.scm jar-defrecord.scm let-opt.scm \
 	lib/list-lib.scm lib/string-lib.scm \
 	loophole.scm module-system.scm \
 	netconst.scm network.scm newports.scm population.scm \
 	primitives.scm procobj.scm \
-	rdelim.scm reading.scm receive.scm rw.scm \
+	rdelim.scm reading.scm rw.scm \
 	rx/cond-package.scm rx/let-match.scm rx/oldfuns.scm \
 	rx/parse.scm rx/posixstr.scm rx/re-fold.scm rx/re-high.scm \
 	rx/re-low.scm rx/re-subst.scm \

@@ -47,7 +47,7 @@
 (define-module (scsh rx parse)
   :use-module (scsh utilities)
   :use-module (scsh char-set)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh ascii)
   :use-module (scsh rx re-low)
   :use-module (scsh rx re)

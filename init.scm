@@ -1,6 +1,6 @@
 (use-modules (ice-9 format)
+	     (ice-9 receive)
 	     (scsh alt-syntax)
-	     (scsh receive)
 	     (scsh module-system)
 	     (scsh let-opt)
 	     (scsh loophole)

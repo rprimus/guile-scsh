@@ -2,7 +2,7 @@
 ;;; Copyright (c) 1998 by Olin Shivers.
 
 (define-module (scsh rx re-high)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh let-opt)
   :use-module (scsh rx cond-package)
   :use-module (scsh rx re-low)

@@ -76,7 +76,7 @@
 
 (define-module (scsh defrec)
   :use-module (scsh alt-syntax)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh utilities)
 )
 (export-syntax define-record-discloser define-record)

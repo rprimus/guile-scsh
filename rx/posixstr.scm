@@ -54,7 +54,7 @@
 ;;; SORT-LIST
 
 (define-module (scsh rx posixstr)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh utilities)
   :use-module (scsh char-set)
   :use-module (scsh ascii)

@@ -23,10 +23,6 @@ This list was generated with help from the make-module-list script.
 ;; not compatible with (ice-9 syncase)
 (define-syntax syntax-rules)
 
-(scsh receive)
-;; compatible with (ice-9 receive), which is not available in Guile 1.4
-(receive)
-
 (scsh module-system)
 ;; dummy definitions.
 (define-structure structure-ref)

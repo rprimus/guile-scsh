@@ -6,7 +6,7 @@
 ;;; Need better error checking on {m,n} brace parsing.
 
 (define-module (scsh rx spencer)
-  :use-module (scsh receive)
+  :use-module (ice-9 receive)
   :use-module (scsh char-set)
   :use-module (scsh ascii)
   :use-module (scsh rx re))

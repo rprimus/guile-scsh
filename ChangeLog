@@ -1,3 +1,8 @@
+Fri Jul 18 07:31:03 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load re.scm.
+	* re.scm: delete everything except regexp-num-submatches.
+
 Wed Jul 16 14:40:40 1997  Jim Blandy  <jimb@floss.red-bean.com>
 
 	* Makefile.am: Install SCSH files in $(datadir)/guile, not in the

@@ -17,6 +17,9 @@ Note that SLIB must be found in %load-path, e.g., it can be unpacked
 in the "site" directory.  SLIB can be obtained by ftp from
 prep.ai.mit.edu in the pub/gnu/jacal directory.
 
+The Guile reference manual also has information about installing
+and using SLIB and scsh.
+
 
 Hacking It Yourself ==================================================
 

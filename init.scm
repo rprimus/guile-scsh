@@ -42,7 +42,7 @@
 (load-from-path "scsh/fname.scm")
 (load-from-path "scsh/errno.scm")
 (load-from-path "scsh/defrec.scm")
-;;(load-from-path "scsh/re.scm")
+(load-from-path "scsh/re.scm")
 (load-from-path "scsh/syscalls.scm")
 (load-from-path "scsh/time.scm")
 (load-from-path "scsh/rw.scm")

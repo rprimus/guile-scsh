@@ -62,13 +62,13 @@ subpkgdata_DATA = char-set.scm \
 	network.scm rdelim.scm re.scm receive.scm \
 	rw.scm scsh.scm syntax.scm syscalls.scm time.scm utilities.scm
 
-EXTRA_DIST = PLUGIN/OPT $(subpkgdata_DATA) INCOMPAT README.PORT
+EXTRA_DIST = $(subpkgdata_DATA) INCOMPAT
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 DATA =  $(subpkgdata_DATA)
 
-DIST_COMMON =  README COPYING ChangeLog Makefile.am Makefile.in \
+DIST_COMMON =  README COPYING ChangeLog INSTALL Makefile.am Makefile.in \
 aclocal.m4 configure configure.in install-sh missing mkinstalldirs
 
 
@@ -153,7 +153,6 @@ distdir: $(DISTFILES)
 	here=`pwd`; distdir=`cd $(distdir) && pwd` \
 	  && cd $(srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(srcdir) --output-dir=$$distdir --foreign
-	$(mkinstalldirs) $(distdir)/PLUGIN
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \

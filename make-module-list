@@ -12,6 +12,7 @@
 	 let-opt
 	 loophole
 	 signals
+	 fdports
 	 syntax-helpers
 	 bitwise
 	 utilities

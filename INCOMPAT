@@ -1,23 +1,10 @@
 Bugs:
 ====
 
-extended process forms don't work:
-
-(run (echo hello) (> out.log)))
-
 Incompatibilities with the original scsh:
 ========================================
 
-the Guile module system is not compatible with that of Scheme48.  the
-module system isn't yet used for all files.
-
-loading guile-scsh may redefine Guile builtins.  e.g., map is
-redefined by list-lib.scm.  This isn't very good.  Maybe use of the
-module system will make this more manageable in future.  Other
-affected procedures are: read-delimited read-delimited! pipe sleep
-exit make-fluid string->list and probably open-file.
-
-the interfaces to the I/O system may be incompatible.
+the Guile module system is not compatible with the one in Scheme48.
 
 interrupt-set, set-enabled-interrupts, with-interrupts,
 with-enabled-interrupts*, %set-unix-signal-handler and
@@ -25,6 +12,8 @@ with-enabled-interrupts*, %set-unix-signal-handler and
 with-enabled-interrupts form, all interrupts are disabled.
 
 [check that the following are still true in 0.5.2]
+
+the interfaces to the I/O system may be incompatible.
 
 generic-receive-message! always returns 2 values: the number of
 bytes read and the address received from.  Likewise for receive-message!

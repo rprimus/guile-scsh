@@ -6,8 +6,24 @@ interpreter with:
 Warning: this will take a while and will clobber various Guile
 definitions.
 
-It's probably more useful to import parts of scsh individually using
-the Guile module system.
+For script usage it's probably more useful to import parts of scsh
+individually using the Guile module system.  However note that macros
+may expand to code that requires additional modules.  e.g., `run' is
+defined in (scsh syntax), but requires loading (scsh procobj), (scsh
+scsh), (scsh fdports) and (scsh syntax-helpers) to execute sucessfully.
+
+One way to avoid clobbering definitions from libguile is to define a
+new module for the code that uses guile-scsh.  e.g.,
+
+#!/usr/bin/guile -s
+!#
+(define-module (test)
+   :use-module (scsh syntax)
+   :use-module (scsh syntax-helpers)
+   :use-module (scsh procobj)
+   :use-module (scsh scsh)
+   :use-module (scsh fdports))
+(run (echo hello) (> out.log))
 
 The remainder of this file lists the modules and the exported symbols
 for each.  The modules don't necessarily correspond with scsh
@@ -36,6 +52,9 @@ This list was generated with help from the make-module-list script.
 
 (scsh signals)
 (syntax-error)
+
+(scsh fdports)
+(open/create+trunc open/write+append+create shell-open)
 
 (scsh syntax-helpers)
 (transcribe-process-form)
@@ -74,6 +93,10 @@ This list was generated with help from the make-module-list script.
 (define-record-discloser define-record)
 
 (scsh lib string-lib)
+;; replaces:
+;; string-downcase string-downcase!
+;; string-upcase string-upcase! string-index
+;; string-fill! string-copy string->list
 (string-map string-map! string-fold string-unfold string-fold-right string-unfold-right string-tabulate string-for-each string-iter string-every string-any string-compare string-compare-ci substring-compare substring-compare-ci string= string< string> string<= string>= string<> string-ci= string-ci< string-ci> string-ci<= string-ci>= string-ci<> substring= substring<> substring-ci= substring-ci<> substring< substring> substring-ci< substring-ci> substring<= substring>= substring-ci<= substring-ci>= string-upper-case? string-lower-case? capitalize-string capitalize-words string-downcase string-upcase capitalize-string! capitalize-words! string-downcase! string-upcase! string-take string-take-right string-drop string-drop-right string-pad string-pad-right string-trim string-trim-right string-trim-both string-filter string-delete string-index string-index-right string-skip string-skip-right string-prefix-count string-prefix-count-ci string-suffix-count string-suffix-count-ci substring-prefix-count substring-prefix-count-ci substring-suffix-count substring-suffix-count-ci string-prefix? string-prefix-ci? string-suffix? string-suffix-ci? substring-prefix? substring-prefix-ci? substring-suffix? substring-suffix-ci? substring? substring-ci? string-fill! string-copy! string-copy string-reverse string-reverse! reverse-list->string string->list string-concat string-concat/shared string-append/shared xsubstring string-xcopy! join-strings make-kmp-restart-vector parse-final-start+end parse-start+end check-substring-spec)
 
 (scsh errno)
@@ -160,6 +183,7 @@ This list was generated with help from the make-module-list script.
 (file-name-as-directory file-name-directory? file-name-non-directory? directory-as-file-name ensure-file-name-is-nondirectory file-name-absolute? file-name-directory file-name-nondirectory split-file-name path-list->file-name file-name-extension file-name-sans-extension replace-extension parse-file-name expand-file-name simplify-file-name resolve-tilde-file-name resolve-file-name absolute-file-name home-dir home-file)
 
 (scsh fluid)
+;; replaces make-fluid
 (make-fluid set-fluid! fluid let-fluid)
 
 (scsh stringcoll)
@@ -175,6 +199,10 @@ This list was generated with help from the make-module-list script.
 (xcons list-tabulate list-copy circular-list iota proper-list? circular-list? dotted-list? not-pair? null-list? list= first second third fourth fifth sixth seventh eighth ninth tenth car+cdr take drop take-right drop-right take! drop-right! take-while drop-while take-while! split-at split-at! span break span! break! last length+ append-reverse append-reverse! concatenate concatenate! zip unzip1 unzip2 unzip3 unzip4 unzip5 count unfold unfold-right fold unfold pair-fold reduce fold-right unfold-right pair-fold-right reduce-right append-map append-map! map! pair-for-each filter-map map-in-order filter partition remove filter! partition! remove! find find-tail any every list-index delete delete! delete-duplicates delete-duplicates! alist-cons alist-copy alist-delete alist-delete! lset<= lset= lset-adjoin lset-union lset-union! lset-intersection lset-intersection! lset-difference lset-difference! lset-xor lset-xor! lset-diff+intersection lset-diff+intersection! map for-each member assoc)
 
 (scsh syntax)
+;; define-simple-syntax generates code that requires
+;; (scsh alt-syntax).
+;; other macros generate code that requires
+;; (scsh scsh), (scsh procobj), (scsh syntax-helpers).
 (define-simple-syntax exec-epf & run || && run-collecting run/port+proc run/port run/strings run/file run/string run/sexp run/sexps)
 
 (scsh glob)
@@ -206,4 +234,4 @@ This list was generated with help from the make-module-list script.
 (bind-listen-accept-loop socket? socket:family socket:inport socket:outport socket-address? socket-address:address socket-address:family internet-address->socket-address socket-address->internet-address create-socket close-socket bind-socket connect-socket listen-socket accept-connection socket-remote-address socket-local-address shutdown-socket create-socket-pair receive-message receive-message! receive-message/partial receive-message!/partial send-message send-message/partial socket-option set-socket-option host-info host-info? host-info:name host-info:aliases host-info:addresses network-info network-info? network-info:name network-info:aliases network-info:net service-info service-info? service-info:name service-info:aliases service-info:port service-info:protocol protocol-info protocol-info? protocol-info:name protocol-info:aliases protocol-info:number)
 
 (scsh scsh)
-(call-terminally fork/pipe %fork/pipe tail-pipe tail-pipe+ alist-update alist-compress add-before add-after with-env* with-total-env* with-cwd* with-umask* create-temp-file temp-file-channel run/collecting* run/port+proc* run/port* run/file* run/string* run/strings* run/sexp* run/sexps* port->string port->string-list port->sexp-list port->list port-fold char-filter string-filter y-or-n? stdio->stdports with-stdio-ports* stdports->stdio command-line-arguments arg* arg argv home-directory exec-path-list suspend exec/env exec-path/env exec-path exec fork %fork with-cwd with-umask with-env with-total-env run/port run/file run/string run/strings run/sexp run/sexps with-stdio-ports)
+(call-terminally fork/pipe %fork/pipe tail-pipe tail-pipe+ alist-update alist-compress add-before add-after with-env* with-total-env* with-cwd* with-umask* create-temp-file temp-file-channel run/collecting* run/port+proc* run/port* run/file* run/string* run/strings* run/sexp* run/sexps* port->string port->string-list port->sexp-list port->list port-fold char-filter string-filter y-or-n? stdio->stdports with-stdio-ports* stdports->stdio command-line-arguments arg* arg argv home-directory exec-path-list suspend exec/env exec-path/env exec-path exec fork %fork stringify with-cwd with-umask with-env with-total-env run/port run/file run/string run/strings run/sexp run/sexps with-stdio-ports)

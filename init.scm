@@ -5,6 +5,7 @@
 	     (scsh let-opt)
 	     (scsh loophole)
 	     (scsh signals)
+	     (scsh fdports)
 	     (scsh syntax-helpers)
 	     (scsh bitwise)
 	     (scsh utilities)		; replaces primitive delete.
@@ -71,6 +72,8 @@
 
 	     ;; define-simple-syntax generates code that requires
 	     ;; (scsh alt-syntax).
+	     ;; other macros generate code that requires
+	     ;; (scsh scsh) and (scsh procobj).
 	     (scsh syntax)
 
 	     (scsh fileinfo)

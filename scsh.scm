@@ -35,7 +35,7 @@
 	command-line-arguments arg* arg argv
 	home-directory exec-path-list suspend
 	exec/env exec-path/env exec-path exec
-	fork %fork
+	fork %fork stringify
 )
 (export-syntax with-cwd with-umask with-env with-total-env
 	       run/port run/file run/string run/strings run/sexp run/sexps

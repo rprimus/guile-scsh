@@ -61,3 +61,25 @@
 (define (->groupname gid)
   (group-info:name (group-info gid)))
 
+;;; I do this one in C, I'm not sure why:
+;;; It is used by MATCH-FILES.
+;;; For Guile it's done in Scheme.
+
+(define-foreign %filter-C-strings!
+  (filter_stringvec (string pattern) ((C "char const ** ~a") cvec))
+  static-string	; error message -- #f if no error.
+  integer)	; number of files that pass the filter.
+
+(define (%filter-C-strings! pattern vec)
+  (let ((rx (make-regexp pattern))
+	(len (vector-length vec)))
+    (let loop ((i 0) (j 0))
+      (if (= i len)
+	  (values #f j)
+	  (loop (+ i 1)
+		(if (regexec rx (vector-ref vec i) #f)
+		    (begin
+		      (vector-set! vec j (vector-ref vec i))
+		      (+ j 1))
+		    j))))))
+

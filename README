@@ -1,4 +1,4 @@
-This is an incomplete port of the scheme shell (scsh) 0.4.4 to Guile.
+This is an incomplete port of the scheme shell (scsh) 0.5.1 to Guile.
 
 The original scsh is available by ftp from
 swiss-ftp.ai.mit.edu:/pub/su, which is also the place to go for scsh
@@ -14,7 +14,7 @@ can be done by:
 (load-from-path "scsh/init")
 
 Note that SLIB must be found in %load-path, e.g., it can be unpacked
-in the installed ice-9 directory.  SLIB can be obtained by ftp from
+in the "site" directory.  SLIB can be obtained by ftp from
 prep.ai.mit.edu in the pub/gnu/jacal directory.
 
 

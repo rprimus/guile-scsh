@@ -104,7 +104,7 @@
   fixnum) ; lo secs
 
 
-(define-foreign %date->time/errno (date2time (fixnum sec)
+(define-foreign %date->time/error (date2time (fixnum sec)
 					     (fixnum min)
 					     (fixnum hour)
 					     (fixnum month-day)
@@ -113,23 +113,25 @@
 					     (desc   tz-name)	; #f or string
 					     (desc   tz-secs)	; #f or int
 					     (bool   summer?))
-  desc	  ; errno or #f
+  desc	  ; errno, -1, or #f
   fixnum  ; hi secs
   fixnum) ; lo secs
 
 (define (time . args) ; optional arg [date]
-  (if (null? args)
-      (current-time)		; Fast path for (time).
-      (let* ((date (check-arg date? (car args) time))
-	     (tm (gmtime 0)))
-	(set-tm:sec tm (date:seconds date))
-	(set-tm:min tm (date:minute date))
-	(set-tm:hour tm (date:hour date))
-	(set-tm:mday tm (date:month-day date))
-	(set-tm:mon tm (date:month date))
-	(set-tm:year tm (date:year date))
-	(set-tm:isdst tm (if (date:summer? date) 1 0))
-	(car (mktime tm)))))
+  (if (pair? args)
+      (if (null? (cdr args))
+	  (let* ((date (check-arg date? (car args) time))
+		 (tm (gmtime 0)))
+	    (set-tm:sec tm (date:seconds date))
+	    (set-tm:min tm (date:minute date))
+	    (set-tm:hour tm (date:hour date))
+	    (set-tm:mday tm (date:month-day date))
+	    (set-tm:mon tm (date:month date))
+	    (set-tm:year tm (date:year date))
+	    (set-tm:isdst tm (if (date:summer? date) 1 0))
+	    (car (mktime tm)))
+	  (error "Too many arguments to TIME procedure" args))
+      (current-time)))		; Fast path for (time).
 
 ;;; Date
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

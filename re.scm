@@ -18,24 +18,19 @@
   end)		; 10 elt vec
 
 (define (match:start match . maybe-index)
-  (let ((i (:optional maybe-index 0)))
-    (or (vector-ref (regexp-match:start match) i)
-	(error match:start "No sub-match found." match i))))
+  (vector-ref (regexp-match:start match)
+	      (:optional maybe-index 0)))
 
 (define (match:end match . maybe-index)
-  (let ((i (:optional maybe-index 0)))
-    (or (vector-ref (regexp-match:end match) i)
-	(error match:start "No sub-match found." match i))))
+  (vector-ref (regexp-match:end match)
+	      (:optional maybe-index 0)))
 
 (define (match:substring match . maybe-index)
   (let* ((i (:optional maybe-index 0))
 	 (start (vector-ref (regexp-match:start match) i)))
-    (if start
-	(substring (regexp-match:string match)
-		   start
-		   (vector-ref (regexp-match:end match) i))
-	(error match:substring "No sub-match found." match i))))
-
+    (and start (substring (regexp-match:string match)
+			  start
+			  (vector-ref (regexp-match:end match) i)))))
 
 ;;; Compiling regexps
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -118,65 +113,116 @@
 ;;; Substitutions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-foreign %regexp-subst (re_subst (string-desc compiled-regexp)
-					(string match)
-					(string str)
-					(integer start)
-					(vector-desc start-vec)
-					(vector-desc end-vec)
-					(string-desc outbuf))
-  static-string	; Error msg or #f
-  integer)
+(define (regexp-substitute port match . items)
+  (let* ((str (regexp-match:string match))
+	 (sv (regexp-match:start match))
+	 (ev (regexp-match:end match))
+	 (range (lambda (item)			; Return start & end of
+		  (cond ((integer? item)	; ITEM's range in STR.
+			 (values (vector-ref sv item)
+				 (vector-ref ev item)))
+			((eq? 'pre item) (values 0 (vector-ref sv 0)))
+			((eq? 'post item) (values (vector-ref ev 0)
+						  (string-length str)))
+			(else (error "Illegal substitution item."
+				     item
+				     regexp-substitute))))))
+    (if port
 
-(define-foreign %regexp-subst-len (re_subst_len (string-desc compiled-regexp)
-						(string match)
-						(string str)
-						(integer start)
-						(vector-desc start-vec)
-						(vector-desc end-vec))
-  static-string	; Error msg or #f
-  integer)
+	;; Output port case.
+	(for-each (lambda (item)
+		    (if (string? item) (write-string item port)
+			(receive (si ei) (range item)
+			  (write-string str port si ei))))
+		  items)
 
-;;; What does this do?
+	;; Here's the string case. Make two passes -- one to
+	;; compute the length of the target string, one to fill it in.
+	(let* ((len (reduce (lambda (i item)
+			      (+ i (if (string? item) (string-length item)
+				       (receive (si ei) (range item) (- ei si)))))
+			    0 items))
+	       (ans (make-string len)))
 
-;(define (regexp-subst re match replacement)
-;  (let ((cr (%regexp:bytes re))
-;	(str       (regexp-match:string match))
-;	(start-vec (regexp-match:start  match))
-;	(end-vec   (regexp-match:end    match)))
-;    (receive (err out-len) (%regexp-subst-len cr str replacement 0
-;					      start-vec end-vec)
-;      (if err (error err regexp-subst str replacement) ; More data here
-;	  (let ((out-buf (make-string out-len)))
-;	    (receive (err out-len) (%regexp-subst cr str replacement 0
-;						  start-vec end-vec out-buf)
-;	      (if err (error err regexp-subst str replacement)
-;		  (substring out-buf 0 out-len))))))))
+	  (reduce (lambda (index item)
+		    (cond ((string? item)
+			   (string-replace! ans index item)
+			   (+ index (string-length item)))
+			  (else (receive (si ei) (range item)
+				  (substring-replace! ans index str si ei)
+				  (+ index (- ei si))))))
+		  0 items)
+	  ans))))
+
+
+
+(define (regexp-substitute/global port re str . items)
+  (let ((range (lambda (start sv ev item)	; Return start & end of
+		 (cond ((integer? item)		; ITEM's range in STR.
+			(values (vector-ref sv item)
+				(vector-ref ev item)))
+		       ((eq? 'pre item) (values start (vector-ref sv 0)))
+		       (else (error "Illegal substitution item."
+				    item
+				    regexp-substitute/global)))))
+	(num-posts (reduce (lambda (count item)
+			     (+ count (if (eq? item 'post) 1 0)))
+			   0 items)))
+    (if (and port (< num-posts 2))
+
+	;; Output port case, with zero or one POST items.
+	(let recur ((start 0))
+	  (let ((match (string-match re str start)))
+	    (if match
+		(let* ((sv (regexp-match:start match))
+		       (ev (regexp-match:end match)))
+		  (for-each (lambda (item)
+			      (cond ((string? item) (write-string item port))
+				    ((procedure? item) (write-string (item match) port))
+				    ((eq? 'post item) (recur (vector-ref ev 0)))
+				    (else (receive (si ei)
+					           (range start sv ev item)
+					    (write-string str port si ei)))))
+			    items))
+
+		(write-string str port start)))) ; No match.
+
+	(let* ((pieces (let recur ((start 0))
+			 (let ((match (string-match re str start))
+			       (cached-post #f))
+			   (if match
+			       (let* ((sv (regexp-match:start match))
+				      (ev (regexp-match:end match)))
+				 (reduce (lambda (pieces item)
+					   (cond ((string? item)
+						  (cons item pieces))
+
+						 ((procedure? item)
+						  (cons (item match) pieces))
+
+						 ((eq? 'post item)
+						  (if (not cached-post)
+						      (set! cached-post
+							    (recur (vector-ref ev 0))))
+						  (append cached-post pieces))
+
+						 (else (receive (si ei)
+							   (range start sv ev item)
+							 (cons (substring str si ei)
+							       pieces)))))
+					 '() items))
+
+			       ;; No match. Return str[start,end].
+			       (list (if (zero? start) str 
+					 (substring str start (string-length str))))))))
+	       (pieces (reverse pieces)))
+	  (if port (for-each (lambda (p) (write-string p port)) pieces)
+	      (apply string-append pieces))))))
+
+
 
 ;;; Miscellaneous
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; I do this one in C, I'm not sure why:
-;;; It is used by MATCH-FILES.
-;;; For Guile it's done in Scheme.
-
-(define-foreign %filter-C-strings!
-  (filter_stringvec (string pattern) ((C "char const ** ~a") cvec))
-  static-string	; error message -- #f if no error.
-  integer)	; number of files that pass the filter.
-
-(define (%filter-C-strings! pattern vec)
-  (let ((rx (make-regexp pattern))
-	(len (vector-length vec)))
-    (let loop ((i 0) (j 0))
-      (if (= i len)
-	  (values #f j)
-	  (loop (+ i 1)
-		(if (regexec rx (vector-ref vec i) #f)
-		    (begin
-		      (vector-set! vec j (vector-ref vec i))
-		      (+ j 1))
-		    j))))))
 
 ;;; Convert a string into a regex pattern that matches that string exactly --
 ;;; in other words, quote the special chars with backslashes.
@@ -191,3 +237,17 @@
 	      (if (memv c '(#\[ #\] #\. #\* #\? #\( #\) #\| #\\ #\$ #\^ #\+))
 		  (cons #\\ result)
 		  result))))))
+
+
+;;; Count the number of possible sub-matches in a regexp 
+;;; (i.e., the number of left parens).
+
+(define (regexp-num-submatches s)
+  (let* ((len (string-length s))
+	 (len-1 (- len 1)))
+    (let lp ((i 0) (nsm 0))
+      (if (= i len) nsm
+	  (case (string-ref s i)
+	    ((#\\) (if (< i len-1) (lp (+ i 2) nsm) nsm))
+	    ((#\() (lp (+ i 1) (+ nsm 1)))
+	    (else (lp (+ i 1) nsm)))))))

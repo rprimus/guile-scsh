@@ -35,7 +35,6 @@
 
 ;; "delete" primitive is replaced, but doesn't seem worth saving.
 (load-from-path "scsh/utilities.scm")
-
 ;; replace procedures in utilities.scm with guile primitives.
 (set! index string-index)
 (set! rindex string-rindex)
@@ -43,7 +42,7 @@
 (load-from-path "scsh/fname.scm")
 (load-from-path "scsh/errno.scm")
 (load-from-path "scsh/defrec.scm")
-(load-from-path "scsh/re.scm")
+;;(load-from-path "scsh/re.scm")
 (load-from-path "scsh/syscalls.scm")
 (load-from-path "scsh/time.scm")
 (load-from-path "scsh/rw.scm")
@@ -53,5 +52,4 @@
 (load-from-path "scsh/netconst.scm")
 (load-from-path "scsh/network.scm")
 (load-from-path "scsh/scsh.scm")
-
 (init-scsh-vars #f)

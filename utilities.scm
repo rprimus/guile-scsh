@@ -170,3 +170,31 @@
   (let ((f (round x)))
     (if (inexact? f) (inexact->exact f) f)))
 
+
+;;; Copy string SOURCE into TARGET[start,...]
+
+(define (string-replace! target start source)
+  (let ((len (string-length source)))
+    (do ((i (+ start len -1) (- i 1))
+	 (j (- len 1) (- j 1)))
+      ((< j 0) target)
+      (string-set! target i (string-ref source j)))))
+
+
+;;; Copy SOURCE[source-start, source-end) into TARGET[start,)
+
+(define (substring-replace! target start source source-start source-end)
+  (do ((i (+ start (- source-end source-start) -1) (- i 1))
+       (j (- source-end 1) (- j 1)))
+      ((< j source-start) target)
+    (string-set! target i (string-ref source j))))
+
+
+;;; Compute (... (f (f (f zero c0) c1) c2) ...)
+
+(define (string-reduce f zero s)
+  (let ((len (string-length s)))
+    (let lp ((v zero) (i 0))
+      (if (= i len)
+	  v
+	  (lp (f v (string-ref s i)) (+ i 1))))))

@@ -1,3 +1,27 @@
+Sun Jun 15 06:06:58 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* configure.in: change the version to 1.2a so it will install
+	in the right place (maybe).
+
+	* README: now it's a port of scsh 0.5.1.
+
+	* init.scm: don't include re.scm until Guile's interface is stable.
+
+	* match:start, match:end, match:substring updated from scsh 0.5.1.
+	regexp-substitute, regexp-substitute/global, regexp-num-submatches:
+	new from scsh 0.5.1.
+
+	* syscalls.scm (%filter-C-strings!): moved from re.scm, following
+	scsh 0.5.1.
+
+	* utilities.scm: new version from scsh 0.5.1, adds string-replace!,
+	substring-replace!, string-reduce.
+
+	* time.scm: minor changes for scsh 0.4.4 -> 0.5.1
+
+	* rw.scm: delete y-or-n? and *y-or-n-eof-count* which have moved
+	in scsh 0.5.1 (to scsh.scm, but we don't need them).
+
 Tue May 13 11:59:28 1997  Jim Blandy  <jimb@floss.cyclic.com>
 
 	* Makefile.in, aclocal.m4, configure: Regenerated using automake

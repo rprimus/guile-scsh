@@ -198,6 +198,25 @@
   (dup (current-output-port) 1)
   (dup (error-output-port)   2))
 
+(define (exit . maybe-status)
+  (flush-all-ports)
+  (primitive-exit (:optional  maybe-status 0))
+  (display "The evil undead walk the earth." 2)
+  (error "(exit) returned."))
+
+
+;;; The classic T 2.0 primitive.
+;;; This definition works for procedures running on top of Unix systems.
+(define (halts? proc) #t)
+
+
+;;; Low-level init absolutely required for any scsh program.
+
+;;(define (init-scsh-hindbrain relink-ff?)
+;;  (if relink-ff? (lookup-all-externals)) ; Re-link C calls.
+;;  (init-fdports!)
+;;  (%install-unix-scsh-handlers))
+
 
 ;;; Some globals:
 (define home-directory "")
@@ -214,5 +233,3 @@
 	      (else (if (not quietly?)
 			(warn "Starting up with no path ($PATH)."))
 		    '()))))
-
-

@@ -3,7 +3,25 @@
 
 ;; Rewritten for Guile in places, incomplete.
 
-(set! exit primitive-exit)
+;;; Process
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define-foreign exit/errno ; errno -- misnomer.
+  (exit (integer status))
+  ignore)
+
+(define-foreign %exit/errno ; errno -- misnomer
+  (_exit (integer status))
+  ignore)
+
+;; (define (%exit . maybe-status)
+;;  (%exit/errno (:optional maybe-status 0))
+;;  (error "Yikes! %exit returned."))
+
+
+(define-foreign %%fork/errno (fork)
+  (multi-rep (to-scheme pid_t errno_or_false)
+             pid_t))
 
 ;;; Miscellaneous process state
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

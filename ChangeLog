@@ -1,3 +1,13 @@
+2000-09-14  Gary Houston  <ghouston@arglist.com>
+
+	* lib/string-lib.scm (string->list): fix a known scsh bug:
+	string->list didn't work at all.
+
+2000-09-07  Gary Houston  <ghouston@arglist.com>
+
+	* alt-syntax.scm (define-syntax): quote ,name when consing it to
+	form.
+
 2000-09-04  Gary Houston  <ghouston@arglist.com>
 
 	* README: updated.  guile-scsh is now based on scsh 0.5.2.

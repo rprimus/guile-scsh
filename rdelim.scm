@@ -5,6 +5,7 @@
 ;;; skip-char-set isn't mentioned in the scsh manual, but is used in fr.scm.
 
 (define-module (scsh rdelim)
+  :use-module (ice-9 rdelim)
   :use-module (scsh char-set)
   :use-module (scsh rx re-high)
   :use-module (scsh rx re)
@@ -13,6 +14,9 @@
 )
 
 (export read-line read-paragraph read-delimited read-delimited! skip-char-set)
+
+;; unchanged from (ice-9 rdelim)
+(export %read-delimited!)
 
 (if (not (defined? 'guile-read-delimited))
     (define guile-read-delimited read-delimited))

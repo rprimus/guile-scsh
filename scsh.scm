@@ -18,6 +18,7 @@
   :use-module (scsh fileinfo)
   :use-module (scsh fname)
   :use-module (scsh rw)
+  :use-module (scsh rdelim)
   :use-module (scsh sighandlers)
   :use-module (scsh procobj)
 )

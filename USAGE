@@ -155,8 +155,11 @@ This list was generated with help from the make-module-list script.
 (coerce-dynamic-regexp spec->char-set)
 
 (scsh rdelim)
-;; replaces guile procs: read-line, read-delimited, read-delimited!
-(read-line read-paragraph read-delimited read-delimited! skip-char-set)
+;; similar to (ice-9 rdelim):
+;; incompatible: read-line, read-delimited, read-delimited!
+;; additions: read-paragraph, skip-char-set
+;; omissions: write-line, read-line!
+(read-line read-paragraph read-delimited read-delimited! skip-char-set %read-delimited!)
 
 (scsh here)
 ;; exports nothing, but installs a read macro for #<

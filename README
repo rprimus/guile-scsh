@@ -8,7 +8,7 @@ http://www.swiss.ai.mit.edu/ftpdir/scsh/
 
 This version of guile-scsh requires:
 
-1) guile-core dated 07 January 2001 or later for best results.  Version 1.4
+1) guile-core dated 25 January 2001 or later for best results.  Version 1.4
 is too old.
 
 2) The guilerxspencer module, available from http://arglist.com/guile/

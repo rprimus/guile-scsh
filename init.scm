@@ -8,8 +8,6 @@
 (defmacro define-errno-syscall args #f)
 (defmacro define-record-discloser args #f)
 
-(define integer->string number->string)
-
 (define-module (guile) :use-module (ice-9 slib))
 
 (load-from-path "scsh/syntax.scm")

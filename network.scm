@@ -3,6 +3,7 @@
 ;;; Copyright (c) 1994 by Olin Shivers.
 
 ;;; Scheme48 implementation.
+;;; numerous changes for interface with Guile primitives.
 
 (foreign-source
  "#include <sys/types.h>"

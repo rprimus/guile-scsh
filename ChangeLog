@@ -1,3 +1,7 @@
+Fri Dec 27 06:06:50 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: remove integer->string.
+
 Sat Dec 21 01:49:23 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* network.scm: (close-socket, bind-socket, create-socket,

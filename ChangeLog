@@ -1,3 +1,8 @@
+2000-11-29  Gary Houston  <ghouston@arglist.com>
+
+	* Makefile.am (install-exec-local): a temporary kludge to create rx
+	and lib	dirs before installing files there. 
+
 2000-11-27  Gary Houston  <ghouston@arglist.com>
 
 	* Removed auto-generated files from the CVS repository.

@@ -2,9 +2,9 @@
 
 # AUTOMAKE_OPTIONS = foreign
 
-subpkgdatadir = @GUILE_SCSH_DIR@
+pkgdatadir = @GUILE_SCSH_DIR@
 
-subpkgdata_DATA = alt-syntax.scm ascii.scm awk.scm bitwise.scm \
+pkgdata_DATA = alt-syntax.scm ascii.scm awk.scm bitwise.scm \
 	char-set.scm \
 	defrec.scm ekko.scm errno.scm features.scm \
 	fileinfo.scm filemtch.scm filesys.scm \
@@ -24,4 +24,9 @@ subpkgdata_DATA = alt-syntax.scm ascii.scm awk.scm bitwise.scm \
 	syntax.scm syntax-helpers.scm syscalls.scm \
 	time.scm utilities.scm weak.scm
 
-EXTRA_DIST = $subpkgdatadir_DATA INCOMPAT USAGE make-module-list autogen.sh
+install-exec-local:
+	$(srcdir)/mkinstalldirs $(pkgdatadir)/rx
+	$(srcdir)/mkinstalldirs $(pkgdatadir)/lib
+
+EXTRA_DIST = $pkgdatadir_DATA $rxdata_DATA \
+	INCOMPAT USAGE make-module-list autogen.sh

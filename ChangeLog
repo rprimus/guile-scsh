@@ -1,3 +1,18 @@
+Tue Dec 17 06:24:39 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load syntax.scm instead of slib's macro-by-example.
+	load defrec.scm.
+	
+	* defrec.scm: copied from SCSH.
+
+	* syntax.scm: copied from SCSH.
+	Redefine define-syntax and define syntax-error.  By some miracle
+	it seems to work.
+
+Mon Dec 16 05:53:43 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* receive.scm: copied from SCSH.
+
 Fri Dec 13 04:53:50 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* utilities.scm (compose): uncomment.

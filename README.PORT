@@ -14,6 +14,5 @@ can be done by:
 (load-from-path "scsh/init")
 
 Note that SLIB must be found in %load-path, e.g., it can be unpacked
-in a directory named "slib" parallel to the scsh directory, or an
-equivalent link can be made.  SLIB can be obtained by ftp from
+in the installed ice-9 directory.  SLIB can be obtained by ftp from
 prep.ai.mit.edu in the pub/gnu/jacal directory.

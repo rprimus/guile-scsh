@@ -1,5 +1,20 @@
-Tue Jul 29 01:39:40 1997  Gary Houston  <ghouston@actrix.gen.nz>
+Sat Aug  9 08:34:09 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
+	* syscalls.scm: signals: signal-process, signal-process-group,
+	pause-until-interrupt.
+	miscellaneous: sleep, sleep-until, system-name.
+	* Makefile.am (scsh_DATA): add weak.scm, population.scm, procobj.scm,
+	sighandlers.scm.
+	* init.scm: load weak.scm, population.scm, procobj.scm,
+	sighandlers.scm.
+	* sighandlers.scm: new file from scsh-0.5.1, partially reimplemented
+	using Guile's sigaction.
+	* procobj.scm: new file from scsh-0.5.1, modified for Guile.
+	* population.scm: new file from scsh-0.5.1/scheme48.
+	* weak.scm: new file, implements scheme48-style weak pointers.
+
+Tue Jul 29 01:39:40 1997  Gary Houston  <ghouston@actrix.gen.nz>
+	
 	* Makefile.am (scsh_DATA): add newports.scm.
 
 	* scsh.scm (exit): defined here instead of in syscalls.scm.

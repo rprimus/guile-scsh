@@ -1,6 +1,6 @@
 Incompatibilities with scsh 0.4.4:
 
-a lot of stuff is missing.
+many things are still missing.
 
 everything is defined at the top level, no modules.
 
@@ -15,3 +15,7 @@ If the buffer fills, it doesn't peek ahead to check whether the next
 character is a delimiter or EOF, since this a) seems to require extra
 code or comparisons, b) makes read-delimted! and read-line! more complex
 c) doesn't gain much anyway.
+
+set-enabled-interrupts and with-interrupts have not been 
+implemented.  Within a with-enabled-interrupts form, all interrupts are
+disabled.

@@ -23,6 +23,13 @@
   (multi-rep (to-scheme pid_t errno_or_false)
              pid_t))
 
+;;; Posix waitpid(2) call.
+(define-foreign %wait-pid/errno (wait_pid (integer pid) (integer options))
+  desc		; errno or #f
+  integer  ; process' id
+  integer) ; process' status
+
+
 ;;; Miscellaneous process state
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -49,12 +56,6 @@
 
 (define cwd getcwd)
 
-(if (not (defined? 'guile-pipe))
-    (define guile-pipe pipe))
-(set! pipe (lambda ()
-	     (let ((rv (guile-pipe)))
-	       (values (car rv) (cdr rv)))))
-
 ;;; UMASK
 
 (define-foreign set-umask (umask (mode_t mask)) no-declare ; integer on SunOS
@@ -67,6 +68,48 @@
 ;;    m))
 
 (define (set-umask newmask) (umask newmask))
+
+(if (not (defined? 'guile-pipe))
+    (define guile-pipe pipe))
+(set! pipe (lambda ()
+	     (let ((rv (guile-pipe)))
+	       (values (car rv) (cdr rv)))))
+
+;;; Signals (rather incomplete)
+;;; ---------------------------
+
+(define-foreign signal-pid/errno
+  (kill (pid_t pid) (integer signal))
+  (to-scheme integer errno_or_false))
+
+(define-errno-syscall (signal-pid pid signal) signal-pid/errno)
+
+(define (signal-process proc signal)
+  (kill (cond ((proc? proc)    (proc:pid proc))
+	      ((integer? proc) proc)
+	      (else (error "Illegal proc passed to signal-process" proc)))
+	signal))
+
+(define (signal-process-group proc-group signal)
+  (kill (- (cond ((proc? proc-group)    (proc:pid proc-group))
+		 ((integer? proc-group) proc-group)
+		 (else (error "Illegal proc passed to signal-process-group"
+			      proc-group))))
+	signal))
+
+;;; SunOS, not POSIX:
+;;; (define-foreign signal-process-group/errno
+;;;   (killpg (integer proc-group) (integer signal))
+;;;   (to-scheme integer errno_or_false))
+;;; 
+;;; (define-errno-syscall (signal-process-group proc-group signal)
+;;;   signal-process-group/errno)
+
+(define-foreign pause-until-interrupt (pause) no-declare ignore)
+
+(define pause-until-interrupt pause)
+
+(define-foreign itimer (alarm (uint_t secs)) uint_t)
 
 ;;; User info
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -225,3 +268,37 @@
 ;;  (if val
 ;;      (putenv (string-append var "=" val))
 ;;      (delete-env var)))
+
+;;; Miscellaneous
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; usleep(3): Try to sleep for USECS microseconds.
+;;; sleep(3):  Try to sleep for SECS seconds.
+
+; De-released -- not POSIX and not on SGI systems.
+; (define-foreign usleep (usleep (integer usecs)) integer)
+
+;; Guile's sleep can be interrupted.
+(if (not (defined? 'guile-sleep))
+    (define guile-sleep sleep))
+
+(define (sleep secs) (sleep-until (+ secs (time))))
+
+(define (sleep-until when)
+  (let ((now (current-time))
+	(iwhen (inexact->exact when)))
+    (if (> iwhen now)
+	(if (> (guile-sleep (- iwhen now)) 0)
+	    (sleep-until when)))))
+
+(define-foreign %sleep-until (sleep_until (fixnum hi)
+					  (fixnum lo))
+  desc)
+
+(define-foreign %gethostname (scm_gethostname)
+  static-string)
+
+(define (system-name) (utsname:nodename (uname)))
+
+(define-foreign errno-msg (errno_msg (integer i))
+  static-string)

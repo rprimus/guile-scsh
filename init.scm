@@ -5,6 +5,7 @@
 
 (define-module (guile) :use-module (ice-9 slib))
 (require 'macro-by-example)
+(require 'values)
 
 (load-from-path "scsh/let-opt.scm")
 

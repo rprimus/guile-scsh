@@ -1,7 +1,7 @@
 ;;; Random useful utilities.
 ;;; Copyright (c) 1993 by Olin Shivers.
 
-;;; for Guile: :optional renamed to optional.  commented out compose.
+;;; for Guile: changed use of :optional to optional.
 
 (define (del elt lis)
   (letrec ((del (lambda (lis)
@@ -129,8 +129,8 @@
 
 (define (negate f) (lambda args (not (apply f args))))
 
-;(define (compose f g)
-;  (lambda args (call-with-values (lambda () (apply g args)) f)))
+(define (compose f g)
+  (lambda args (call-with-values (lambda () (apply g args)) f)))
 
 
 (define (reverse! lis)

@@ -1,3 +1,8 @@
+Fri Dec 13 04:53:50 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* utilities.scm (compose): uncomment.
+	* init.scm (values): get call-with-values from slib.
+
 Wed Dec 11 22:15:18 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm: define bitwise-not, bitwise-and, bitwise-ior, bitwise-xor.

@@ -1,3 +1,17 @@
+Tue May 13 11:59:28 1997  Jim Blandy  <jimb@floss.cyclic.com>
+
+	Make SCSH into a separate distribution.
+	* README: Renamed from README.PORT.
+	* configure.in: Use AM_INIT_AUTOMAKE, not AM_INIT_GUILE_MODULE.
+	* Makefile.am: Don't use @module@ to decide where to install
+	things.  No need to mention README.PORT; automake will grab it
+	automatically now, since it's named README.  Don't try to
+	distribute the PLUGIN stuff.
+	* INSTALL: New file; stock text.
+	* install-sh, missing, mkinstalldirs: New files, used by
+	automake-generated makefiles.
+	* configure, Makefile.in, aclocal.m4: Regenerated.
+
 Sat Apr 26 03:16:18 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* time.scm (format-date): Uncommented and rewritten.

@@ -82,7 +82,7 @@
 ;;; Time
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; TICKS/SEC is defined in OS-dependent code.
+(define ticks/sec 1000000)
 
 (define-foreign %time+ticks/errno (time_plus_ticks)	; C fun is OS-dependent
   desc	  ; errno or #f
@@ -91,13 +91,9 @@
   fixnum  ; hi ticks
   fixnum) ; lo ticks
 
-;; convert pair to multiple values.
-(if (not (defined? 'guile-time+ticks))
-    (define guile-time+ticks time+ticks))
-(set! time+ticks
-      (lambda ()
-	(let ((rv (guile-time+ticks)))
-	  (values (car rv) (cdr rv)))))
+(define (time+ticks)
+  (let ((rv (gettimeofday)))
+    (values (car rv) (cdr rv))))
 
 (define (time+ticks->time secs ticks)
   (+ secs (/ ticks ticks/sec)))

@@ -1,5 +1,8 @@
 Sat Apr  5 06:44:32 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
+	* time.scm (ticks/sec): define, always 1000000.
+	(time+ticks): use gettimeofday.
+
 	* Makefile.am (subpkgdata_DATA): add time.scm.
 	* init.scm: load time.scm.  require 'format from slib.
 

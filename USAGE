@@ -34,6 +34,9 @@ between module names and files.  It was considered desirable to leave
 the scsh file layouts relatively intact, to simplify ungrading to
 newer versions of scsh.
 
+FIXME: some facilities from scsh are available directly in guile-core.
+They should probably be listed here.
+
 This list was generated with help from the make-module-list script.
 
 (scsh alt-syntax)
@@ -107,7 +110,7 @@ This list was generated with help from the make-module-list script.
 ()
 
 (scsh rw)
-(bogus-substring-spec? read-string/partial read-string! read-string write-string write-string/partial)
+(bogus-substring-spec? read-string/partial read-string! read-string write-string write-string/partial read-string!/partial)
 
 (scsh rx re-low)
 (match:start match:end match:substring new-cre cre-search cre-search? cre:string cre:tvec)

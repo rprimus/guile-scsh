@@ -1,6 +1,8 @@
 Bugs:
 ====
 
+write-string/partial will block until all data is written.
+
 Incompatibilities with the original scsh:
 ========================================
 

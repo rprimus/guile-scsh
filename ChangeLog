@@ -1,3 +1,7 @@
+2001-01-25  Gary Houston  <ghouston@arglist.com>
+
+	* rw.scm: export read-string!/partial.
+
 2001-01-24  Gary Houston  <ghouston@arglist.com>
 
 	* rdelim.scm: use module (ice-9 rdelim).

@@ -8,10 +8,11 @@ http://www.swiss.ai.mit.edu/ftpdir/scsh/
 
 This version of guile-scsh requires:
 
-1) guile-core dated 25 January 2001 or later for best results.  Version 1.4
-is too old.
+1) guile-core.  For best results, check it out of CVS at the same time
+as guile-scsh.  Version 1.4 is too old.
 
 2) The guilerxspencer module, available from http://arglist.com/guile/
+(although some scsh modules can still be used if it's not installed.)
 
 Please send bug reports to:
 
@@ -22,12 +23,12 @@ To install the package, use something like:
 ./configure
 make install
 
-The configure script will attempt to install guile-scsh in the Guile
-site directory, as reported by guile-config in the current PATH.
-Supplying a prefix argument to configure doesn't have any effect.
+The configure script will attempt to locate the Guile site directory,
+as reported by guile-config in the current PATH.  Supplying a prefix
+argument to configure doesn't have any effect.
 
 Alternatively it's sufficient to rename (or link) the main guile-scsh
-directory to "scsh" and place it somewhere in the guile load path (type
+directory to "scsh" and place it somewhere in the Guile load path (type
 %load-path in an interactive Guile session to see the current
 setting).
 

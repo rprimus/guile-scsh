@@ -9,7 +9,9 @@
 )
 (export bogus-substring-spec? read-string/partial
 	read-string! read-string write-string write-string/partial)
-	
+
+;; from guile-core.
+(export read-string!/partial)
 
 (define (bogus-substring-spec? s start end)
   (or (< start 0)

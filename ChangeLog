@@ -1,3 +1,14 @@
+2001-05-29  Gary Houston  <ghouston@arglist.com>
+
+	* rx/re-subst.scm: export regexp-substitute-global.  otherwise
+	the version from (ice-9 regex) is used, but can't handle SREs.
+	thanks to Paul Emsley for pointing out that
+	regexp-substitute/global didn't work.
+
+	* rx/re-low.scm: export regexp-match:start, regexp-match:end,
+	regexp-match:string since they are used in re-subst.scm.  This
+	fixes regexp-substitute.
+
 2001-05-28  Gary Houston  <ghouston@arglist.com>
 
 	* filesys.scm (create-directory, create-fifo, create-hard-link,

@@ -9,6 +9,7 @@
   :use-module (scsh utilities)
 )
 (export match:start match:end match:substring)
+(export regexp-match:start regexp-match:end regexp-match:string)
 (export new-cre cre-search cre-search? cre:string cre:tvec)
 
 (foreign-source

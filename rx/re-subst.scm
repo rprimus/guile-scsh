@@ -17,7 +17,7 @@
   :use-module (scsh rx re-low)
   :use-module (scsh rx re-high)
 )
-(export regexp-substitute)
+(export regexp-substitute regexp-substitute/global)
 
 (define (regexp-substitute port match . items)
   (let* ((str (regexp-match:string match))

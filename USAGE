@@ -141,7 +141,8 @@ This list was generated with help from the make-module-list script.
 (->regexp)
 
 (scsh rx re-subst)
-(regexp-substitute)
+;; these replace definitions from (ice-9 regex).
+(regexp-substitute regexp-substitute/global)
 
 (scsh rx re-fold)
 (regexp-fold regexp-fold-right regexp-for-each)

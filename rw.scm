@@ -21,7 +21,7 @@
       (let loop ()
 	(catch 'system-error
 	       (lambda ()
-		 (let ((nread (reader s source start (- end start))))
+		 (let ((nread (reader s source start end)))
 		   (and (not (zero? nread)) nread)))
 	       (lambda args 
 		 (let ((err (car (list-ref args 4))))
@@ -59,7 +59,7 @@
     (if (>= i end) (- i start)
 	(catch 'system-error
 	       (lambda ()
-		 (let ((nread (reader s source i (- end i))))
+		 (let ((nread (reader s source i end)))
 		   (if (zero? nread) ; EOF
 		       (let ((result (- i start)))
 			 (and (not (zero? result)) result))
@@ -98,7 +98,7 @@
       (let loop ()
 	(catch 'system-error
 	       (lambda ()
-		 (let ((nwritten (writer s target start (- end start))))
+		 (let ((nwritten (writer s target start end start)))
 		   nwritten))
 	       (lambda args 
 		 (let ((err (car (list-ref args 4))))
@@ -127,8 +127,7 @@
     (if (< i end)
 	(catch 'system-error
 	       (lambda ()
-		 (let ((nwritten (writer s target i (- end i))))
-		   
+		 (let ((nwritten (writer s target i end i)))
 		   (loop (+ i nwritten))))
 	       (lambda args
 		 (apply scm-error args))))))

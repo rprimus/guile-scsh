@@ -13,3 +13,9 @@ bytes read and the address received from.  Likewise for receive-message!
 and receive-message (bug in scsh?)
 
 network-info works when its argument is a socket address (bug in scsh?)
+
+%read-delimited! takes a string for its "set of delimiters" parameter.
+If the buffer fills, it doesn't peek ahead to check whether the next
+character is a delimiter or EOF, since this a) seems to require extra
+code or comparisons, b) makes read-delimted! and read-line! more complex
+c) doesn't gain much anyway.

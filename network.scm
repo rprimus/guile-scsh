@@ -418,9 +418,9 @@
 	     (addr #f))
     (if (>= i end) (values (- i start)
 			   (make-socket-address from addr))
-	(let* ((rv (recvfrom sockfd (list s i end) flags))
-	       (nread (cadr rv))
-	       (addr (caddr rv)))
+	(let* ((rv (recvfrom! sockfd s flags i end))
+	       (nread (car rv))
+	       (addr (cdr rv)))
 	  (cond
 	   ((zero? nread)	; EOF
 	    (values
@@ -470,9 +470,9 @@
   (if (= start end) 0 ; Vacuous request.
       (catch 'system-error
 	     (lambda ()
-	       (let* ((rv (recvfrom sockfd (list s start end) flags))
-		      (nread (cadr rv))
-		      (addr (caddr rv)))
+	       (let* ((rv (recvfrom! sockfd s flags start end))
+		      (nread (car rv))
+		      (addr (cdr rv)))
 		 (values (and (not (zero? nread)) nread)
 			 (make-socket-address from addr))))
 	     (lambda args

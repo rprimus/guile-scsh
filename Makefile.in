@@ -45,8 +45,9 @@ module = @module@
 AUTOMAKE_OPTIONS = foreign
 
 subpkgdatadir = $(pkgdatadir)/$(VERSION)/@module@
-subpkgdata_DATA = defrec.scm errno.scm init.scm let-opt.scm netconst.scm \
-	network.scm receive.scm rw.scm syntax.scm utilities.scm
+subpkgdata_DATA = char-set.scm \
+	defrec.scm errno.scm init.scm let-opt.scm netconst.scm \
+	network.scm rdelim.scm receive.scm rw.scm syntax.scm utilities.scm
 
 EXTRA_DIST = PLUGIN/OPT $(subpkgdata_DATA) INCOMPAT README.PORT
 ACLOCAL = $(top_srcdir)/aclocal.m4

@@ -1,3 +1,23 @@
+Sat Jan 25 01:03:03 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load char-set.scm and rdelim.scm.
+	* Makefile.am (subpkgdata_DATA): add char-set.scm and rdelim.scm.
+
+	* rdelim.scm: new file from scsh.  Some procedures have been
+ 	implemented in libguile/ice-9 (based on the scsh interfaces), so
+ 	the versions here just modify them to use scsh char-sets and
+ 	multiple values.
+
+	* rw.scm (generic-read-string!/partial, generic-read-string!,
+	generic-write-string/partial, generic-write-string: adapt
+	to change in uniform-array-read/write arguments.
+
+	* network.scm (generic-receive-message!, 
+	generic-receive-message!/partial): adapt to changes in recvfrom!
+	primitive.
+
+	* char-set.scm: new file from scsh.
+
 Mon Jan 20 01:12:38 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* Makefile.am, Makefile.in, PLUGIN/OPT, README.PORT, configure.in,

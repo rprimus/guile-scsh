@@ -11,7 +11,10 @@
   :use-module (ice-9 receive)
   :use-module (scsh let-opt)
   :use-module (srfi srfi-14)
+
+  ;; can be removed when rx upgraded to 0.5.3
   :use-module (scsh cset-obsolete)
+
   :use-module (scsh rdelim)
   :use-module (scsh rx re)
   :use-module (scsh rx re-low)
@@ -332,7 +335,7 @@
 	     s)))
 
 	((concat)		; CONCAT-delimiter reader.
-	 (let ((not-delims (char-set-invert delims)))
+	 (let ((not-delims (char-set-complement delims)))
 	   (lambda maybe-port
 	     (let* ((p (:optional maybe-port (current-input-port)))
 		    (s (read-delimited delims p 'concat)))
@@ -342,7 +345,7 @@
 			 (string-append s extra-delims))))))))
 
 	((split)		; SPLIT-delimiter reader.
-	 (let ((not-delims (char-set-invert delims)))
+	 (let ((not-delims (char-set-complement delims)))
 	   (lambda maybe-port
 	     (let ((p (:optional maybe-port (current-input-port))))
 	       (receive (s delim) (read-delimited delims p 'split)

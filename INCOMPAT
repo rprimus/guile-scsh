@@ -8,9 +8,13 @@ e.g., see the "run" comment in the USAGE file.
 scsh features not implemented
 =============================
 
+The ODBC interface.
+
 enabled-interrupts, interrupt-set, itimer, %set-unix-signal-handler,
 set-enabled-interrupts, %unix-signal-handler,
 with-enabled-interrupts*.
+
+(incomplete, more below.)
 
 Bugs in scsh fixed in guile-scsh
 ================================

@@ -67,7 +67,7 @@
   (let ((uid (user-effective-uid)))
     (with-errno-handler ((err data)
 			 ((errno/acces) 'search-denied)
-			 ((errno/notdir) 'not-directory)
+			 ((errno/notdir) 'no-directory)
 
 			 ;; If the file doesn't exist, we usually return
 			 ;; 'nonexistent, but we special-case writability

@@ -5,6 +5,9 @@
   :use-module (scsh signals))
 (export-syntax define-syntax syntax-rules)
 
+;; kludge: may appear in define-syntax expansion.
+(re-export syntax-error)
+
 ; This definition of define-syntax is appropriate for Scheme-to-C.
 
 ;(define-macro define-syntax

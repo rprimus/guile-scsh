@@ -16,7 +16,6 @@
   :use-module (scsh rx re)
   :use-module (scsh utilities)
   :use-module (srfi srfi-14)
-  :use-module (scsh cset-obsolete)
   :use-module (scsh scsh-condition)
   :use-module (scsh syscalls)
 )
@@ -119,7 +118,7 @@
 		 (res (list re-bos))
 		 (i 0))
 	  (if (= i pat-len)
-	      (re-seq (reverse (str-cons chars res)))
+	      (re-seq (reverse (cons re-eos (str-cons chars res))))
 
 	      (let ((c (string-ref pat i))
 		    (i (+ i 1)))
@@ -136,10 +135,9 @@
 			     (cons re-any (str-cons chars res))
 			     i))
 				
-		  ((#\[) (receive (cset i) (parse-glob-bracket pat i)
+		  ((#\[) (receive (re i) (parse-glob-bracket pat i)
 			   (lp '()
-			       (cons (re-char-set cset)
-				     (str-cons chars res))
+			       (cons re (str-cons chars res))
 			       i)))
 
 		  (else  (lp (cons c chars) res i))))))))))
@@ -165,16 +163,15 @@
 	      (case c
 		((#\])
 		 (let ((cset (fold (lambda (elt cset)
-				     (char-set-union
-				      cset
-				      (if (char? elt)
-					  (char-set elt)
-					  (ascii-range->char-set (char->ascii (car elt))
-								 (+ 1 (char->ascii (cdr elt)))))))
-				   char-set:empty
+				     (if (char? elt)
+					 (char-set-adjoin! cset elt)
+					 (ucs-range->char-set! (char->ascii (car elt))
+							       (+ 1 (char->ascii (cdr elt)))
+							       #f cset)))
+				   (char-set-copy char-set:empty)
 				   elts)))
 		   (values (re-char-set (if negate?
-					    (char-set-invert cset)
+					    (char-set-complement! cset)
 					    cset))
 			   i)))
 

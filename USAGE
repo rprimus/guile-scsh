@@ -174,8 +174,9 @@ modules from guile-scsh
 (regexp-fold regexp-fold-right regexp-for-each)
 
 (scsh rx re-syntax)
-;; rx macro generates code that requires
-;; (scsh rx re)
+;; rx macro generates code that requires at least:
+;; (scsh rx re) (srfi srfi-14) (scsh cset-obsolete)
+;; (scsh cset-obsolete only needed until rx upgraded to 0.5.3.
 (sre-form? expand-rx if-sre-form rx)
 
 (scsh rx parse)

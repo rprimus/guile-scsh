@@ -1,3 +1,16 @@
+2001-08-03  Gary Houston  <ghouston@arglist.com>
+
+	* glob.scm, fr.scm, fileinfo.scm, let-opt.scm:
+	upgraded with scsh 0.5.2 -> scsh 0.5.3 changes.
+
+	* fr.scm, glob.scm: don't use module (scsh cset-obsolete).
+	* let-opt.scm: don't export really-let-optionals*, it's gone.
+	commented out the last part the file to avoid 2nd let-optionals*
+	definition, which doesn't work in Guile. use module (ice-9 receive).
+
+	* alt-syntax.scm: re-export syntax-error: a kludge to allow
+	define-syntax macro expansion to use it.
+
 2001-08-01  Gary Houston  <ghouston@arglist.com>
 
 	* char-p.scm: new file, for new module (scsh char-p).

@@ -41,3 +41,7 @@ net-to-host-32 etc., haven't been defined.
 the files jcontrol.scm and jcontrol2.scm haven't been ported.
 
 pty and tty support hasn't been implemented (pty.scm, tty.scm).
+
+select! hasn't been implemented.
+
+display and write don't accept file descriptors in place of ports.

@@ -97,8 +97,7 @@ modules from guile-scsh
 (arithmetic-shift bitwise-not bitwise-and bitwise-ior bitwise-xor)
 
 (scsh utilities)
-;; "delete" is incompatile with guile primitive.
-(del delete first? nth mapv mapv! vector-every? copy-vector initialize-vector vector-append vfold vfold-right check-arg conjoin disjoin negate compose call/cc deprecated-proc deposit-bit-field real->exact-integer)
+(del first? nth mapv mapv! vector-every? copy-vector initialize-vector vector-append vfold vfold-right check-arg conjoin disjoin negate compose call/cc deprecated-proc deposit-bit-field real->exact-integer)
 
 (scsh define-foreign-syntax)
 ;; dummy definitions.

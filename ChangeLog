@@ -1,3 +1,14 @@
+2001-06-06  Gary Houston  <ghouston@arglist.com>
+
+	* scsh-condition.scm (with-errno-handler*): bug fix, errors were
+	not reported correctly.  use (ice-9 stack-catch) to improve
+	error messages.
+	* filesys.scm (create-file-thing): use (ice-9 stack-catch) to improve
+	error messages.
+	(delete-filesys-object): handle errno/isdir, not errno/perm when
+	deleting a file.  otherwise directories can't be deleted: seems like
+	a bug in scsh.
+
 2001-06-04  Gary Houston  <ghouston@arglist.com>
 
 	* rw.scm (generic-write-string/partial, write-string/partial):

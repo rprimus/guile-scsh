@@ -3,6 +3,7 @@
 ;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
 (define-module (scsh filesys)
+  :use-module (ice-9 stack-catch)
   :use-module (scsh scsh-condition)
   :use-module (scsh syscalls)
   :use-module (scsh let-opt)
@@ -27,7 +28,8 @@
   (let loop ()
     (or (with-errno-handler ; Assume it's a file and try.
 	    ((err data)
-	     ((errno/perm) #f) ; Return #f if directory
+	     ((errno/isdir) #f) ; Return #f if directory
+	     ((errno/perm) #f)
 	     ((errno/noent) #t))
 	    (delete-file fname)
 	    #t)
@@ -51,20 +53,20 @@
 		 (y-or-n? (string-append op-name ": " fname
 					 " already exists. Delete")))))
     (let loop ((override? override?))
-      (catch 'system-error
-	     (lambda () (makeit fname))
-	     (lambda (tag proc msg msg-args rest)
-	       (let ((errno (car rest)))
-		 (if (= errno errno/exist)
-		     ;; FNAME exists. Nuke it and retry?
-		     (cond ((if (eq? override? 'query)
-				(query)
-				override?)
-			    (delete-filesys-object fname)
-			    (loop #t))
-			   (else
-			    (scm-error tag proc msg msg-args rest)))
-		     (scm-error tag proc msg msg-args rest))))))))
+      (stack-catch 'system-error
+		   (lambda () (makeit fname))
+		   (lambda (tag proc msg msg-args rest)
+		     (let ((errno (car rest)))
+		       (if (= errno errno/exist)
+			   ;; FNAME exists. Nuke it and retry?
+			   (cond ((if (eq? override? 'query)
+				      (query)
+				      override?)
+				  (delete-filesys-object fname)
+				  (loop #t))
+				 (else
+				  (throw tag proc msg msg-args rest)))
+			   (throw tag proc msg msg-args rest))))))))
 
 ;;;;;;;
 

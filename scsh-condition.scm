@@ -2,6 +2,7 @@
 ;;; Add scsh conditions to s48.
 
 (define-module (scsh scsh-condition)
+  :use-module (ice-9 stack-catch)
   :use-module (scsh alt-syntax)
 )
 (export errno-error with-errno-handler*)
@@ -18,17 +19,14 @@
     (scm-error 'system-error syscall "%s" msg (list errno))))
 
 (define (with-errno-handler* handler thunk)
-  (catch 'system-error
-	 thunk
-	 (lambda args
-	   (let ((errno (car (list-ref args 4)))
-		 (message (car (list-ref args 3)))
-		 (subr (list-ref args 1)))
-	   (handler errno (list message
-				subr
-				'()))	; data
-	   (throw 'system-error subr "%s" (list-ref args 3) #f)))))
-		      
+  (stack-catch 'system-error
+	       thunk
+	       (lambda (key subr msg msg-args rest)
+		 (let ((errno (car rest)))
+		   (handler errno (list msg
+					subr
+					'()))	; data
+		   (throw key subr msg msg-args rest)))))
 
 ;;; (with-errno-handler
 ;;;   ((errno data) ; These are vars bound in this scope.

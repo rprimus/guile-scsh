@@ -40,8 +40,13 @@ This list was generated with help from the make-module-list script.
 modules from guile-core
 =======================
 
-FIXME: various scsh facilities are available by default in guile-core and
-should be listed here.
+Apart from scsh-compatible facilities that are made available by
+modules in guile-core, there are a few that are currently available by
+default, including:
+
+(move->fdes release-port-handle dup->inport dup->outport dup fdes->inport fdes->outport port->fdes seek command-line port-revealed dup->fdes close flush-all-ports)
+
+Scsh-compatible facilities that can be obtained from guile-core modules:
 
 (ice-9 format)
 (format)

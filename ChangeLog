@@ -1,3 +1,12 @@
+2002-10-26  Gary Houston  <ghouston@arglist.com>
+
+	* USAGE: listed scsh-compatible facilities available by default
+	in guile-core (probably not complete).
+	autogen.sh: include warning and force options.
+	* configure.in: move Makefile argument from AC_OUTPUT to
+	AC_CONFIG_FILES.
+	README: updated.
+
 2001-08-08  Gary Houston  <ghouston@arglist.com>
 
 	* rdelim.scm (%read-delimited!): export a modified version that's

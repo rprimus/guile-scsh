@@ -4,15 +4,16 @@ some random time from the CVS archive.
 
 For the original scsh package and documentation, see:
 
-http://www.swiss.ai.mit.edu/ftpdir/scsh/
+http://www.scsh.net/
 http://sourceforge.net/projects/scsh/
 
 This version of guile-scsh requires:
 
-1) guile-core.  For best results, check it out of CVS at the same time
-as guile-scsh.  Version 1.4 is too old.
+guile-core.  The 1.6 series is recommended.  CVS guile-scsh is not compatible
+with the 1.4 series of guile-core.  CVS guile-core should work, although
+with possible deprecation warnings.
 
-2) The guilerxspencer module, available from http://arglist.com/guile/
+The guilerxspencer module, available from http://arglist.com/guile/
 A few guile-scsh modules can still be used if it's not installed.
 It's possible to install guile-scsh first and guilerxspencer later.
 

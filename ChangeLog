@@ -1,3 +1,7 @@
+2001-04-29  Gary Houston  <ghouston@arglist.com>
+
+	* rw.scm: use module (ice-9 rw).
+
 2001-01-25  Gary Houston  <ghouston@arglist.com>
 
 	* rw.scm: export read-string!/partial.

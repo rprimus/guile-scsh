@@ -4,13 +4,14 @@
 ;;; Note: read ops should check to see if their string args are mutable.
 
 (define-module (scsh rw)
+  :use-module (ice-9 rw)
   :use-module (scsh errno)
   :use-module (scsh let-opt)
 )
 (export bogus-substring-spec? read-string/partial
 	read-string! read-string write-string write-string/partial)
 
-;; from guile-core.
+;; from (ice-9 rw)
 (export read-string!/partial)
 
 (define (bogus-substring-spec? s start end)

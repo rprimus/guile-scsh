@@ -4,7 +4,8 @@ AUTOMAKE_OPTIONS = foreign
 
 subpkgdatadir = $(pkgdatadir)/$(VERSION)/@module@
 subpkgdata_DATA = char-set.scm \
-	defrec.scm errno.scm init.scm let-opt.scm netconst.scm \
-	network.scm rdelim.scm receive.scm rw.scm syntax.scm utilities.scm
+	defrec.scm errno.scm fname.scm init.scm let-opt.scm netconst.scm \
+	network.scm rdelim.scm receive.scm \
+	rw.scm scsh.scm syntax.scm syscalls.scm utilities.scm
 
 EXTRA_DIST = PLUGIN/OPT $(subpkgdata_DATA) INCOMPAT README.PORT

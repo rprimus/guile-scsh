@@ -22,7 +22,9 @@
 		    (passwd:gid info)
 		    (passwd:dir info)
 		    (passwd:shell info))))
-
+(define name->user-info user-info)
+(define uid->user-info user-info)
+  
 ;;; Derived functions
 
 (define (->uid uid/name)

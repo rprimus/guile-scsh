@@ -37,18 +37,19 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 transform = @program_transform_name@
-VERSION = @VERSION@
-INSTALL_SCRIPT = @INSTALL_SCRIPT@
-module = @module@
-PACKAGE = @PACKAGE@
 MAINT = @MAINT@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+PACKAGE = @PACKAGE@
+module = @module@
+VERSION = @VERSION@
 
 AUTOMAKE_OPTIONS = foreign
 
 subpkgdatadir = $(pkgdatadir)/$(VERSION)/@module@
 subpkgdata_DATA = char-set.scm \
-	defrec.scm errno.scm init.scm let-opt.scm netconst.scm \
-	network.scm rdelim.scm receive.scm rw.scm syntax.scm utilities.scm
+	defrec.scm errno.scm fname.scm init.scm let-opt.scm netconst.scm \
+	network.scm rdelim.scm receive.scm \
+	rw.scm scsh.scm syntax.scm syscalls.scm utilities.scm
 
 EXTRA_DIST = PLUGIN/OPT $(subpkgdata_DATA) INCOMPAT README.PORT
 ACLOCAL = $(top_srcdir)/aclocal.m4

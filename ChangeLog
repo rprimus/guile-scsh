@@ -24,6 +24,8 @@
 
 	* init.scm, USAGE, Makefile.am, make-module-list: updated.
 
+	* rdelim.scm: use module (scsh let-opt).
+
 2001-07-30  Gary Houston  <ghouston@arglist.com>
 
 	* char-set.scm (char:newline, char:tab, char:page, char:return,

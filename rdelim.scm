@@ -12,6 +12,7 @@
   :use-module (scsh rx re)
   :use-module (scsh rx re-syntax)
   :use-module (scsh errno)
+  :use-module (scsh let-opt)
 )
 
 (if (not (defined? 'guile-read-delimited))

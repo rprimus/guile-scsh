@@ -1,3 +1,7 @@
+Fri Jan 31 04:36:42 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: use use-modules instead of define-module to access slib.
+
 Sat Jan 25 01:03:03 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm: load char-set.scm and rdelim.scm.

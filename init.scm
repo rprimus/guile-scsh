@@ -21,7 +21,7 @@
 		  (cons (car rest) result)
 		  result)))))
 
-(define-module (guile) :use-module (ice-9 slib))
+(use-modules (ice-9 slib))
 (require 'values)
 
 (load-from-path "scsh/syntax.scm")

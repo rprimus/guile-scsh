@@ -41,7 +41,7 @@
 
 (define (read-string/partial len . maybe-fd/port) 
   (let* ((s (make-string len))
-	 (fd/port (optional maybe-fd/port (current-input-port)))
+	 (fd/port (:optional maybe-fd/port (current-input-port)))
 	 (nread (read-string!/partial s fd/port 0 len)))
     (cond ((not nread) #f) ; EOF
 	  ((= nread len) s)
@@ -79,7 +79,7 @@
 
 (define (read-string len . maybe-fd/port) 
   (let* ((s (make-string len))
-	 (fd/port (optional maybe-fd/port (current-input-port)))
+	 (fd/port (:optional maybe-fd/port (current-input-port)))
 	 (nread (read-string! s fd/port 0 len)))
     (cond ((not nread) #f) ; EOF
 	  ((= nread len) s)
@@ -147,7 +147,7 @@
 ;      (cond ((eof-object? line)
 ;	     (newline)
 ;	     (if (= count 0)
-;		 (optional maybe-eof-value (error "EOF in y-or-n?"))
+;		 (:optional maybe-eof-value (error "EOF in y-or-n?"))
 ;		 (begin (display "I'll only ask another ")
 ;			(write count)
 ;			(display " times.")

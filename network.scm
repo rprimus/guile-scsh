@@ -164,7 +164,7 @@
 ;;; socket syscall
 ;;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 (define (create-socket pf type . maybe-protocol)
-  (let ((protocol (optional maybe-protocol 0)))
+  (let ((protocol (:optional maybe-protocol 0)))
     (if (not (and (integer? pf)
 		  (integer? type)
 		  (integer? protocol)))
@@ -378,7 +378,7 @@
 ;;; recv syscall
 ;;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 (define (receive-message socket len . maybe-flags) 
-  (let ((flags (optional maybe-flags 0)))
+  (let ((flags (:optional maybe-flags 0)))
     (cond ((not (socket? socket))
 	   (error "receive-message: socket expected ~s" socket))
 	  ((or (not (integer? flags))
@@ -430,7 +430,7 @@
 	   (else (loop (+ i nread) addr)))))))
 
 (define (receive-message/partial socket len . maybe-flags)
-  (let ((flags (optional maybe-flags 0)))
+  (let ((flags (:optional maybe-flags 0)))
     (cond ((not (socket? socket))
 	   (error "receive-message/partial: socket expected ~s" socket))
 	  ((or (not (integer? flags))
@@ -815,7 +815,7 @@
 	 args))
 
 (define (port->service-info name . maybe-proto)
-  (let ((proto (optional maybe-proto "")))
+  (let ((proto (:optional maybe-proto "")))
     (cond ((not (integer? name))
 	   (error "port->service-info: integer expected ~s" name))
 	  ((not (string? proto))
@@ -838,7 +838,7 @@
   
   
 (define (name->service-info name . maybe-proto)
-  (let* ((vec (getservbyname name (optional maybe-proto "")))
+  (let* ((vec (getservbyname name (:optional maybe-proto "")))
 	 (name (vector-ref vec 0))
 	 (aliases (vector-ref vec 1))
 	 (port (vector-ref vec 2))

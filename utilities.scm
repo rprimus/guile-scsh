@@ -1,8 +1,6 @@
 ;;; Random useful utilities.
 ;;; Copyright (c) 1993 by Olin Shivers.
 
-;;; for Guile: changed use of :optional to optional.
-
 (define (del elt lis)
   (letrec ((del (lambda (lis)
 		  (if (pair? lis)
@@ -19,7 +17,7 @@
   (filter (lambda (x) (not (pred x))) lis))
 
 (define (index str c . maybe-start)
-  (let ((start (max 0 (optional maybe-start 0)))
+  (let ((start (max 0 (:optional maybe-start 0)))
 	(len (string-length str)))
     (do ((i start (+ 1 i)))
 	((or (>= i len)
@@ -28,7 +26,7 @@
 
 (define (rindex str c . maybe-start)
   (let* ((len (string-length str))
-	 (start (min (optional maybe-start len)
+	 (start (min (:optional maybe-start len)
 		     len)))
     (do ((i (- start 1) (- i 1)))
 	((or (< i 0)

@@ -1,14 +1,13 @@
 ;;; This file defines three macros for parsing optional arguments to procs:
-;;; for Guile: replaced :optional with optional.
 ;;; 	(LET-OPTIONALS  arg-list ((var1 default1) ...) . body)
 ;;; 	(LET-OPTIONALS* arg-list ((var1 default1) ...) . body)
-;;; 	(OPTIONAL rest-arg default-exp)
+;;; 	(:OPTIONAL rest-arg default-exp)
 ;;;
 ;;; The LET-OPTIONALS macro is defined using the Clinger/Rees
 ;;; explicit-renaming low-level macro system. You'll have to do some work to
 ;;; port it to another macro system.
 ;;;
-;;; The LET-OPTIONALS* and OPTIONAL macros are defined with simple
+;;; The LET-OPTIONALS* and :OPTIONAL macros are defined with simple
 ;;; high-level macros, and should be portable to any R4RS system.
 ;;;
 ;;; These macros are all careful to evaluate their default forms *only* if
@@ -26,7 +25,7 @@
 ;;; which obeys the following interface:
 ;;;     (exports (let-optionals  :syntax)
 ;;;              (let-optionals* :syntax)
-;;;		 (optional       :syntax))
+;;;		 (:optional       :syntax))
 ;;;
 ;;; To repeat: This code is not simple Scheme code; it is module code. 
 ;;; It must be loaded into the Scheme 48 ,config package, not the ,user 
@@ -183,7 +182,7 @@
 
 (define-structure let-opt (export (let-optionals  :syntax)
 				  (let-optionals* :syntax)
-				  (optional      :syntax))
+				  (:optional      :syntax))
   (open scheme error-package)
   (for-syntax (open let-opt-expanders scheme))
   (begin
@@ -195,7 +194,7 @@
 (define-syntax let-optionals expand-let-optionals)
 
 
-;;; (optional rest-arg default-exp)
+;;; (:optional rest-arg default-exp)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; This form is for evaluating optional arguments and their defaults
 ;;; in simple procedures that take a *single* optional argument. It is
@@ -207,9 +206,9 @@
 ;;; - If REST-ARG has 1 element, return that element.
 ;;; - If REST-ARG has >1 element, error.
 
-(define-syntax optional
+(define-syntax :optional
   (syntax-rules ()
-    ((optional rest default-exp)
+    ((:optional rest default-exp)
      (let ((maybe-arg rest))
        (cond ((null? maybe-arg) default-exp)
 	     ((null? (cdr maybe-arg)) (car maybe-arg))

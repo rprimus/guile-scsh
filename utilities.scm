@@ -1,6 +1,21 @@
 ;;; Random useful utilities.
 ;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
+(define-module (scsh utilities)
+  :use-module (scsh loophole)
+  :use-module (scsh bitwise))
+(export del delete filter first first? nth
+	fold fold-right
+	any every
+	mapv mapv! vector-every? copy-vector initialize-vector vector-append
+	vfold vfold-right
+	check-arg conjoin disjoin negate compose call/cc
+	deprecated-proc
+	deposit-bit-field
+	real->exact-integer
+	;; reverse! omitted.
+)
+
 (define (del elt lis)
   (letrec ((del (lambda (lis)
 		  (if (pair? lis)
@@ -150,13 +165,13 @@
 (define (compose f g)
   (lambda args (call-with-values (lambda () (apply g args)) f)))
 
-
-(define (reverse! lis)
-  (let lp ((lis lis) (prev '()))
-    (if (not (pair? lis)) prev
-	(let ((tail (cdr lis)))
-	  (set-cdr! lis prev)
-	  (lp tail lis)))))
+;; guile primitive is compatible.
+;;(define (reverse! lis)
+;;  (let lp ((lis lis) (prev '()))
+;;    (if (not (pair? lis)) prev
+;;	(let ((tail (cdr lis)))
+;;	  (set-cdr! lis prev)
+;;	  (lp tail lis)))))
 
 (define call/cc call-with-current-continuation)
 

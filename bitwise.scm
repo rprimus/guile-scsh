@@ -2,11 +2,16 @@
 
 ; modified for Guile.
 
+;; original file: alt/bitwise.scm.
+
 ; Bitwise operators written in vanilla Scheme.
 ; Written for clarity and simplicity, not for speed.
 
 ; No need to use these in Scheme 48 since Scheme 48's virtual machine
 ; provides fast machine-level implementations.
+
+(define-module (scsh bitwise))
+(export arithmetic-shift bitwise-not bitwise-and bitwise-ior bitwise-xor)
 
 ;; use Guile primitives.
 (define (bitwise-not a) (lognot a))

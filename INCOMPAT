@@ -8,7 +8,8 @@ extended process forms don't work:
 Incompatibilities with the original scsh:
 ========================================
 
-everything is defined at the top level, no modules.
+the Guile module system is not compatible with that of Scheme48.  the
+module system isn't yet used for all files.
 
 loading guile-scsh may redefine Guile builtins.  e.g., map is
 redefined by list-lib.scm.  This isn't very good.  Maybe use of the

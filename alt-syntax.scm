@@ -1,5 +1,9 @@
 ; Copyright (c) 1993, 1994 Richard Kelsey and Jonathan Rees.  See file COPYING.
-; for Guile: redefined define-syntax, added syntax-error definition.
+
+;; original file: alt/syntax.scm.
+(define-module (scsh alt-syntax)
+  :use-module (scsh signals))
+(export-syntax define-syntax syntax-rules)
 
 ; This definition of define-syntax is appropriate for Scheme-to-C.
 
@@ -22,8 +26,6 @@
 						    (lambda (x) x)
 						    eq?)))))
 
-
-(define syntax-error error)
 
 ; Rewrite-rule compiler (a.k.a. "extend-syntax")
 

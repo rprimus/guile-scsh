@@ -1,3 +1,24 @@
+2000-10-15  Gary Houston  <ghouston@arglist.com>
+
+	* bitwise.scm: define module (scsh bitwise).
+	* utilities.scm: define module (scsh utilities).
+	(reverse!): removed, since guile primitive is compatible.
+
+	* syntax-helpers.scm: define module (scsh syntax-helpers).
+	* signals.scm: new file.  move syntax-error here from alt-syntax.scm.
+	define module (scsh signals).
+	* module-system.scm: new file.  define module (scsh module-system).
+	dummy definitions for define-structure, structure-ref moved from
+	init.scm.
+	* loophole.scm: new file from scsh-0.5.2: alt/loophole.scm.
+	define module (scsh loopholes).  used by check-arg in utilities.scm.
+	
+	* defrec.scm (define-record-discloser): moved from init.scm.
+	* let-opt.scm: define module (scsh let-opt).
+	define module (scsh receive).
+	* alt-syntax.scm: define module (scsh alt-syntax).
+	* init.scm: use these modules.
+
 2000-10-14  Gary Houston  <ghouston@arglist.com>
 
 	* remove dependency on slib:

@@ -88,6 +88,11 @@
 ;;; 			  (error ...)))))))))
 
 
+(define-module (scsh let-opt)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh module-system))
+(export-syntax let-optionals let-optionals* :optional)
+
 (define-structure let-opt-expanders (export expand-let-optionals)
   (open scheme)
   (begin

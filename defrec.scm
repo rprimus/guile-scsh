@@ -74,6 +74,8 @@
 ;;; - Code produced by the macro needs the RECORDS package.
 ;;; - Macro-expander code needs ERROR-PACKAGE and RECEIVING
 
+(defmacro define-record-discloser args #f)  ;; guile.
+
 (define-syntax define-record
   (lambda (form rename compare)
     (receive (field-specs method-specs)

@@ -5,6 +5,12 @@
 ;;; Must be loaded into for-syntax package.
 ;;; Copyright (c) 1993 by Olin Shivers. See file COPYING.
 
+(define-module (scsh syntax-helpers)
+  :use-module (scsh alt-syntax)
+  :use-module (scsh signals)
+  :use-module (scsh receive))
+(export transcribe-process-form)
+
 (define-syntax define-simple-syntax
   (syntax-rules ()
     ((define-simple-syntax (name . pattern) result)

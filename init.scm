@@ -1,6 +1,5 @@
 (define (foreign-source . args) #f)
 (defmacro define-foreign args #f)
-(defmacro define-record-discloser args #f)
 
 (define ascii->char integer->char)
 (define char->ascii char->integer)
@@ -10,30 +9,17 @@
 (define (reading-error port message . irritants)
   (apply error message (append irritants (list port))))
 
-;; just pick out the begin forms.
-(defmacro define-structure (name interface . body)
-  (let loop ((rest body)
-	     (result '(begin)))
-    (if (null? rest)
-	(reverse result)
-	(loop (cdr rest)
-	      (if (eq? (caar rest) 'begin)
-		  (cons (car rest) result)
-		  result)))))
-
-(defmacro structure-ref (structure symb)
-  symb)
-
-(use-modules (ice-9 format))
-
-(load-from-path "scsh/alt-syntax.scm")
-(load-from-path "scsh/receive.scm")
-(load-from-path "scsh/let-opt.scm")
-
-(load-from-path "scsh/syntax-helpers.scm")
-
-;; "delete" primitive is replaced, but doesn't seem worth saving.
-(load-from-path "scsh/utilities.scm")
+(use-modules (ice-9 format)
+	     (scsh alt-syntax)
+	     (scsh receive)
+	     (scsh module-system)
+	     (scsh let-opt)
+	     (scsh loophole)
+	     (scsh signals)
+	     (scsh syntax-helpers)
+	     (scsh bitwise)
+	     (scsh utilities)   ;; replaces primitive "delete".
+)
 
 (load-from-path "scsh/scsh-version.scm")
 (load-from-path "scsh/fname.scm")
@@ -44,7 +30,6 @@
 (load-from-path "scsh/fluid.scm")
 (load-from-path "scsh/population.scm")
 (load-from-path "scsh/stringcoll.scm")
-(load-from-path "scsh/bitwise.scm")
 (load-from-path "scsh/condition.scm")
 (load-from-path "scsh/scsh-condition.scm")
 (load-from-path "scsh/jar-defrecord.scm")

@@ -69,37 +69,6 @@
 	  ((= nread len) s)
 	  (else (substring s 0 nread)))))
 
-
-;;; Best-effort/forward-progress writing
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Non-blocking output to a buffered port is not defined.
-
-; (define (generic-write-string/partial s start end writer target)
-;   (if (bogus-substring-spec? s start end)
-;       (error "Bad substring indices" writer s start end target))
-
-;   (if (= start end) 0			; Vacuous request.
-;       (let loop ()
-; 	(catch 'system-error
-; 	       (lambda ()
-; 		 (let ((nwritten (writer s target start end start)))
-; 		   nwritten))
-; 	       (lambda args 
-; 		 (let ((err (car (list-ref args 4))))
-; 		   (cond ;; ((= err errno/intr) (loop)) ; handled by primitive.
-; 			((or (= err errno/wouldblock); No forward-progess here.
-; 			     (= err errno/again))
-; 			 0)
-; 			(else (apply scm-error args)))))))))
-
-; (define (write-string/partial s . args)
-;   (let-optionals args ((fd/port (current-output-port))
-; 		       (start 0)
-; 		       (end (string-length s)))
-; 		 (generic-write-string/partial s start end
-; 					 uniform-array-write fd/port)))
-
-
 ;;; Persistent writing
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -1,3 +1,9 @@
+2001-01-01  Gary Houston  <ghouston@arglist.com>
+
+	* lib/string-lib.scm (string-unfold-right, join-strings,
+	string-take-right, string-drop-right): 	don't export, since they are
+	not defined.
+
 2000-12-06  Gary Houston  <ghouston@arglist.com>
 
 	* init.scm: load (scsh fdports)

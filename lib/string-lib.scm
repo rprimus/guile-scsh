@@ -96,7 +96,7 @@
 )
 (export string-map    string-map!
 	string-fold       string-unfold
-	string-fold-right string-unfold-right 
+	string-fold-right
 	string-tabulate
 	string-for-each string-iter
 	string-every string-any
@@ -110,8 +110,8 @@
 	string-upper-case? string-lower-case?
 	capitalize-string  capitalize-words  string-downcase  string-upcase
 	capitalize-string! capitalize-words! string-downcase! string-upcase!
-	string-take string-take-right
-	string-drop string-drop-right
+	string-take ; string-take-right
+	string-drop ; string-drop-right
 	string-pad string-pad-right
 	string-trim string-trim-right string-trim-both
 	string-filter string-delete
@@ -131,7 +131,6 @@
 	string-concat string-concat/shared string-append/shared
 	xsubstring string-xcopy!
 	; string-null?
-	join-strings
 
 	make-kmp-restart-vector
 	parse-final-start+end

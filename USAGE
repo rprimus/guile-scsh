@@ -10,13 +10,12 @@ For script usage it's probably more useful to import parts of scsh
 individually using the Guile module system.  However note that macros
 may expand to code that requires additional modules.  e.g., `run' is
 defined in (scsh syntax), but requires loading (scsh procobj), (scsh
-scsh), (scsh fdports) and (scsh syntax-helpers) to execute sucessfully.
+scsh), (scsh fdports) and (scsh syntax-helpers) to execute
+sucessfully.  This may be a deficiency of the Guile module system.
 
 One way to avoid clobbering definitions from libguile is to define a
 new module for the code that uses guile-scsh.  e.g.,
 
-#!/usr/bin/guile -s
-!#
 (define-module (test)
    :use-module (scsh syntax)
    :use-module (scsh syntax-helpers)
@@ -24,6 +23,9 @@ new module for the code that uses guile-scsh.  e.g.,
    :use-module (scsh scsh)
    :use-module (scsh fdports))
 (run (echo hello) (> out.log))
+
+In this case the definitions will only be clobbered within the module
+(test).
 
 The remainder of this file lists the modules and the exported symbols
 for each.  The modules don't necessarily correspond with scsh
@@ -63,8 +65,9 @@ This list was generated with help from the make-module-list script.
 (arithmetic-shift bitwise-not bitwise-and bitwise-ior bitwise-xor)
 
 (scsh utilities)
-;; "delete" is incompatile with guile primitive.  it's also incompatible with
-;; delete from (scsh lib list-lib).
+;; "delete" is incompatile with guile primitive.
+;; following are defined in (scsh lib list-lib) too, possibly incompatibly:
+;; delete filter first fold fold-right any every
 (del delete filter first first? nth fold fold-right any every mapv mapv! vector-every? copy-vector initialize-vector vector-append vfold vfold-right check-arg conjoin disjoin negate compose call/cc deprecated-proc deposit-bit-field real->exact-integer)
 
 (scsh define-foreign-syntax)
@@ -97,7 +100,7 @@ This list was generated with help from the make-module-list script.
 ;; string-downcase string-downcase!
 ;; string-upcase string-upcase! string-index
 ;; string-fill! string-copy string->list
-(string-map string-map! string-fold string-unfold string-fold-right string-unfold-right string-tabulate string-for-each string-iter string-every string-any string-compare string-compare-ci substring-compare substring-compare-ci string= string< string> string<= string>= string<> string-ci= string-ci< string-ci> string-ci<= string-ci>= string-ci<> substring= substring<> substring-ci= substring-ci<> substring< substring> substring-ci< substring-ci> substring<= substring>= substring-ci<= substring-ci>= string-upper-case? string-lower-case? capitalize-string capitalize-words string-downcase string-upcase capitalize-string! capitalize-words! string-downcase! string-upcase! string-take string-take-right string-drop string-drop-right string-pad string-pad-right string-trim string-trim-right string-trim-both string-filter string-delete string-index string-index-right string-skip string-skip-right string-prefix-count string-prefix-count-ci string-suffix-count string-suffix-count-ci substring-prefix-count substring-prefix-count-ci substring-suffix-count substring-suffix-count-ci string-prefix? string-prefix-ci? string-suffix? string-suffix-ci? substring-prefix? substring-prefix-ci? substring-suffix? substring-suffix-ci? substring? substring-ci? string-fill! string-copy! string-copy string-reverse string-reverse! reverse-list->string string->list string-concat string-concat/shared string-append/shared xsubstring string-xcopy! join-strings make-kmp-restart-vector parse-final-start+end parse-start+end check-substring-spec)
+(string-map string-map! string-fold string-unfold string-fold-right string-tabulate string-for-each string-iter string-every string-any string-compare string-compare-ci substring-compare substring-compare-ci string= string< string> string<= string>= string<> string-ci= string-ci< string-ci> string-ci<= string-ci>= string-ci<> substring= substring<> substring-ci= substring-ci<> substring< substring> substring-ci< substring-ci> substring<= substring>= substring-ci<= substring-ci>= string-upper-case? string-lower-case? capitalize-string capitalize-words string-downcase string-upcase capitalize-string! capitalize-words! string-downcase! string-upcase! string-take string-drop string-pad string-pad-right string-trim string-trim-right string-trim-both string-filter string-delete string-index string-index-right string-skip string-skip-right string-prefix-count string-prefix-count-ci string-suffix-count string-suffix-count-ci substring-prefix-count substring-prefix-count-ci substring-suffix-count substring-suffix-count-ci string-prefix? string-prefix-ci? string-suffix? string-suffix-ci? substring-prefix? substring-prefix-ci? substring-suffix? substring-suffix-ci? substring? substring-ci? string-fill! string-copy! string-copy string-reverse string-reverse! reverse-list->string string->list string-concat string-concat/shared string-append/shared xsubstring string-xcopy! make-kmp-restart-vector parse-final-start+end parse-start+end check-substring-spec)
 
 (scsh errno)
 ;; defines symbols such as errno/perm.
@@ -196,6 +199,8 @@ This list was generated with help from the make-module-list script.
 ;; replaces:
 ;; map map-in-order for-each member assoc iota list-index
 ;; delete delete!
+;; following are defined in (scsh utilities) too, possibly incompatibly:
+;; delete filter first fold fold-right any every
 (xcons list-tabulate list-copy circular-list iota proper-list? circular-list? dotted-list? not-pair? null-list? list= first second third fourth fifth sixth seventh eighth ninth tenth car+cdr take drop take-right drop-right take! drop-right! take-while drop-while take-while! split-at split-at! span break span! break! last length+ append-reverse append-reverse! concatenate concatenate! zip unzip1 unzip2 unzip3 unzip4 unzip5 count unfold unfold-right fold unfold pair-fold reduce fold-right unfold-right pair-fold-right reduce-right append-map append-map! map! pair-for-each filter-map map-in-order filter partition remove filter! partition! remove! find find-tail any every list-index delete delete! delete-duplicates delete-duplicates! alist-cons alist-copy alist-delete alist-delete! lset<= lset= lset-adjoin lset-union lset-union! lset-intersection lset-intersection! lset-difference lset-difference! lset-xor lset-xor! lset-diff+intersection lset-diff+intersection! map for-each member assoc)
 
 (scsh syntax)

@@ -1,13 +1,14 @@
 ;;; This file defines three macros for parsing optional arguments to procs:
+;;; for Guile: replaced :optional with optional.
 ;;; 	(LET-OPTIONALS  arg-list ((var1 default1) ...) . body)
 ;;; 	(LET-OPTIONALS* arg-list ((var1 default1) ...) . body)
-;;; 	(:OPTIONAL rest-arg default-exp)
+;;; 	(OPTIONAL rest-arg default-exp)
 ;;;
 ;;; The LET-OPTIONALS macro is defined using the Clinger/Rees
 ;;; explicit-renaming low-level macro system. You'll have to do some work to
 ;;; port it to another macro system.
 ;;;
-;;; The LET-OPTIONALS* and :OPTIONAL macros are defined with simple
+;;; The LET-OPTIONALS* and OPTIONAL macros are defined with simple
 ;;; high-level macros, and should be portable to any R4RS system.
 ;;;
 ;;; These macros are all careful to evaluate their default forms *only* if
@@ -25,7 +26,7 @@
 ;;; which obeys the following interface:
 ;;;     (exports (let-optionals  :syntax)
 ;;;              (let-optionals* :syntax)
-;;;		 (:optional       :syntax))
+;;;		 (optional       :syntax))
 ;;;
 ;;; To repeat: This code is not simple Scheme code; it is module code. 
 ;;; It must be loaded into the Scheme 48 ,config package, not the ,user 
@@ -88,113 +89,113 @@
 ;;; 			  (error ...)))))))))
 
 
-;(define-structure let-opt-expanders (export expand-let-optionals)
-;  (open scheme)
-;  (begin
+(define-structure let-opt-expanders (export expand-let-optionals)
+  (open scheme)
+  (begin
 
 ;;; This guy makes the END-DEF, START-DEF, PORT-DEF definitions above.
 ;;; I wish I had a reasonable loop macro.
 
-;(define (make-default-procs vars body-proc defaulter-names defs rename)
-;  (let ((%lambda (rename 'lambda)))
-;    (let recur ((vars (reverse vars))
-;		(defaulter-names (reverse defaulter-names))
-;		(defs (reverse defs))
-;		(next-guy body-proc))
-;      (if (null? vars) '()
-;	  (let ((vars (cdr vars)))
-;	    `((,(car defaulter-names)
-;	       (,%lambda ,(reverse vars)
-;			 (,next-guy ,@(reverse vars) ,(car defs))))
-;	      . ,(recur vars
-;			(cdr defaulter-names)
-;			(cdr defs)
-;			(car defaulter-names))))))))
+(define (make-default-procs vars body-proc defaulter-names defs rename)
+  (let ((%lambda (rename 'lambda)))
+    (let recur ((vars (reverse vars))
+		(defaulter-names (reverse defaulter-names))
+		(defs (reverse defs))
+		(next-guy body-proc))
+      (if (null? vars) '()
+	  (let ((vars (cdr vars)))
+	    `((,(car defaulter-names)
+	       (,%lambda ,(reverse vars)
+			 (,next-guy ,@(reverse vars) ,(car defs))))
+	      . ,(recur vars
+			(cdr defaulter-names)
+			(cdr defs)
+			(car defaulter-names))))))))
 
 
 ;;; This guy makes the (IF (NULL? REST) (PORT-DEF) ...) tree above.
  
-;(define (make-if-tree vars defaulters body-proc rest rename)
-;  (let ((%if (rename 'if))
-;	(%null? (rename 'null?))
-;	(%error (rename 'error))
-;	(%let (rename 'let))
-;	(%car (rename 'car))
-;	(%cdr (rename 'cdr)))
+(define (make-if-tree vars defaulters body-proc rest rename)
+  (let ((%if (rename 'if))
+	(%null? (rename 'null?))
+	(%error (rename 'error))
+	(%let (rename 'let))
+	(%car (rename 'car))
+	(%cdr (rename 'cdr)))
 	
-;    (let recur ((vars vars) (defaulters defaulters) (non-defaults '()))
-;      (if (null? vars)
-;	  `(,%if (,%null? ,rest) (,body-proc . ,(reverse non-defaults))
-;		 (,%error "Too many optional arguments." ,rest))
+    (let recur ((vars vars) (defaulters defaulters) (non-defaults '()))
+      (if (null? vars)
+	  `(,%if (,%null? ,rest) (,body-proc . ,(reverse non-defaults))
+		 (,%error "Too many optional arguments." ,rest))
 
-;	  (let ((v (car vars)))
-;	    `(,%if (,%null? ,rest)
-;		   (,(car defaulters) . ,(reverse non-defaults))
-;		   (,%let ((,v (,%car ,rest))
-;			   (,rest (,%cdr ,rest)))
-;		     ,(recur (cdr vars)
-;			     (cdr defaulters)
-;			     (cons v non-defaults)))))))))
+	  (let ((v (car vars)))
+	    `(,%if (,%null? ,rest)
+		   (,(car defaulters) . ,(reverse non-defaults))
+		   (,%let ((,v (,%car ,rest))
+			   (,rest (,%cdr ,rest)))
+		     ,(recur (cdr vars)
+			     (cdr defaulters)
+			     (cons v non-defaults)))))))))
 	    
 
-;(define (expand-let-optionals exp rename compare?)
-;  (let* ((arg-list (cadr exp))
-;	 (var/defs (caddr exp))
-;	 (body (cdddr exp))
-;	 (vars (map car var/defs))
+(define (expand-let-optionals exp rename compare?)
+  (let* ((arg-list (cadr exp))
+	 (var/defs (caddr exp))
+	 (body (cdddr exp))
+	 (vars (map car var/defs))
 
-;	 (prefix-sym (lambda (prefix sym)
-;		       (string->symbol (string-append prefix (symbol->string sym)))))
+	 (prefix-sym (lambda (prefix sym)
+		       (string->symbol (string-append prefix (symbol->string sym)))))
 
-;	 ;; Private vars, one for each user var.
-;	 ;; We prefix the % to help keep macro-expanded code from being
-;	 ;; too confusing.
-;	 (vars2 (map (lambda (v) (rename (prefix-sym "%" v)))
-;		     vars))
+	 ;; Private vars, one for each user var.
+	 ;; We prefix the % to help keep macro-expanded code from being
+	 ;; too confusing.
+	 (vars2 (map (lambda (v) (rename (prefix-sym "%" v)))
+		     vars))
 
-;	 (defs (map cadr var/defs))
-;	 (body-proc (rename 'body))
+	 (defs (map cadr var/defs))
+	 (body-proc (rename 'body))
 
-;	 ;; A private var, bound to the value of the ARG-LIST expression.
-;	 (rest-var (rename '%rest))
+	 ;; A private var, bound to the value of the ARG-LIST expression.
+	 (rest-var (rename '%rest))
 
-;	 (%let* (rename 'let*))
-;	 (%lambda (rename 'lambda))
+	 (%let* (rename 'let*))
+	 (%lambda (rename 'lambda))
 
-;	 (defaulter-names (map (lambda (var) (rename (prefix-sym "def-" var)))
-;			       vars))
+	 (defaulter-names (map (lambda (var) (rename (prefix-sym "def-" var)))
+			       vars))
 
-;	 (defaulters (make-default-procs vars2 body-proc
-;					 defaulter-names defs rename))
-;	 (if-tree (make-if-tree vars2 defaulter-names body-proc
-;				rest-var rename)))
+	 (defaulters (make-default-procs vars2 body-proc
+					 defaulter-names defs rename))
+	 (if-tree (make-if-tree vars2 defaulter-names body-proc
+				rest-var rename)))
 
-;    `(,%let* ((,rest-var ,arg-list)
-;	      (,body-proc (,%lambda ,vars . ,body))
-;	      . ,defaulters)
-;       ,if-tree)))
+    `(,%let* ((,rest-var ,arg-list)
+	      (,body-proc (,%lambda ,vars . ,body))
+	      . ,defaulters)
+       ,if-tree)))
 
-;)) ; erutcurts-enifed
+)) ; erutcurts-enifed
 ;;; nilO- .noitnevnoc gnitekcarb sugob a ni deppart m'I !pleh !pleh
 
 ;;; Here is where we define the macros, using the expanders from the above
 ;;; package.
 
-;(define-structure let-opt (export (let-optionals  :syntax)
-;				  (let-optionals* :syntax)
-;				  (:optional      :syntax))
-;  (open scheme error-package)
-;  (for-syntax (open let-opt-expanders scheme))
-;  (begin
+(define-structure let-opt (export (let-optionals  :syntax)
+				  (let-optionals* :syntax)
+				  (optional      :syntax))
+  (open scheme error-package)
+  (for-syntax (open let-opt-expanders scheme))
+  (begin
 
 
 ;;; (LET-OPTIONALS args ((var1 default1) ...) body1 ...)
 ;;; The expander is defined in the code above.
 
-;(define-syntax let-optionals expand-let-optionals)
+(define-syntax let-optionals expand-let-optionals)
 
 
-;;; (:optional rest-arg default-exp)
+;;; (optional rest-arg default-exp)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; This form is for evaluating optional arguments and their defaults
 ;;; in simple procedures that take a *single* optional argument. It is
@@ -206,7 +207,6 @@
 ;;; - If REST-ARG has 1 element, return that element.
 ;;; - If REST-ARG has >1 element, error.
 
-;; for Guile, renamed from :optional 
 (define-syntax optional
   (syntax-rules ()
     ((optional rest default-exp)
@@ -235,32 +235,32 @@
 ;;; This just interfaces to REALLY-LET-OPTIONALS*, which expects
 ;;; the ARGS form to be a variable.
 
-;(define-syntax let-optionals*
-;  (syntax-rules ()
-;    ((let-optionals* args vars&defaults body1 ...)
-;     (let ((rest args))
-;       (really-let-optionals* rest vars&defaults body1 ...)))))
+(define-syntax let-optionals*
+  (syntax-rules ()
+    ((let-optionals* args vars&defaults body1 ...)
+     (let ((rest args))
+       (really-let-optionals* rest vars&defaults body1 ...)))))
 
-;(define-syntax really-let-optionals*
-;  (syntax-rules ()
-;    ;; Standard case. Do the first var/default and recurse.
-;    ((really-let-optionals* args ((var1 default1) etc ...)
-;       body1 ...)
-;     (call-with-values (lambda () (if (null? args)
-;				      (values default1 '())
-;				      (values (car args) (cdr args))))
-;		       (lambda (var1 rest)
-;			 (really-let-optionals* rest (etc ...)
-;			   body1 ...))))
+(define-syntax really-let-optionals*
+  (syntax-rules ()
+    ;; Standard case. Do the first var/default and recurse.
+    ((really-let-optionals* args ((var1 default1) etc ...)
+       body1 ...)
+     (call-with-values (lambda () (if (null? args)
+				      (values default1 '())
+				      (values (car args) (cdr args))))
+		       (lambda (var1 rest)
+			 (really-let-optionals* rest (etc ...)
+			   body1 ...))))
 
-;    ;; Single rest arg -- bind to the remaining rest values.
-;    ((really-let-optionals* args (rest) body1 ...)
-;     (let ((rest args)) body1 ...))
+    ;; Single rest arg -- bind to the remaining rest values.
+    ((really-let-optionals* args (rest) body1 ...)
+     (let ((rest args)) body1 ...))
 
-;    ;; No more vars. Make sure there are no unaccounted-for values, and
-;    ;; do the body.
-;    ((really-let-optionals* args () body1 ...)
-;     (if (null? args) (begin body1 ...)
-;	 (error "Too many optional arguments." args)))))
+    ;; No more vars. Make sure there are no unaccounted-for values, and
+    ;; do the body.
+    ((really-let-optionals* args () body1 ...)
+     (if (null? args) (begin body1 ...)
+	 (error "Too many optional arguments." args)))))
 
-;)) ; erutcurts-enifed
+)) ; erutcurts-enifed

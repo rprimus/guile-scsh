@@ -9,10 +9,20 @@
 (defmacro define-record-discloser args #f)
 
 (define-module (guile) :use-module (ice-9 slib))
+(require 'values)
 
 (load-from-path "scsh/syntax.scm")
 
-(require 'values)
+;; just pick out the begin forms.
+(defmacro define-structure (name interface . body)
+  (let loop ((rest body)
+	     (result '(begin)))
+    (if (null? rest)
+	(reverse result)
+	(loop (cdr rest)
+	      (if (eq? (caar rest) 'begin)
+		  (cons (car rest) result)
+		  result)))))
 
 (load-from-path "scsh/receive.scm")
 

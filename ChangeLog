@@ -1,3 +1,11 @@
+Sat Jan  4 02:48:02 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm (define-structure): simple substitute.
+
+Sun Dec 29 08:12:10 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* let-opt.scm: new copy from SCSH.  replace :optional with optional.
+
 Fri Dec 27 06:06:50 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm: remove integer->string.

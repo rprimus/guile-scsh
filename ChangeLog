@@ -1,0 +1,16 @@
+Wed Dec 11 22:15:18 1996  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: define bitwise-not, bitwise-and, bitwise-ior, bitwise-xor.
+	use slib's macro-by-example for define-syntax for now.
+	load let-opt.scm and utilities.scm.
+
+	* utilities.scm: replace usage of :optional with optional.
+	comment out compose, haven't decided what to do with call-with-values.
+
+	* let-opt.scm: comment out everything but the `optional'
+ 	macro, renamed from :optional.
+	
+	* COPYING, let-opt.scm, utilities.scm: from SCSH 0.4.4.
+	* ChangeLog, INCOMPAT, init.scm: new files.
+	* new directory.
+

@@ -1,5 +1,8 @@
 Tue May 13 11:59:28 1997  Jim Blandy  <jimb@floss.cyclic.com>
 
+	* Makefile.in, aclocal.m4, configure: Regenerated using automake
+	1.1p.
+
 	Lie to automake in a different way, to get it to install things in
 	the right place.
 	* configure.in (AM_INIT_AUTOMAKE): Call the package guile-scsh,

@@ -84,7 +84,7 @@
 
 	     (scsh fr)
 
-	     ;; the awk macro generates code that reqiures:
+	     ;; the awk macro generates code that requires:
 	     ;; (scsh rx re-syntax)
 	     ;; (scsh rx re)
 	     ;; (scsh rx re-high)

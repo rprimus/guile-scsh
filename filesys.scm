@@ -51,21 +51,20 @@
 		 (y-or-n? (string-append op-name ": " fname
 					 " already exists. Delete")))))
     (let loop ((override? override?))
-      ;; MAKEIT returns #f if win, errno if lose.
-      (cond ((makeit fname) =>
-	     (lambda (err)
-	       (if (not (= err errno/exist))
-		   (errno-error err syscall fname)
-
-		   ;; FNAME exists. Nuke it and retry?
-		   (cond ((if (eq? override? 'query)
-			      (query)
-			      override?)
-			  (delete-filesys-object fname)
-			  (loop #t))
-			 (else
-			  (errno-error err syscall fname))))))))))
-
+      (catch 'system-error
+	     (lambda () (makeit fname))
+	     (lambda (tag proc msg msg-args rest)
+	       (let ((errno (car rest)))
+		 (if (= errno errno/exist)
+		     ;; FNAME exists. Nuke it and retry?
+		     (cond ((if (eq? override? 'query)
+				(query)
+				override?)
+			    (delete-filesys-object fname)
+			    (loop #t))
+			   (else
+			    (scm-error tag proc msg msg-args rest)))
+		     (scm-error tag proc msg msg-args rest))))))))
 
 ;;;;;;;
 
@@ -74,7 +73,7 @@
 	(override? (if (or (null? rest) (null? (cdr rest))) #f
 		       (cadr rest))))
     (create-file-thing dir
-		       (lambda (dir) (create-directory/errno dir perms))
+		       (lambda (dir) (mkdir dir perms))
 		       override?
 		       "create-directory"
 		       create-directory)))
@@ -84,7 +83,7 @@
 	(override? (if (or (null? rest) (null? (cdr rest))) #f
 		       (cadr rest))))
     (create-file-thing fifo
-		       (lambda (fifo) (create-fifo/errno fifo perms))
+		       (lambda (fifo) (mknod fifo 'fifo perms 0))
 		       override?
 		       "create-fifo"
 		       create-fifo)))
@@ -92,15 +91,15 @@
 (define (create-hard-link old-fname new-fname . maybe-override?)
   (create-file-thing new-fname
 		     (lambda (new-fname)
-		       (create-hard-link/errno old-fname new-fname))
+		       (link old-fname new-fname))
 		     (:optional maybe-override? #f)
 		     "create-hard-link"
 		     create-hard-link))
 
 (define (create-symlink old-fname new-fname . maybe-override?)
   (create-file-thing new-fname
-		     (lambda (symlink)
-		       (create-symlink/errno old-fname symlink))
+		     (lambda (new-fname)
+		       (symlink old-fname new-fname))
 		     (:optional maybe-override? #f)
 		     "create-symlink"
 		     create-symlink))

@@ -1,3 +1,10 @@
+2001-05-28  Gary Houston  <ghouston@arglist.com>
+
+	* filesys.scm (create-directory, create-fifo, create-hard-link,
+	create-symlink, create-file-thing): fixed.  for some reason
+	these had never been ported to guile.  thanks to Paul Emsley
+	for pointing out that create-directory didn't work.
+
 2001-05-25  Gary Houston  <ghouston@arglist.com>
 
 	* syscalls.scm (directory-files): initialise result with '(), not ().

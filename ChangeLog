@@ -1,14 +1,18 @@
+2002-10-27  Gary Houston  <ghouston@arglist.com>
+
+	* USAGE: fix (scsh newports) exports list.
+
 2002-10-26  Gary Houston  <ghouston@arglist.com>
 
 	* README, NEWS: updated for 2.0.0 version.
 	* INCOMPAT: Scheme 48 strings ports not implemented.
 	* newports.scm: export with-error-output-port* and
 	with-error-output-port.
-	* syntax.scm (define-simple-syntax): export run/collecting, not
-	run-collecting.
+	* syntax.scm: export run/collecting, not run-collecting.
 	* USAGE: listed scsh-compatible facilities available by default
 	in guile-core (probably not complete).
 	autogen.sh: include warning and force options.
+
 	* configure.in: move Makefile argument from AC_OUTPUT to
 	AC_CONFIG_FILES.
 	version -> 2.0.0.

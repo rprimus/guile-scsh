@@ -252,7 +252,7 @@ modules from guile-scsh
 
 (scsh newports)
 ;; replaces open-file, open-input-file, open-output-file
-(fdport? set-port-buffering bufpol/block bufpol/line bufpol/none open-file open-input-file open-output-file call/fdes close-after with-current-input-port* with-current-output-port* with-current-error-port* with-current-input-port with-current-output-port with-current-error-port set-current-input-port! set-current-output-port! set-current-error-port!)
+(fdport? set-port-buffering bufpol/block bufpol/line bufpol/none open-file open-input-file open-output-file call/fdes close-after with-current-input-port* with-current-output-port* with-error-output-port* with-current-error-port* with-current-input-port with-current-output-port with-error-output-port with-current-error-port set-current-input-port! set-current-output-port! set-current-error-port!)
 
 (scsh fr)
 (field-splitter infix-splitter suffix-splitter sloppy-suffix-splitter record-reader field-reader)

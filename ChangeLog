@@ -1,3 +1,10 @@
+Wed Jul 16 14:40:40 1997  Jim Blandy  <jimb@floss.red-bean.com>
+
+	* Makefile.am: Install SCSH files in $(datadir)/guile, not in the
+	version-specific directory.  I think SCSH shouldn't be tied to a
+	specific version of Guile.
+	* Makefile.in: Regenerated.
+
 Sun Jun 15 06:06:58 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* configure.in: change the version to 1.2a so it will install

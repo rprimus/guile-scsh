@@ -27,6 +27,7 @@
 
 (use-modules (ice-9 slib))
 (require 'values)
+(require 'format)
 
 (load-from-path "scsh/syntax.scm")
 (load-from-path "scsh/receive.scm")
@@ -42,7 +43,9 @@
 (load-from-path "scsh/fname.scm")
 (load-from-path "scsh/errno.scm")
 (load-from-path "scsh/defrec.scm")
+(load-from-path "scsh/re.scm")
 (load-from-path "scsh/syscalls.scm")
+(load-from-path "scsh/time.scm")
 (load-from-path "scsh/rw.scm")
 (load-from-path "scsh/char-set.scm")
 (load-from-path "scsh/rdelim.scm")

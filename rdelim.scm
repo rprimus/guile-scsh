@@ -2,7 +2,6 @@
 ;;; for guile: read-delimited and read-delimited! are implemented in guile and 
 ;;; modified below to use scsh char-sets and multiple values.
 ;;; read-line is redefined below.
-;;; read-paragraph could be fixed.
 ;;; skip-char-set isn't mentioned in the scsh manual.
 
 (if (not (defined? 'guile-read-delimited))
@@ -290,37 +289,37 @@
 ;;; (read-paragraph [port handle-delim])
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;(define blank-line-regexp (make-regexp "^[ \t]*\n$"))
+(define blank-line-regexp (make-regexp "^[ \t]*\n$"))
 
-;(define (read-paragraph . args)
-;  (let-optionals args ((port         (current-input-port))
-;		       (handle-delim 'trim))
-;    ;; First, skip all blank lines.
-;    (let lp ()
-;      (let ((line (read-line port 'concat)))
-;	(cond ((eof-object? line)
-;	       (if (eq? handle-delim 'split) (values line line) line))
+(define (read-paragraph . args)
+  (let-optionals args ((port         (current-input-port))
+		       (handle-delim 'trim))
+    ;; First, skip all blank lines.
+    (let lp ()
+      (let ((line (read-line port 'concat)))
+	(cond ((eof-object? line)
+	       (if (eq? handle-delim 'split) (values line line) line))
 
-;	      ((regexp-exec blank-line-regexp line) (lp))
+	      ((regexp-exec blank-line-regexp line) (lp))
 
-;	      ;; Then, read in non-blank lines.
-;	      (else
-;	       (let lp ((lines (list line)))
-;		 (let ((line (read-line port 'concat)))
-;		   (if (and (string? line)
-;			    (not (regexp-exec blank-line-regexp line)))
+	      ;; Then, read in non-blank lines.
+	      (else
+	       (let lp ((lines (list line)))
+		 (let ((line (read-line port 'concat)))
+		   (if (and (string? line)
+			    (not (regexp-exec blank-line-regexp line)))
 
-;		       (lp (cons line lines))
+		       (lp (cons line lines))
 
-;		       ;; Return the paragraph
-;		       (let ((->str (lambda (lns) (apply string-append (reverse lns)))))
-;			 (case handle-delim
-;			   ((trim) (->str lines))
+		       ;; Return the paragraph
+		       (let ((->str (lambda (lns) (apply string-append (reverse lns)))))
+			 (case handle-delim
+			   ((trim) (->str lines))
 
-;			   ((concat)
-;			    (->str (if (eof-object? line) lines (cons line lines))))
+			   ((concat)
+			    (->str (if (eof-object? line) lines (cons line lines))))
 
-;			   ((split)
-;			    (values (->str lines) line))
+			   ((split)
+			    (values (->str lines) line))
 
-;			   (else (error "Illegal HANDLE-DELIM parameter to READ-PARAGRAPH")))))))))))))
+			   (else (error "Illegal HANDLE-DELIM parameter to READ-PARAGRAPH")))))))))))))

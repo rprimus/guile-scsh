@@ -1,3 +1,20 @@
+Sat Apr  5 06:44:32 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm: load time.scm.  require 'format from slib.
+
+Tue Apr  1 23:19:08 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* time.scm: copied from scsh and modified to use Guile primitives.
+
+Mon Mar 31 02:24:25 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* rdelim.scm: uncomment read-paragraph.
+
+	* Makefile.am (subpkgdata_DATA): add re.scm.
+	* init.scm: load re.scm.
+	* re.scm: copied from scsh and modified to use Guile regular
+	expressions.
+
 Tue Mar 25 04:28:51 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* syscalls.scm (name->user-info, uid->user-info): defined, needed

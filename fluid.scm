@@ -1,10 +1,17 @@
 ;; implementation of scheme48 fluid variables using libguile fluids.
 
 (define-module (scsh fluid))
-(export make-fluid set-fluid! fluid let-fluid)
 
 (if (not (defined? 'guile-make-fluid))
     (define guile-make-fluid make-fluid))
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting core bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define make-fluid #f))
+
+(export make-fluid set-fluid! fluid let-fluid)
 
 (define (make-fluid value)
   (let ((result (guile-make-fluid)))

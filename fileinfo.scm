@@ -15,6 +15,13 @@
   :use-module (scsh utilities)
   :use-module (scsh errno)
 )
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting core bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define file-exists? #f))
+
 (export file-not-readable? file-not-writable? file-not-executable?
 	file-readable? file-writable? file-executable?
 	file-not-exists? file-exists?

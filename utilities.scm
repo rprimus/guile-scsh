@@ -4,6 +4,13 @@
 (define-module (scsh utilities)
   :use-module (scsh loophole)
   :use-module (scsh bitwise))
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting core bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define delete #f))
+
 (export del delete filter first first? nth
 	fold fold-right
 	any every

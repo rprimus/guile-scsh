@@ -13,13 +13,21 @@
   :use-module (scsh errno)
 )
 
+(if (not (defined? 'guile-read-delimited))
+    (define guile-read-delimited read-delimited))
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting (ice-9 rdelim) bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define read-line #f)
+ (define read-delimited #f)
+ (define read-delimited! #f))
+
 (export read-line read-paragraph read-delimited read-delimited! skip-char-set)
 
 ;; unchanged from (ice-9 rdelim)
-(export %read-delimited!)
-
-(if (not (defined? 'guile-read-delimited))
-    (define guile-read-delimited read-delimited))
+(re-export %read-delimited!)
 
 (define (read-delimited delims . args)
   (let ((rv

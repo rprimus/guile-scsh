@@ -24,7 +24,6 @@
 	 jar-defrecord
 	 char-set
 	 defrec
-	 lib/string-lib
 	 errno
 	 rw
 	 rx/re-low
@@ -53,9 +52,9 @@
 	 fluid
 	 stringcoll
 	 scsh-condition
-	 lib/list-lib
 	 syntax
 	 glob
+	 fileinfo
 	 filesys
 	 time
 	 newports

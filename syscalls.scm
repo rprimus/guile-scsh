@@ -15,6 +15,14 @@
   :use-module (scsh procobj)
   :use-module (scsh errno)
 )
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting core bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define pipe #f)
+ (define sleep #f))
+
 (export %exec %%fork cwd user-gid user-effective-gid set-gid
 	user-supplementary-gids user-uid user-effective-uid set-uid
 	user-login-name pid parent-pid set-process-group

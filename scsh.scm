@@ -39,7 +39,6 @@
 	fork %fork stringify
 )
 (export-syntax with-cwd with-umask with-env with-total-env
-	       run/port run/file run/string run/strings run/sexp run/sexps
 	       with-stdio-ports
 )
 

@@ -12,7 +12,7 @@
 	read-string! read-string write-string)
 
 ;; from (ice-9 rw)
-(export read-string!/partial write-string/partial)
+(re-export read-string!/partial write-string/partial)
 
 (define (bogus-substring-spec? s start end)
   (or (< start 0)

@@ -232,6 +232,10 @@ modules from guile-scsh
 (scsh glob)
 (glob glob-quote maybe-directory-files)
 
+(scsh fileinfo)
+;; replaces file-exists?
+(file-not-readable? file-not-writable? file-not-executable? file-readable? file-writable? file-executable? file-not-exists? file-exists? file-type file-group file-inode file-last-access file-last-mod file-last-status-change file-mode file-nlinks file-owner file-size file-directory? file-fifo? file-regular? file-socket? file-special? file-symlink?)
+
 (scsh filesys)
 ;; replaces rename-file.
 (delete-filesys-object create-directory create-fifo create-hard-link create-symlink rename-file)
@@ -258,4 +262,4 @@ modules from guile-scsh
 (socket-connect bind-listen-accept-loop socket? socket:family socket:inport socket:outport socket-address? socket-address:address socket-address:family internet-address->socket-address socket-address->internet-address create-socket close-socket bind-socket connect-socket listen-socket accept-connection socket-remote-address socket-local-address shutdown-socket create-socket-pair receive-message receive-message! receive-message/partial receive-message!/partial send-message send-message/partial socket-option set-socket-option host-info host-info? host-info:name host-info:aliases host-info:addresses network-info network-info? network-info:name network-info:aliases network-info:net service-info service-info? service-info:name service-info:aliases service-info:port service-info:protocol protocol-info protocol-info? protocol-info:name protocol-info:aliases protocol-info:number)
 
 (scsh scsh)
-(call-terminally fork/pipe %fork/pipe tail-pipe tail-pipe+ alist-update alist-compress add-before add-after with-env* with-total-env* with-cwd* with-umask* create-temp-file temp-file-channel run/collecting* run/port+proc* run/port* run/file* run/string* run/strings* run/sexp* run/sexps* port->string port->string-list port->sexp-list port->list port-fold char-filter string-filter y-or-n? stdio->stdports with-stdio-ports* stdports->stdio command-line-arguments arg* arg argv home-directory exec-path-list suspend exec/env exec-path/env exec-path exec fork %fork stringify with-cwd with-umask with-env with-total-env run/port run/file run/string run/strings run/sexp run/sexps with-stdio-ports)
+(call-terminally fork/pipe %fork/pipe tail-pipe tail-pipe+ alist-update alist-compress add-before add-after with-env* with-total-env* with-cwd* with-umask* create-temp-file temp-file-channel run/collecting* run/port+proc* run/port* run/file* run/string* run/strings* run/sexp* run/sexps* port->string port->string-list port->sexp-list port->list port-fold char-filter string-filter y-or-n? stdio->stdports with-stdio-ports* stdports->stdio command-line-arguments arg* arg argv home-directory exec-path-list suspend exec/env exec-path/env exec-path exec fork %fork stringify with-cwd with-umask with-env with-total-env with-stdio-ports)

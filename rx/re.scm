@@ -15,14 +15,20 @@
 ;;; submatches, then POST-DSM as dead submatches.
 
 (define-module (scsh rx re)
+  :use-module (ice-9 receive)
+  :use-module (srfi srfi-13)
   :use-module (scsh defrec)
   :use-module (scsh jar-defrecord)
   :use-module (scsh rx re-low)
-  :use-module (ice-9 receive)
   :use-module (scsh utilities)
   :use-module (scsh char-set)
-  :use-module (scsh rx cond-package)
-  :use-module (scsh lib string-lib))
+  :use-module (scsh rx cond-package))
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting core bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define regexp? #f))
 
 (export %make-re-dsm %make-re-dsm/posix re-dsm? re-dsm:body re-dsm:pre-dsm
 	re-dsm:tsm re-dsm:posix set-re-dsm:posix re-dsm:post-dsm re-dsm

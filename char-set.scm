@@ -340,9 +340,7 @@
 ;;; Apply P to each index and it's char in S: (P I C).
 ;;; Used by the intersection & difference.
 
-;;; char-set- prefix added for Guile to avoid conflict with 
-;;; string-iter defined in lib/string-lib.scm.
-(define (char-set-string-iter p s)
+(define (string-iter p s)
   (let lp ((i (- (string-length s) 1)))
     (cond ((>= i 0)
 	   (p i (string-ref s i))
@@ -350,7 +348,7 @@
 
 (define (char-set-invert! cset)
   (let ((s (char-set:s cset)))
-    (char-set-string-iter (lambda (i c)
+    (string-iter (lambda (i c)
 		     (string-set! s i (ascii->char (- 1 (char->ascii c)))))
 		 s))
   cset)
@@ -368,7 +366,7 @@
 (define (char-set-intersection! cset1 . csets)
   (let ((s (char-set:s cset1)))
     (for-each (lambda (cset)
-		(char-set-string-iter (lambda (i c)
+		(string-iter (lambda (i c)
 			       (if (zero? (char->ascii c))
 				   (string-set! s i (ascii->char 0))))
 			     (char-set:s cset)))

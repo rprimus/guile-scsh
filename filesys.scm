@@ -11,6 +11,13 @@
   :use-module (scsh errno)
   :use-module (scsh scsh)
 )
+
+(begin-deprecated
+ ;; Prevent `export' from re-exporting core bindings.  This behaviour
+ ;; of `export' is deprecated and will disappear in one of the next
+ ;; releases.
+ (define rename-file #f))
+
 (export delete-filesys-object create-directory create-fifo create-hard-link
 	create-symlink rename-file)
 

@@ -1,3 +1,19 @@
+2001-07-07  Gary Houston  <ghouston@arglist.com>
+
+	* scsh.scm (run/port, run/file, run/string, run/strings, run/sexp,
+	run/sexps): don't export, they are defined in (scsh syntax).
+	* rw.scm, rdelim.scm: use re-export instead of export for
+	re-exporting from guile-core modules.
+	* char-set.scm: remove char-set- prefix from string-iter, since
+	it's no longer defined elsewhere.
+	* fname.scm, rx/posixstr.scm, rx/re-subst.scm, rx/re.scm:
+	use (srfi srfi-13) instead of (lib string-lib).
+	* syscalls.scm, utilities.scm, fluid.scm, filesys.scm, rdelim.scm,
+	rx/re.scm:
+	add deprecated blocks to create bindings for features that
+	override guile-core.
+	USAGE: updated.
+
 2001-07-06  Gary Houston  <ghouston@arglist.com>
 
 	* lib/string-lib.scm: removed.

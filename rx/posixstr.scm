@@ -55,6 +55,7 @@
 
 (define-module (scsh rx posixstr)
   :use-module (ice-9 receive)
+  :use-module (srfi srfi-13)
   :use-module (scsh utilities)
   :use-module (scsh char-set)
   :use-module (scsh ascii)
@@ -62,7 +63,6 @@
   :use-module (scsh rx simp)
   :use-module (scsh rx cond-package)
   :use-module (scsh rx parse)
-  :use-module (scsh lib string-lib)
 )
 (export regexp->posix-string)
 

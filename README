@@ -1,14 +1,14 @@
-This is an incomplete port of the scheme shell, scsh 0.5.2 to Guile.
+This is an incomplete port of the scheme shell, scsh 0.5.2, to Guile.
+This is not a release of guile-scsh, but was presumably obtained at
+some random time from the CVS archive.
 
 For the original scsh package and documentation, see:
 
 http://www.swiss.ai.mit.edu/ftpdir/scsh/
 
-Prerequisites for guile-scsh:
+This version of guile-scsh requires:
 
-1) guile-core, version 1.4.  The CVS version of guile-scsh should also
-work with the CVS version of guile-core: please report it as a bug if
-it doesn't.
+1) guile-core dated 27 November 2000 or later.  Version 1.4 is too old.
 
 2) The guilerxspencer module, available from http://arglist.com/guile/
 

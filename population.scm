@@ -1,7 +1,10 @@
 ; Copyright (c) 1993, 1994 Richard Kelsey and Jonathan Rees.  See file COPYING.
 
-
-
+(define-module (scsh population)
+  :use-module (scsh weak)
+)
+(export make-population add-to-population! population-reduce
+	population->list walk-population)
 
 (define (make-population)
   (list '<population>))

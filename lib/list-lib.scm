@@ -208,6 +208,51 @@
 ;;;
 ;;; The SRFI discussion record contains more discussion on this topic.
 
+(define-module (scsh lib list-lib)
+  :use-module (scsh receive)
+  :use-module (scsh utilities)
+  :use-module (scsh let-opt)
+)
+(export xcons
+	; cons* make-list
+	list-tabulate list-copy circular-list iota
+	proper-list? circular-list? dotted-list? not-pair? null-list? list=
+	first second third fourth fifth sixth seventh eighth ninth tenth
+	car+cdr
+	take       drop       
+	take-right drop-right 
+	take!      drop-right!
+	take-while drop-while  take-while!
+	split-at   split-at!
+	span  break
+	span! break!
+	last ; last-pair
+	length+
+	; append! reverse!
+	append-reverse append-reverse! concatenate
+	concatenate!
+	zip unzip1 unzip2 unzip3 unzip4 unzip5
+	count
+	unfold unfold-right
+	fold       unfold       pair-fold       reduce
+	fold-right unfold-right pair-fold-right reduce-right
+	append-map append-map! map! pair-for-each filter-map map-in-order
+	filter  partition  remove 
+	filter! partition! remove!
+	find find-tail any every list-index
+	delete delete! delete-duplicates delete-duplicates!
+	alist-cons alist-copy
+	alist-delete alist-delete!
+
+	lset<= lset= lset-adjoin  
+	lset-union			lset-union!
+	lset-intersection		lset-intersection!
+	lset-difference		lset-difference!
+	lset-xor			lset-xor!
+	lset-diff+intersection	lset-diff+intersection!
+
+	map for-each member assoc
+)
 
 ;;; Constructors
 ;;;;;;;;;;;;;;;;
@@ -224,15 +269,16 @@
 
 ;;; Make a list of length LEN.
 
-(define (make-list len . maybe-elt)
-  (check-arg (lambda (n) (and (integer? n) (>= n 0))) len make-list)
-  (let ((elt (cond ((null? maybe-elt) #f) ; Default value
-		   ((null? (cdr maybe-elt)) (car maybe-elt))
-		   (else (error "Too many arguments to MAKE-LIST"
-				(cons len maybe-elt))))))
-    (do ((i len (- i 1))
-	 (ans '() (cons elt ans)))
-	((<= i 0) ans))))
+;; already defined in Guile
+; (define (make-list len . maybe-elt)
+;   (check-arg (lambda (n) (and (integer? n) (>= n 0))) len make-list)
+;   (let ((elt (cond ((null? maybe-elt) #f) ; Default value
+; 		   ((null? (cdr maybe-elt)) (car maybe-elt))
+; 		   (else (error "Too many arguments to MAKE-LIST"
+; 				(cons len maybe-elt))))))
+;     (do ((i len (- i 1))
+; 	 (ans '() (cons elt ans)))
+; 	((<= i 0) ans))))
 
 
 ;(define (list . ans) ans)	; R4RS
@@ -252,19 +298,20 @@
 ;;;
 ;;; (cons first (unfold not-pair? car cdr rest values))
 
-(define (cons* first . rest)
-  (let recur ((x first) (rest rest))
-    (if (pair? rest)
-	(cons x (recur (car rest) (cdr rest)))
-	x)))
+;; already defined in Guile
+; (define (cons* first . rest)
+;   (let recur ((x first) (rest rest))
+;     (if (pair? rest)
+; 	(cons x (recur (car rest) (cdr rest)))
+; 	x)))
 
 ;;; (unfold not-pair? car cdr lis values)
 
-(define (list-copy lis)				
-  (let recur ((lis lis))			
-    (if (pair? lis)				
-	(cons (car lis) (recur (cdr lis)))	
-	lis)))					
+;(define (list-copy lis)				
+;  (let recur ((lis lis))			
+;    (if (pair? lis)				
+;	(cons (car lis) (recur (cdr lis)))	
+;	lis)))					
 
 ;;; IOTA count [start step]	(start start+step ... start+(count-1)*step)
 
@@ -593,11 +640,12 @@
 
 (define (last lis) (car (last-pair lis)))
 
-(define (last-pair lis)
-  (check-arg pair? lis last-pair)
-  (let lp ((lis lis))
-    (let ((tail (cdr lis)))
-      (if (pair? tail) (lp tail) lis))))
+;; already defined in Guile.
+; (define (last-pair lis)
+;   (check-arg pair? lis last-pair)
+;   (let lp ((lis lis))
+;     (let ((tail (cdr lis)))
+;       (if (pair? tail) (lp tail) lis))))
 
 
 ;;; Unzippers -- 1 through 5
@@ -647,24 +695,25 @@
 ;;; append! append-reverse append-reverse! concatenate concatenate!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (append! . lists)
-  ;; First, scan through lists looking for a non-empty one.
-  (let lp ((lists lists) (prev '()))
-    (if (not (pair? lists)) prev
-	(let ((first (car lists))
-	      (rest (cdr lists)))
-	  (if (not (pair? first)) (lp rest first)
+;; already defined in Guile.
+; (define (append! . lists)
+;   ;; First, scan through lists looking for a non-empty one.
+;   (let lp ((lists lists) (prev '()))
+;     (if (not (pair? lists)) prev
+; 	(let ((first (car lists))
+; 	      (rest (cdr lists)))
+; 	  (if (not (pair? first)) (lp rest first)
 
-	      ;; Now, do the splicing.
-	      (let lp2 ((tail-cons (last-pair first))
-			(rest rest))
-		(if (pair? rest)
-		    (let ((next (car rest))
-			  (rest (cdr rest)))
-		      (set-cdr! tail-cons next)
-		      (lp2 (if (pair? next) (last-pair next) tail-cons)
-			   rest))
-		    first)))))))
+; 	      ;; Now, do the splicing.
+; 	      (let lp2 ((tail-cons (last-pair first))
+; 			(rest rest))
+; 		(if (pair? rest)
+; 		    (let ((next (car rest))
+; 			  (rest (cdr rest)))
+; 		      (set-cdr! tail-cons next)
+; 		      (lp2 (if (pair? next) (last-pair next) tail-cons)
+; 			   rest))
+; 		    first)))))))
 
 ;;; APPEND is R4RS.
 ;(define (append . lists)
@@ -942,6 +991,16 @@
 	      (proc lis)		; in case PROC SET-CDR!s LIS.
 	      (lp tail))))))
 
+;; guile: above it's claimed that for-each is redefined in this file
+;; to handle lists of unequal lengths.  this is from scsh rts/base.scm
+;; and hacked.
+(define (for-each proc first . rest)
+  (let loop ((first first) (rest rest))
+    (if (not (or (null? first)
+		 (any null? rest)))
+	(begin (apply proc (cons (car first) (map car rest)))
+	       (loop (cdr first) (map cdr rest))))))
+
 ;;; We stop when LIS1 runs out, not when any list runs out.
 (define (map! f lis1 . lists)
   (check-arg procedure? f map!)
@@ -980,6 +1039,8 @@
 ;;; NOTE: Some implementations of R5RS MAP are compliant with this spec;
 ;;; in which case this procedure may simply be defined as a synonym for MAP.
 
+;; Guile's version can't be used because it doesn't allow list of unequal
+;; length.
 (define (map-in-order f lis1 . lists)
   (check-arg procedure? f map-in-order)
   (if (pair? lists)
@@ -990,9 +1051,9 @@
 		(cons x (recur cdrs)))		; then tail.
 	      '())))
 	    
-      ;; Fast path.
-      (let recur ((lis lis1))
-	(if (null-list? lis) lis
+     ;; Fast path.
+     (let recur ((lis lis1))
+       (if (null-list? lis) lis
 	    (let ((tail (cdr lis))
 		  (x (f (car lis))))		; Do head first,
 	      (cons x (recur tail)))))))	; then tail.
@@ -1411,12 +1472,13 @@
 ;(define (reverse! lis)
 ;  (pair-fold (lambda (pair tail) (set-cdr! pair tail) pair) '() lis))
 
-(define (reverse! lis)
-  (let lp ((lis lis) (ans '()))
-    (if (null-list? lis) ans
-        (let ((tail (cdr lis)))
-          (set-cdr! lis ans)
-          (lp tail lis)))))
+;; already defined in Guile.
+; (define (reverse! lis)
+;   (let lp ((lis lis) (ans '()))
+;     (if (null-list? lis) ans
+;         (let ((tail (cdr lis)))
+;           (set-cdr! lis ans)
+;           (lp tail lis)))))
 
 ;;; Lists-as-sets
 ;;;;;;;;;;;;;;;;;

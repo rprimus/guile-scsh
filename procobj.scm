@@ -9,6 +9,18 @@
 ;;; and out of the kernel process table, and they can be waited on
 ;;; multiple times.
 
+(define-module (scsh procobj)
+  :use-module (scsh defrec)
+  :use-module (scsh population)
+  :use-module (scsh utilities)
+  :use-module (scsh let-opt)
+  :use-module (scsh sighandlers)
+  :use-module (scsh weak)
+)
+(export proc:pid proc? pid->proc autoreap-policy reap-zombies
+	new-child-proc wait/poll wait/stopped-children wait wait-any
+	wait-process-group)
+
 ;;; Process objects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

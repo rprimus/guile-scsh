@@ -32,6 +32,25 @@
 ;;;	ENABLED-INTERRUPTS
 ;;; Must define WITH-INTERRUPTS* and WITH-INTERRUPTS.
 
+(define-module (scsh sighandlers)
+  :use-module (scsh define-foreign-syntax)
+)
+;; additional exports are generated below.
+(export signal->interrupt
+	;;  interrupt-set
+	with-enabled-interrupts
+	;; with-enabled-interrupts*
+	enabled-interrupts
+	set-enabled-interrupts
+
+	set-interrupt-handler
+	interrupt-handler
+
+;;	%set-unix-signal-handler
+;;	%unix-signal-handler
+
+)
+
 (foreign-source
  "#include <errno.h>"
   ""
@@ -75,18 +94,19 @@
 ;(define with-enabled-interrupts* with-interrupts)
 
 (defmacro maybe-define-signal (name)
-  (let ((build-name (lambda (prefix signame)
-		      (string->symbol
-		       (string-append prefix
-				      (string-downcase
-				       (substring (symbol->string signame)
-						  3)))))))
-    `(if (defined? ',name)
-	 (begin
-	   (define ,(build-name "interrupt/" name)
-	     ,name)
-	   (define ,(build-name "signal/" name)
-	     ,name)))))
+  (let* ((build-name (lambda (prefix signame)
+		       (string->symbol
+			(string-append prefix
+				       (string-downcase
+					(substring (symbol->string signame)
+						   3))))))
+	 (interrupt-name (build-name "interrupt/" name))
+	 (signal-name (build-name "signal/" name)))
+    `(cond ((defined? ',name)
+	    (define ,interrupt-name ,name)
+	    (export ,interrupt-name)
+	    (define ,signal-name ,name)
+	    (export ,signal-name)))))
 
 (maybe-define-signal SIGABRT)
 (maybe-define-signal SIGALRM)
@@ -122,8 +142,6 @@
 (maybe-define-signal SIGWINCH)
 (maybe-define-signal SIGXCPU)
 (maybe-define-signal SIGXFSZ)
-
-(undefine maybe-define-signal)
 
 ;;; HANDLER is #f (ignore), #t (default), or a procedure taking an integer
 ;;; argument. The interrupt is delivered to a procedure by (1) setting the

@@ -27,6 +27,12 @@
 ;;; This facility makes it reasonably efficient to accumulate strings
 ;;; of any size in increments of any size.
 
+(define-module (scsh stringcoll)
+  :use-module (scsh defrec)
+)
+(export make-string-collector collect-string! clear-string-collector!
+	string-collector->string)
+
 (define-record string-collector
   (len 0)		; How many chars have we accumulated?
   (chunks '())		; The chunk list.

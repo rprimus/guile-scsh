@@ -1,24 +1,3 @@
-The entire guile-scsh package can be loaded into a running Guile
-interpreter with:
-
-(load-from-path "scsh/init")
-
-Warning: this will take a while and will clobber various Guile
-definitions.
-
-It's probably more useful to import parts of scsh individually using
-the Guile module system, but this is not yet possible for all parts of
-the library.
-
-The remainder of this file lists the modules and the exported symbols
-for each.  The modules don't necessarily correspond with scsh
-structures, since the Guile module system requires a correspondence
-between module names and files.  It was considered desirable to leave
-the scsh file layouts relatively intact, to simplify ungrading to
-newer versions of scsh.
-
-This list was generated with help from the make-module-list script.
-
 (scsh alt-syntax)
 ;; not compatible with (ice-9 syncase)
 (define-syntax syntax-rules)
@@ -49,7 +28,8 @@ This list was generated with help from the make-module-list script.
 (arithmetic-shift bitwise-not bitwise-and bitwise-ior bitwise-xor)
 
 (scsh utilities)
-;; "delete" is incompatile with guile primitive.
+;; "delete" is incompatile with guile primitive.  it's also incompatible with
+;; delete from (scsh lib list-lib).
 (del delete filter first first? nth fold fold-right any every mapv mapv! vector-every? copy-vector initialize-vector vector-append vfold vfold-right check-arg conjoin disjoin negate compose call/cc deprecated-proc deposit-bit-field real->exact-integer)
 
 (scsh define-foreign-syntax)
@@ -135,6 +115,42 @@ This list was generated with help from the make-module-list script.
 (read-line read-paragraph read-delimited read-delimited! skip-char-set)
 
 (scsh here)
-;; exports nothing, but installs a read macro for #<
 ()
 
+(scsh scsh-version)
+(scsh-major-version scsh-minor-version scsh-version-string)
+
+(scsh weak)
+(make-weak-pointer weak-pointer-ref weak-pointer?)
+
+(scsh population)
+(make-population add-to-population! population-reduce population->list walk-population)
+
+(scsh sighandlers)
+;; also exports signal/alrm, interrupt/alrm etc.
+(signal->interrupt with-enabled-interrupts enabled-interrupts set-enabled-interrupts set-interrupt-handler interrupt-handler)
+
+(scsh procobj)
+(proc:pid proc? pid->proc autoreap-policy reap-zombies new-child-proc wait/poll wait/stopped-children wait wait-any wait-process-group)
+
+(scsh syscalls)
+;; replaces pipe, sleep
+(%exec %%fork cwd user-gid user-effective-gid set-gid user-supplementary-gids user-uid user-effective-uid set-uid user-login-name pid parent-pid set-process-group become-session-leader set-umask process-times cpu-ticks/sec set-file-mode set-file-owner set-file-group read-symlink delete-directory set-file-times file-info file-info:type file-info:gid file-info:inode file-info:atime file-info:mtime file-info:ctime file-info:mode file-info:nlinks file-info:uid file-info:size sync-file sync-file-system seek/set seek/delta seek/end tell pipe signal-process signal-process-group pause-until-interrupt user-info user-info:name user-info:uid user-info:gid user-info:home-dir user-info:shell name->user-info uid->user-info ->uid ->username %homedir group-info group-info:name group-info:gid group-info:members ->gid ->groupname directory-files env->alist alist->env fdes-flags set-fdes-flags fdes-status set-fdes-status open/read open/write open/read+write open/non-blocking open/append open/exclusive open/create open/truncate open/no-control-tty fdflags/close-on-exec sleep sleep-until system-name define-errno-syscall)
+
+(scsh fname)
+(file-name-as-directory file-name-directory? file-name-non-directory? directory-as-file-name ensure-file-name-is-nondirectory file-name-absolute? file-name-directory file-name-nondirectory split-file-name path-list->file-name file-name-extension file-name-sans-extension replace-extension parse-file-name expand-file-name simplify-file-name resolve-tilde-file-name resolve-file-name absolute-file-name home-dir home-file)
+
+(scsh fluid)
+(make-fluid set-fluid! fluid let-fluid)
+
+(scsh stringcoll)
+(make-string-collector collect-string! clear-string-collector! string-collector->string)
+
+(scsh scsh-condition)
+(errno-error with-errno-handler* with-errno-handler)
+
+(scsh lib list-lib)
+;; replaces:
+;; map map-in-order for-each member assoc iota list-index
+;; delete delete!
+(xcons list-tabulate list-copy circular-list iota proper-list? circular-list? dotted-list? not-pair? null-list? list= first second third fourth fifth sixth seventh eighth ninth tenth car+cdr take drop take-right drop-right take! drop-right! take-while drop-while take-while! split-at split-at! span break span! break! last length+ append-reverse append-reverse! concatenate concatenate! zip unzip1 unzip2 unzip3 unzip4 unzip5 count unfold unfold-right fold unfold pair-fold reduce fold-right unfold-right pair-fold-right reduce-right append-map append-map! map! pair-for-each filter-map map-in-order filter partition remove filter! partition! remove! find find-tail any every list-index delete delete! delete-duplicates delete-duplicates! alist-cons alist-copy alist-delete alist-delete! lset<= lset= lset-adjoin lset-union lset-union! lset-intersection lset-intersection! lset-difference lset-difference! lset-xor lset-xor! lset-diff+intersection lset-diff+intersection! map for-each member assoc)

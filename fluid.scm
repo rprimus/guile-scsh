@@ -1,5 +1,8 @@
 ;; implementation of scheme48 fluid variables using libguile fluids.
 
+(define-module (scsh fluid))
+(export make-fluid set-fluid! fluid let-fluid)
+
 (if (not (defined? 'guile-make-fluid))
     (define guile-make-fluid make-fluid))
 

@@ -11,6 +11,34 @@
 ;;; Relevant bits of CScheme:
 ;;;    pathnm sfile strnin unxcwd unxdir unxpar unxprm unxpth unxunp wrkdir
 
+(define-module (scsh fname)
+  :use-module (scsh lib string-lib)
+  :use-module (scsh let-opt)
+  :use-module (scsh receive)
+  :use-module (scsh syscalls))
+
+(export file-name-as-directory
+	file-name-directory?
+	file-name-non-directory?
+	directory-as-file-name
+	ensure-file-name-is-nondirectory
+	file-name-absolute?
+	file-name-directory
+	file-name-nondirectory
+	split-file-name
+	path-list->file-name
+	file-name-extension
+	file-name-sans-extension
+	replace-extension
+	parse-file-name
+	expand-file-name
+	simplify-file-name
+	resolve-tilde-file-name
+	resolve-file-name
+	absolute-file-name
+	home-dir
+	home-file)
+
 (define (file-name-directory? fname)
   (or (string=? fname "")			; Note! "" is directory (cwd)
       (char=? #\/ (string-ref fname (- (string-length fname) 1)))))

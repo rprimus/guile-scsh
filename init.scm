@@ -43,22 +43,29 @@
 
 	     (scsh rdelim)
 	     (scsh here)
+	     (scsh scsh-version)
+	     (scsh weak)
+	     (scsh population)
+
+	     ;; also exports signal/alrm, interrupt/alrm etc.
+	     (scsh sighandlers)
+
+	     (scsh procobj)
+
+	     ;; replaces pipe, sleep
+	     (scsh syscalls)
+
+	     (scsh fname)
+	     (scsh fluid)
+	     (scsh stringcoll)
+	     (scsh scsh-condition)
+	     
+	     ;; replaces:
+	     ;; map map-in-order for-each member assoc iota list-index
+	     ;; delete delete!
+	     (scsh lib list-lib)
 )
 
-(load-from-path "scsh/scsh-version.scm")
-(load-from-path "scsh/fname.scm")
-(load-from-path "scsh/enumconst.scm")
-(load-from-path "scsh/weak.scm")
-(load-from-path "scsh/fluid.scm")
-(load-from-path "scsh/population.scm")
-(load-from-path "scsh/stringcoll.scm")
-(load-from-path "scsh/condition.scm")
-(load-from-path "scsh/scsh-condition.scm")
-
-(load-from-path "scsh/lib/ccp.scm")
-(load-from-path "scsh/lib/list-lib.scm")
-
-(load-from-path "scsh/syscalls.scm")
 (load-from-path "scsh/syntax.scm")
 (load-from-path "scsh/fileinfo.scm")
 (load-from-path "scsh/glob.scm")
@@ -70,8 +77,6 @@
 (load-from-path "scsh/fr.scm")
 (load-from-path "scsh/netconst.scm")
 (load-from-path "scsh/network.scm")
-(load-from-path "scsh/sighandlers.scm")
-(load-from-path "scsh/procobj.scm")
 (load-from-path "scsh/scsh.scm")
 
 (init-scsh-vars #f)

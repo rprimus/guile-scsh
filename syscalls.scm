@@ -5,6 +5,43 @@
 
 ;;; Need to rationalise names here. getgid. get-gid. "effective" as morpheme?
 
+(define-module (scsh syscalls)
+  :use-module (scsh define-foreign-syntax)
+  :use-module (scsh receive)
+  :use-module (scsh utilities)
+  :use-module (scsh let-opt)
+  :use-module (scsh fname)
+  :use-module (scsh defrec)
+  :use-module (scsh procobj)
+)
+(export %exec %%fork cwd user-gid user-effective-gid set-gid
+	user-supplementary-gids user-uid user-effective-uid set-uid
+	user-login-name pid parent-pid set-process-group
+	become-session-leader set-umask process-times cpu-ticks/sec
+	set-file-mode set-file-owner set-file-group read-symlink
+	delete-directory set-file-times
+	file-info file-info:type file-info:gid file-info:inode
+	file-info:atime file-info:mtime file-info:ctime file-info:mode
+	file-info:nlinks file-info:uid file-info:size
+	sync-file sync-file-system
+	seek/set seek/delta seek/end tell pipe
+	signal-process signal-process-group pause-until-interrupt
+	user-info user-info:name user-info:uid user-info:gid
+	user-info:home-dir user-info:shell
+	name->user-info uid->user-info ->uid ->username %homedir
+	group-info group-info:name group-info:gid group-info:members
+	->gid ->groupname
+	directory-files
+	env->alist alist->env
+	fdes-flags set-fdes-flags fdes-status set-fdes-status
+	open/read open/write open/read+write open/non-blocking
+	open/append open/exclusive open/create open/truncate
+	open/no-control-tty fdflags/close-on-exec
+	sleep sleep-until
+	system-name)
+
+(export-syntax define-errno-syscall)
+
 (foreign-source
   "#include <sys/signal.h>"
   "#include <sys/types.h>"
@@ -518,8 +555,6 @@
 ;;	    (else
 ;;	     (errno-error errno %close-fdes fd))))))	; You lose.
 
-(define close-fdes close)
-
 (define-foreign %dup/errno
   (dup (integer fd))
   (multi-rep (to-scheme integer errno_or_false)
@@ -548,9 +583,14 @@
 (define seek/delta SEEK_CUR)
 (define seek/end SEEK_END)
 
-(define (seek fd/port offset . maybe-whence)
-  (let ((whence (:optional maybe-whence seek/set)))
-    (fseek fd/port offset whence)))
+;(define (seek fd/port offset . maybe-whence)
+;  (let ((whence (:optional maybe-whence seek/set)))
+;    (receive (err cursor)  
+;	((if (integer? fd/port) %fd-seek/errno %fdport-seek/errno)
+;	 fd/port
+;	 offset
+;	 whence)
+;      (if err (errno-error err seek fd/port offset whence) cursor))))
 
 (define tell ftell)
 
@@ -589,9 +629,9 @@
 
 (if (not (defined? 'guile-pipe))
     (define guile-pipe pipe))
-(set! pipe (lambda ()
-	     (let ((rv (guile-pipe)))
-	       (values (car rv) (cdr rv)))))
+(define pipe (lambda ()
+	       (let ((rv (guile-pipe)))
+		 (values (car rv) (cdr rv)))))
 
 (define-foreign %read-fdes-char
   (read_fdes_char (integer fd))

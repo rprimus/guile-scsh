@@ -19,6 +19,11 @@ exit make-fluid string->list and probably open-file.
 
 the interfaces to the I/O system may be incompatible.
 
+interrupt-set, set-enabled-interrupts, with-interrupts,
+with-enabled-interrupts*, %set-unix-signal-handler and
+%unix-signal-handler have not been implemented.  Within a
+with-enabled-interrupts form, all interrupts are disabled.
+
 [check that the following are still true in 0.5.2]
 
 generic-receive-message! always returns 2 values: the number of
@@ -32,10 +37,6 @@ If the buffer fills, it doesn't peek ahead to check whether the next
 character is a delimiter or EOF, since this a) seems to require extra
 code or comparisons, b) makes read-delimted! and read-line! more complex
 c) doesn't gain much anyway.
-
-set-enabled-interrupts and with-interrupts have not been 
-implemented.  Within a with-enabled-interrupts form, all interrupts are
-disabled.
 
 set-command-line-args! is not implemented.
 command-line returns the same list every time, not a copy.

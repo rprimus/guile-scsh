@@ -1,3 +1,40 @@
+2000-11-27  Gary Houston  <ghouston@arglist.com>
+
+	* USAGE, README: updated.
+
+	* lib/list-lib.scm (for-each): define
+
+	* lib/list-lib.scm: define module (scsh lib list-lib).
+	comment out procedures which are already compatibly defined in
+	Guile (cons*, make-list, list-copy, last-pair, append!, 
+	reverse!)
+	(for-each): define, since it's supposed to be here but was missing.
+
+	* lib/ccp.scm: file removed.  doesn't seem to be required by 
+	anything else or documented.
+
+	* scsh-condition.scm: define module (scsh scsh-condition).
+
+	* condition.scm: file removed.
+	
+	* stringcoll.scm: define module (scsh stringcoll).
+
+	* enumconst.scm: file deleted: defines a couple of macros which
+	are not used or exported.
+
+	* fluid.scm: define module (scsh fluid).
+	* sighandlers.scm: define module (scsh sighandlers).
+	(maybe-define-signal): export each symbol that's
+	defined.
+	* weak.scm: define module (scsh weak).
+	* population.scm: define module (scsh population).
+	* procobj.scm: define module (scsh procobj).
+	* syscalls.scm: define module (scsh syscalls).
+	(close-fdes, seek): removed: now guile primitives.
+	* fname.scm: define module (scsh fname).
+	* scsh-version.scm: define module (scsh scsh-version).
+	* init.scm: load new modules.
+
 2000-10-29  Gary Houston  <ghouston@arglist.com>
 
 	* rx/rx-lib.scm: define module (scsh rx rx-lib).

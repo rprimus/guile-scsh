@@ -1,6 +1,12 @@
 ;;; Copyright (c) 1994 by Olin Shivers. See file COPYING.
 ;;; Add scsh conditions to s48.
 
+(define-module (scsh scsh-condition)
+  :use-module (scsh alt-syntax)
+)
+(export errno-error with-errno-handler*)
+(export-syntax with-errno-handler)
+
 ;;; A syscall-error condition-type:
 
 ;;(define-condition-type 'syscall-error '(error))

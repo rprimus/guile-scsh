@@ -42,10 +42,18 @@
 	 rx/parse
 	 rx/rx-lib
 	 rdelim
-	 here)))
-
-;; comments
-
+	 here
+	 scsh-version
+	 weak
+	 population
+	 sighandlers
+	 procobj
+	 syscalls
+	 fname
+	 fluid
+	 stringcoll
+	 scsh-condition
+	 lib/list-lib)))
 
 ;; if expr is a define-module form, return the name of the module
 ;; e.g., '(scsh alt-syntax).

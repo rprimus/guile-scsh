@@ -113,7 +113,7 @@ This list was generated with help from the make-module-list script.
 (bogus-substring-spec? read-string/partial read-string! read-string write-string write-string/partial read-string!/partial)
 
 (scsh rx re-low)
-(match:start match:end match:substring new-cre cre-search cre-search? cre:string cre:tvec)
+(match:start match:end match:substring regexp-match:start regexp-match:end regexp-match:string new-cre cre-search cre-search? cre:string cre:tvec)
 
 (scsh rx cond-package)
 (define-simple-syntax when unless ? switchq switch prog0 land* %switch %switchq)

@@ -1,6 +1,6 @@
 2001-05-29  Gary Houston  <ghouston@arglist.com>
 
-	* rx/re-subst.scm: export regexp-substitute-global.  otherwise
+	* rx/re-subst.scm: export regexp-substitute/global.  otherwise
 	the version from (ice-9 regex) is used, but can't handle SREs.
 	thanks to Paul Emsley for pointing out that
 	regexp-substitute/global didn't work.

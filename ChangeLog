@@ -1,10 +1,26 @@
+Sat Jan 18 00:52:14 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* init.scm (index, rindex): replace versions in utilities.scm with
+	primitives.
+	load errno.scm.
+
+	* rw.scm: globally replace :optional with optional.
+	comment out y-or-n? and *y-or-n-eof-count*.
+	(read-string!/partial, generic-read-string!/partial,
+	generic-read-string!, read-string!, generic-write-string/partial,
+	write-string/partial, generic-write-string, write-string):
+	use guile primitives.
+
+	* netconst.scm: undefine maybe-define and maybe-define-so after use.
+	* errno.scm: new file.
+
 Wed Jan  8 02:32:56 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm (ascii->char, char->ascii) defined.
 
 	* netconst.scm (maybe-define-so): new macro.  use it to define
 	socket option constants.
-	remove a few SO_ types which don't appear in SCSH's netconst.scm.
+	remove a few SO_ types which don't appear in scsh's netconst.scm.
 	define variables options/boolean etc.
 
 	* network.scm: socket-address->list: new procedure.
@@ -20,13 +36,13 @@ Mon Jan  6 05:00:19 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* network.scm (generic-receive-message!): use guile primitives.
 	(receive-message!): minor change.
-	(receive-message): use the SCSH definition.
+	(receive-message): use the scsh definition.
 	(generic-receive-mesage/partial, receive-message/partial,
 	receive-message!/partial): similar.
 
 	* init.scm: load rw.scm
 
-	* rw.scm: copied from SCSH.
+	* rw.scm: copied from scsh.
 
 Sat Jan  4 02:48:02 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
@@ -34,7 +50,7 @@ Sat Jan  4 02:48:02 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 Sun Dec 29 08:12:10 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
-	* let-opt.scm: new copy from SCSH.  replace :optional with optional.
+	* let-opt.scm: new copy from scsh.  replace :optional with optional.
 
 Fri Dec 27 06:06:50 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
@@ -69,22 +85,22 @@ Wed Dec 18 22:44:02 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
 Tue Dec 17 06:24:39 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
-	* network.scm: copied from SCSH
+	* network.scm: copied from scsh
 
 	* init.scm: define foreign-source, does nothing.
 
 	* init.scm: load syntax.scm instead of slib's macro-by-example.
 	load defrec.scm.
 
-	* defrec.scm: copied from SCSH.
+	* defrec.scm: copied from scsh.
 
-	* syntax.scm: copied from SCSH.
+	* syntax.scm: copied from scsh.
 	Redefine define-syntax and define syntax-error.  By some miracle
 	it seems to work.
 
 Mon Dec 16 05:53:43 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
-	* receive.scm: copied from SCSH.
+	* receive.scm: copied from scsh.
 
 Fri Dec 13 04:53:50 1996  Gary Houston  <ghouston@actrix.gen.nz>
 
@@ -103,7 +119,7 @@ Wed Dec 11 22:15:18 1996  Gary Houston  <ghouston@actrix.gen.nz>
 	* let-opt.scm: comment out everything but the `optional'
  	macro, renamed from :optional.
 	
-	* COPYING, let-opt.scm, utilities.scm: from SCSH 0.4.4.
+	* COPYING, let-opt.scm, utilities.scm: from scsh 0.4.4.
 	* ChangeLog, INCOMPAT, init.scm: new files.
 	* new directory.
 

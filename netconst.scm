@@ -50,3 +50,6 @@
 (define shutdown/receives	0)
 (define shutdown/sends		1)
 (define shutdown/sends+receives	2)
+
+(undefine maybe-define)
+(undefine maybe-define-so)

@@ -8,14 +8,20 @@ e.g., see the "run" comment in the USAGE file.
 scsh features not implemented
 =============================
 
-The ODBC interface.
-The char->char partial maps library (CCP).
+char->char partial maps library (lib/ccp*)
+flock interface (flock*)
+Job control (jcontrol*)
+NDBM interface (ndbm*)
+ODBC interface (odbc/*)
+pty interface (pty.scm)
+tty interface (tty*)
 
-enabled-interrupts, interrupt-set, %set-unix-signal-handler,
-set-enabled-interrupts, %unix-signal-handler,
-with-enabled-interrupts*.
-
-(incomplete, more below.)
+set-command-line-args!
+select!
+open/async open/fsync open/shared-lock open/exclusive-lock
+enabled-interrupts interrupt-set %set-unix-signal-handler
+set-enabled-interrupts %unix-signal-handler
+with-enabled-interrupts*
 
 Bugs in scsh fixed in guile-scsh
 ================================
@@ -33,44 +39,19 @@ filter-weak-ptr-list in procobj.scm seems to have a typo in its last
 line: list instead of lis.  This was causing problems for guile-scsh but
 doesn't seem to matter in scsh.  Hmm.
 
-Other Incompatibilities with scsh
+network-info doesn't work if its argument is a socket address.
+
+Other incompatibilities with scsh
 =================================
 
-The Guile module system is not compatible with the one in scsh (from
-Scheme48).
+The Guile module system is not compatible with the Scheme48 system
+used in scsh.
 
 Sockets are created unbuffered in Guile, but buffered in scsh.
 
-with-enabled-interrupts disables all interrupts.
+with-enabled-interrupts disables all interrupts in guile-scsh.
 
-open/async, open/fsync, open/shared-lock, open/exclusive-lock are
-not defined.
+Guile I/O procedures haven't been changed throughout to accept file
+descriptors in place of ports, e.g., display, write, read-char.
 
-[FIXME: check that the following are still true]
-
-network-info works when its argument is a socket address (bug in scsh?)
-
-%read-delimited! takes a string for its "set of delimiters" parameter.
-If the buffer fills, it doesn't peek ahead to check whether the next
-character is a delimiter or EOF, since this a) seems to require extra
-code or comparisons, b) makes read-delimted! and read-line! more complex
-c) doesn't gain much anyway.
-
-set-command-line-args! is not implemented.
-command-line returns the same list every time, not a copy.
-
-The close-on-exec flag is not currently set on unrevealed ports.
-
-the NDBM interface hasn't been implemented.
-
-the flock interface hasn't been implemented.
-
-net-to-host-32 etc., haven't been defined.
-
-the files jcontrol.scm and jcontrol2.scm haven't been ported.
-
-pty and tty support hasn't been implemented (pty.scm, tty.scm).
-
-select! hasn't been implemented.
-
-display and write don't accept file descriptors in place of ports.
+The close-on-exec flag is not set on unrevealed ports.

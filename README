@@ -37,5 +37,10 @@ directory to "scsh" and place it somewhere in the Guile load path (type
 %load-path in an interactive Guile session to see the current
 setting).
 
-See the USAGE file for notes on using the library and INSTALL for 
-generic configure documentation.
+For more information see:
+
+INSTALL for generic configure documentation.
+
+USAGE for notes on using the library.
+
+INCOMPAT for differences with the original scsh.

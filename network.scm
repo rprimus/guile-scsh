@@ -32,6 +32,7 @@
 	service-info:protocol
 	protocol-info protocol-info?
 	protocol-info:name protocol-info:aliases protocol-info:number
+	host-to-net-16 net-to-host-16 host-to-net-32 net-to-host-32
 )
 
 ;; noop for Guile.
@@ -987,3 +988,10 @@
     (do ((i 0 (+ i 1)))
 	((= i len) v)
       (vector-set! v i (f (vector-ref v i))))))
+
+;; from scsh/endian.scm.in.
+
+(define host-to-net-16 htons)
+(define net-to-host-16 ntohs)
+(define host-to-net-32 htonl)
+(define net-to-host-32 ntohl)

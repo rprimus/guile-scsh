@@ -182,7 +182,7 @@ modules from guile-scsh
 
 (scsh rdelim)
 ;; similar to (ice-9 rdelim):
-;; incompatible: read-line, read-delimited, read-delimited!
+;; incompatible: read-line, read-delimited, read-delimited!, %read-delimited!
 ;; additions: read-paragraph, skip-char-set
 ;; omissions: write-line, read-line!
 (read-line read-paragraph read-delimited read-delimited! skip-char-set %read-delimited!)
@@ -262,7 +262,7 @@ modules from guile-scsh
 (options/boolean options/value options/linger shutdown/receives shutdown/sends shutdown/sends+receives)
 
 (scsh network)
-(socket-connect bind-listen-accept-loop socket? socket:family socket:inport socket:outport socket-address? socket-address:address socket-address:family internet-address->socket-address socket-address->internet-address create-socket close-socket bind-socket connect-socket listen-socket accept-connection socket-remote-address socket-local-address shutdown-socket create-socket-pair receive-message receive-message! receive-message/partial receive-message!/partial send-message send-message/partial socket-option set-socket-option host-info host-info? host-info:name host-info:aliases host-info:addresses network-info network-info? network-info:name network-info:aliases network-info:net service-info service-info? service-info:name service-info:aliases service-info:port service-info:protocol protocol-info protocol-info? protocol-info:name protocol-info:aliases protocol-info:number)
+(socket-connect bind-listen-accept-loop socket? socket:family socket:inport socket:outport socket-address? socket-address:address socket-address:family internet-address->socket-address socket-address->internet-address create-socket close-socket bind-socket connect-socket listen-socket accept-connection socket-remote-address socket-local-address shutdown-socket create-socket-pair receive-message receive-message! receive-message/partial receive-message!/partial send-message send-message/partial socket-option set-socket-option host-info host-info? host-info:name host-info:aliases host-info:addresses network-info network-info? network-info:name network-info:aliases network-info:net service-info service-info? service-info:name service-info:aliases service-info:port service-info:protocol protocol-info protocol-info? protocol-info:name protocol-info:aliases protocol-info:number host-to-net-16 net-to-host-16 host-to-net-32 net-to-host-32)
 
 (scsh scsh)
 (call-terminally fork/pipe %fork/pipe tail-pipe tail-pipe+ alist-update alist-compress add-before add-after with-env* with-total-env* with-cwd* with-umask* create-temp-file temp-file-channel run/collecting* run/port+proc* run/port* run/file* run/string* run/strings* run/sexp* run/sexps* port->string port->string-list port->sexp-list port->list port-fold char-filter string-filter y-or-n? stdio->stdports with-stdio-ports* stdports->stdio command-line-arguments arg* arg argv home-directory exec-path-list suspend exec/env exec-path/env exec-path exec fork %fork stringify with-cwd with-umask with-env with-total-env with-stdio-ports)

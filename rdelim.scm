@@ -20,12 +20,11 @@
  ;; releases.
  (define read-line #f)
  (define read-delimited #f)
- (define read-delimited! #f))
+ (define read-delimited! #f)
+ (define %read-delimited! #f))
 
-(export read-line read-paragraph read-delimited read-delimited! skip-char-set)
-
-;; unchanged from (ice-9 rdelim)
-(re-export %read-delimited!)
+(export read-line read-paragraph read-delimited read-delimited!
+	%read-delimited! skip-char-set)
 
 (define guile-read-delimited
   (module-ref (resolve-module '(ice-9 rdelim)) 'read-delimited))
@@ -179,6 +178,14 @@
 ;							last))
 ;				(+ num-read 1)))))))))
 		  
+
+(define guile-%read-delimited!
+  (module-ref (resolve-module '(ice-9 rdelim)) '%read-delimited!))
+
+(define (%read-delimited! delims buf gobble? . rest)
+  (let ((rv (apply guile-%read-delimited! (char-set->string delims)
+		   buf gobble? rest)))
+    (values (car rv) (cdr rv))))
 
 ;;; (%read-delimited! delims buf gobble? [port start end])
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

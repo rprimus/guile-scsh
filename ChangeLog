@@ -1,3 +1,12 @@
+2001-08-08  Gary Houston  <ghouston@arglist.com>
+
+	* rdelim.scm (%read-delimited!): export a modified version that's
+	more scsh-compatible.
+
+	* network.scm: (host-to-net-16, net-to-host-16, host-to-net-32,
+	net-to-host-32): defined and exported.
+	* USAGE, INCOMPAT, README: updated.
+
 2001-08-06  Gary Houston  <ghouston@arglist.com>
 
 	* syscalls.scm (itimer): define and export.  it's an interface

@@ -2,7 +2,9 @@ Incompatibilities with scsh 0.4.4:
 
 a lot of stuff is missing.
 
-:optional renamed to optional.
+:optional has been renamed to optional, due to conflict with the
+Guile keyword support.  Hopefully a better solution will be found
+shortly.
 
 everything is defined at the top level, no modules.
 

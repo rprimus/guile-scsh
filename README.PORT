@@ -1,0 +1,19 @@
+This is an incomplete port of the scheme shell (scsh) 0.4.4 to Guile.
+
+The original scsh is available by ftp from
+swiss-ftp.ai.mit.edu:/pub/su, which is also the place to go for scsh
+documentation.
+
+The Guile port uses a record type to represent the multiple values
+returned by many scsh procedures.  The values can be retrieved
+using call-with-values or receive.
+
+The Guile module system is not currently being used.  Initialization
+can be done by:
+
+(load-from-path "scsh/init")
+
+Note that SLIB must be found in %load-path, e.g., it can be unpacked
+in a directory named "slib" parallel to the scsh directory, or an
+equivalent link can be made.  SLIB can be obtained by ftp from
+prep.ai.mit.edu in the pub/gnu/jacal directory.

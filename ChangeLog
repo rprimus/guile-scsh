@@ -1,3 +1,11 @@
+Mon Jan 20 01:12:38 1997  Gary Houston  <ghouston@actrix.gen.nz>
+
+	* Makefile.am, Makefile.in, PLUGIN/OPT, README.PORT, configure.in,
+	configure, aclocal.m4: new files.
+
+	* network.scm (generic-receive-message!/partial): catch sytem-error
+	and check for errno/wouldblock or errno/again.
+
 Sat Jan 18 00:52:14 1997  Gary Houston  <ghouston@actrix.gen.nz>
 
 	* init.scm (index, rindex): replace versions in utilities.scm with

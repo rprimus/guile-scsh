@@ -468,11 +468,21 @@
       (error "Bad substring indices" reader s start end))
 
   (if (= start end) 0 ; Vacuous request.
-      (let* ((rv (recvfrom sockfd (list s start end) flags))
-	     (nread (cadr rv))
-	     (addr (caddr rv)))
-	(values (and (not (zero? nread)) nread)
-		(make-socket-address from addr)))))
+      (catch 'system-error
+	     (lambda ()
+	       (let* ((rv (recvfrom sockfd (list s start end) flags))
+		      (nread (cadr rv))
+		      (addr (caddr rv)))
+		 (values (and (not (zero? nread)) nread)
+			 (make-socket-address from addr))))
+	     (lambda args
+	       (let ((err (car (list-ref args 4))))
+		 (cond ;; ((= err errno/intr) (loop)) ; handled by primitive.
+		  ((or (= err errno/wouldblock); No forward-progess here.
+		       (= err errno/again))
+		   0)
+		  (else (apply scm-error args))))))))
+
 
 (define-foreign recv-substring!/errno
   (recv_substring (integer sockfd)

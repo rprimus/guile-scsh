@@ -1,0 +1,7 @@
+#
+# Process this file with autoconf to produce a configure script.
+#
+
+AC_INIT(network.scm)
+AM_INIT_GUILE_MODULE(scsh)
+AC_OUTPUT(Makefile)
